@@ -18,10 +18,8 @@
               <captcha ref="captcha" v-model:token="form.token" style="margin-left: 1rem"></captcha>
             </el-form-item>
           </el-row>
-          <el-row>
-            <el-form-item>
-              <el-button type="primary" @click="onSubmit">登录</el-button>
-            </el-form-item>
+          <el-row justify="center">
+              <el-button type="primary" @click="onSubmit" style="width: 60%;">登录</el-button>
           </el-row>
         </el-form>
     </el-row>

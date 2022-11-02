@@ -15,4 +15,10 @@ export default {
             data: data
         })
     },
+    logout() {
+        return request({
+            url: '/logout',
+            method: 'get',
+        })
+    },
 }
