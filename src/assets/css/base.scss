@@ -1,0 +1,23 @@
+:root{
+    --white:#FFFFFF;
+}
+.min-width{
+    width: 1200px;
+    height: 100%;
+    margin: auto;
+}
+.fl-l{
+    float: left;
+}
+.fl-r{
+    float: right;
+}
+/*禁用文字选中*/
+.notext{
+    -o-user-select: none;
+    -moz-user-select: none; /*火狐 firefox*/
+    -webkit-user-select: none; /*webkit浏览器*/
+    -ms-user-select: none; /*IE10+*/
+    -khtml-user-select :none; /*早期的浏览器*/
+    user-select: none;
+}
