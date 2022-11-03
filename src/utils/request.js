@@ -30,7 +30,7 @@ api.interceptors.response.use(res => {
             localStorage.setItem('javawebtoken', res.headers.authorization)
         }
     }
-    if (res.data.code == "106") {
+    if (res.data.code == "106" || !window.localStorage.getItem("javawebtoken")) {
         //用户未登录
         router.push({
             path: '/login',

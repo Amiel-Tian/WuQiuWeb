@@ -2,17 +2,19 @@
   <el-container style="height: 100%;">
 
     <el-aside :width="menuRightCollapse ? 'auto' : '220px'" class="aside">
-      <el-scrollbar >
-      <el-menu
-          active-text-color="#ffd04b"
-          background-color="#545c64"
-          text-color="#fff"
-          class="el-menu-vertical-demo"
-          default-active="1"
-          :collapse="menuRightCollapse"
-      >
-          <menu-tree :menu-list="menuList"></menu-tree>
-      </el-menu>
+      <el-scrollbar>
+        <el-menu
+            active-text-color="#ffd04b"
+            background-color="#545c64"
+            text-color="#fff"
+            class="el-menu-vertical-demo"
+            default-active="1"
+            :collapse="menuRightCollapse"
+            :router="true"
+            :default-active="routerPath"
+        >
+          <menu-tree v-model:menu-list="menuList"></menu-tree>
+        </el-menu>
       </el-scrollbar>
     </el-aside>
 
@@ -40,9 +42,7 @@
       </el-header>
 
       <el-main>
-          <el-scrollbar >
-            <div style="margin: 23rem">main</div>
-          </el-scrollbar>
+        <router-view name="index"></router-view>
       </el-main>
 
     </el-container>
@@ -64,7 +64,10 @@ export default {
   components: {menuTree},
   setup(props, content) {
     const router = useRouter()
+    const routerPath = ref(router.currentRoute.value.path)
+
     let data = {
+      routerPath: ref(""),
       userInfo: reactive({
         username: "--"
       }),
@@ -77,6 +80,7 @@ export default {
     })
     onMounted(async () => {
       methods.getUserInto()
+      console.log(routerPath)
     })
     let methods = {
       getUserInto() {
@@ -95,6 +99,7 @@ export default {
 
     return {
       router,
+      routerPath,
       ...data,
       ...methods
     }
@@ -107,12 +112,13 @@ export default {
   flex-grow: 1;
 }
 
-.aside{
+.aside {
   .el-menu {
     height: 100vh;
   }
 }
-.el-header{
+
+.el-header {
   padding: 0;
 }
 </style>
