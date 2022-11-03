@@ -1,33 +1,37 @@
 <template>
-  <div class="box">
-    <el-row justify="center" align="middle" style="height: 100%">
-        <el-form class="form" label-width="120px">
+  <el-row justify="center" align="middle" style="height: 100%">
+    <el-col :span="12">
+      <el-row justify="center" align="middle" class="login-box">
+        <el-col :span="12" class="left">
           <el-row>
-            <el-form-item label="用户名：" style="width: 100%;">
-              <el-input v-model="form.username" />
-            </el-form-item>
+
           </el-row>
-          <el-row>
-            <el-form-item label="密码：" style="width: 100%;">
-              <el-input v-model="form.password" show-password/>
-            </el-form-item>
-          </el-row>
-          <el-row>
-            <el-form-item label="验证码：">
-              <el-input v-model="form.captcha" style="flex: 1"/>
+        </el-col>
+        <el-col :span="12" class="right">
+
+          <el-form class="form" label-width="120px">
+            <el-row>
+              <el-input v-model="form.username" placeholder="请输入用户名" prefix-icon="User"/>
+            </el-row>
+            <el-row>
+              <el-input v-model="form.password" placeholder="请输pm入密码" show-password prefix-icon="Lock"/>
+            </el-row>
+            <el-row>
+              <el-input v-model="form.captcha" placeholder="请输入验证码" style="flex: 1" prefix-icon="Aim"/>
               <captcha ref="captcha" v-model:token="form.token" style="margin-left: 1rem"></captcha>
-            </el-form-item>
-          </el-row>
-          <el-row justify="center">
-              <el-button type="primary" @click="onSubmit" style="width: 60%;">登录</el-button>
-          </el-row>
-        </el-form>
-    </el-row>
-  </div>
+            </el-row>
+            <el-row justify="center">
+              <el-button @click="onSubmit" style="width: 100%;">登录</el-button>
+            </el-row>
+          </el-form>
+        </el-col>
+      </el-row>
+    </el-col>
+  </el-row>
 </template>
 
 <script>
-import {ref,unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
+import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter, useRoute} from 'vue-router'
 import {ElMessage, ElMessageBox} from 'element-plus';
 
@@ -37,18 +41,18 @@ import tool from "@/utils/tool";
 
 export default {
   name: "login",
-  components:{
+  components: {
     captcha,
   },
-  setup(props ,content){
+  setup(props, content) {
     const router = useRouter()
     const captcha = ref(null)
 
     let data = {
-      form:reactive({}),
+      form: reactive({}),
     }
     //监听
-    watch(() => [props.info], ([newInfo],[oldInfo]) => {
+    watch(() => [props.info], ([newInfo], [oldInfo]) => {
       // if (newInfo){
       //   Object.assign(data.form, newInfo)
       // }
@@ -58,16 +62,16 @@ export default {
     })
 
     let methods = {
-      onSubmit(){
+      onSubmit() {
         let param = tool.changeJson(data.form)
 
         userApi.login(param).then(res => {
-          if (res.success){
+          if (res.success) {
             ElMessage.success(res.msg);
             router.push({
               path: '/',
             })
-          }else{
+          } else {
             ElMessage.warning(res.msg);
             captcha.value.getCaptcha()
           }
@@ -88,12 +92,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.box{
-  width: 100%;
+.form {
+  padding: 2rem 3rem;
+
+  .el-row {
+    margin: 1.5rem 0;
+  }
+  .el-button, .el-input{
+    height: 50px;
+  }
+}
+.login-box {
   height: 100%;
-  //background-image: linear-gradient(333deg, #FFDEE9 0%, #B5FFFC 100%);
+  border-radius: 1%;
+  box-shadow: -4px 5px 10px rgb(0 0 0 / 40%);
+  background-color: #8b9aac;
+
+  .left{
+    height: 100%;
+  }
+  .right{
+    padding: 1rem 0;
+    background-color: #f3f3f3;
+  }
 }
-.form{
-  height: 50%;
-}
+
+
 </style>

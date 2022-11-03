@@ -12,11 +12,14 @@ import 'element-plus/dist/index.css'
 import locale from 'element-plus/lib/locale/lang/zh-cn';
 app.use(ElementPlus,{locale})
 //注册element 图标
-// import * as Icons from '@element-plus/icons-vue'
-import * as Icons from '@element-plus/icons'
-for (let i in Icons) {
-    app.component(i, Icons[i])
+import * as Elicons from "@element-plus/icons-vue";
+for (let i in Elicons) {
+    app.component(i, Elicons[i])
 }
+// import * as Icons from '@element-plus/icons'
+// for (let i in Icons) {
+//     app.component(i, Icons[i])
+// }
 
 //注册路由
 import router from './router/index.js'
