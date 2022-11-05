@@ -1,5 +1,25 @@
 export default [
     {
+        name: '404',
+        path: '/404',
+        meta: { title: '404', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/error/404')
+        }
+    },
+    {
+        name: '500',
+        path: '/500',
+        meta: { title: '500', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/error/500')
+        }
+    },
+    {
         name: 'sys/user',
         path: '/sys/user',
         meta: { title: '用户管理', icon: '' },

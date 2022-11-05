@@ -5,7 +5,7 @@ import router from '@/router'
 //全局变量
 import APP_CONFIG from "@/config/config";
 //超时时间
-axios.defaults.timeout = 10000 * 60 * 2;
+axios.defaults.timeout = 1000 * 60 * 2;
 const api = axios.create({
     // baseURL: APP_CONFIG.VUE_APP_API_HOST_DEFAULT, // 请求的公共地址部分
     baseURL: "api", // 请求的公共地址部分
@@ -49,7 +49,7 @@ api.interceptors.response.use(res => {
     return Promise.resolve(res.data)
 }, err => {
     // 服务器响应发生错误时的处理
-    ElMessage.error('系统错误：' + err.response.data);
+    ElMessage.error('系统错误');
     if (err.response.data.indexOf("/getUserInfo") > -1){
         localStorage.setItem('javawebtoken', res.headers.authorization)
         router.push({

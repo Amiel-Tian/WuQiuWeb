@@ -1,13 +1,108 @@
 <template>
-人员管理
+  <page-title title="人员管理"></page-title>
+  <el-card>
+    <el-row>
+
+    </el-row>
+    <el-row>
+      <el-table v-loading="tableDataLoad" :data="tableData" stripe style="width: 100%">
+        <el-table-column prop="username" label="用户名" show-overflow-tooltip />
+        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip />
+        <el-table-column fixed="right" label="操作" >
+          <template #default>
+
+          </template>
+        </el-table-column>
+      </el-table>
+      <el-pagination
+          v-model:currentPage="page.pageNum"
+          v-model:page-size="page.pageSize"
+          :page-sizes="[10, 20, 30, 40]"
+          :small="page.small"
+          :disabled="false"
+          :hide-on-single-page="page.onepage"
+          :background="page.background"
+          layout=" sizes, prev, pager, next, jumper, total"
+          :total="page.total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+      />
+    </el-row>
+
+  </el-card>
 </template>
 
 <script>
+import pageTitle from "@/components/pageTitle";
+import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
+import {useRouter} from "vue-router";
+
+import userApi from "@/api/sys/user"
 export default {
-  name: "index"
+  name: "index",
+  props: ["info"],
+  emits: ["update:info"],
+  components: {
+    pageTitle
+  },
+  setup(props, content) {
+    const router = useRouter()
+    let data = {
+      tableData: ref([]),
+      tableDataLoad: ref(false),
+      page: reactive({
+        small: true, //是否小型
+        onepage: true, //是否一页不显示
+        background: true, //是否有背景
+        // sizes: , //多少条分页
+        pageSize: 10, // 目前分页数
+        pageNum: 1, //目前页数
+        total: 0,//总数
+      }),
+
+    }
+    //监听
+    watch(() => [props.info], ([newInfo], [oldInfo]) => {
+      // if (newInfo){
+      //   Object.assign(data.form, newInfo)
+      // content.emit('update:info',newInfo)
+      // }
+    })
+    onMounted(async () => {
+      methods.getTableData()
+    })
+    let methods = {
+      handleSizeChange(number){
+        methods.getTableData()
+      },
+      handleCurrentChange(number){
+        methods.getTableData()
+      },
+
+      getTableData(){
+        data.tableDataLoad.value = true
+        let param = {}
+        param = Object.assign(param, data.page)
+  
+        console.log(param)
+        userApi.page(param).then(res => {
+          data.tableData.value = res.data.records
+          data.page.total = res.data.total
+        }).finally(() => {
+          data.tableDataLoad.value = false
+        })
+      }
+    }
+
+    return {
+      router,
+      ...data,
+      ...methods
+    }
+  }
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 </style>
