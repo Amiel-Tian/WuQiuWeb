@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import login from "@/views/login";
 import home from "@/views/index";
 import sys from "@/router/sys/index";
+import renwushu from "@/router/model/renwushu";
 
 
 const routes = [
@@ -16,6 +17,7 @@ const routes = [
         component : home,
         children:[
             ...sys,
+            ...renwushu
         ],
     },
     // ...back,

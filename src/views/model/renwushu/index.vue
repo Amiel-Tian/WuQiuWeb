@@ -48,7 +48,7 @@
       </el-row>
       <el-divider />
       <el-row>
-        <el-icon class=""><CopyDocument /></el-icon>
+        <el-icon class="" @click="copy(showData)"><CopyDocument /></el-icon>
       </el-row>
       <el-row>
         <el-input
@@ -65,8 +65,10 @@
 
 <script>
 import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
+import useClipboard   from 'vue-clipboard3'
 import {useRouter} from "vue-router";
 import userApi from "@/api/sys/user";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "index",
@@ -75,6 +77,7 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const { toClipboard } = useClipboard()
     let data = {
       userInfo: reactive({}),
       form: reactive({}),
@@ -115,7 +118,14 @@ export default {
           data.form.recipient = data.userInfo.username
         })
       },
-
+      async copy(content) {
+        try {
+          await toClipboard(content)
+          ElMessage.success("复制成功");
+        } catch (e) {
+          ElMessage.error("复制失败" ,"e");
+        }
+      },
     }
 
     return {
