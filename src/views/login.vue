@@ -14,7 +14,7 @@
               <el-input :disabled = "btnLoad" v-model="form.username" placeholder="请输入用户名" prefix-icon="User"/>
             </el-row>
             <el-row>
-              <el-input :disabled = "btnLoad" v-model="form.password" placeholder="请输pm入密码" show-password prefix-icon="Lock"/>
+              <el-input :disabled = "btnLoad" v-model="form.password" placeholder="请输入用户密码" show-password prefix-icon="Lock"/>
             </el-row>
             <el-row>
               <el-input :disabled = "btnLoad" v-model="form.captcha" placeholder="请输入验证码" style="flex: 1" prefix-icon="Aim"/>
