@@ -49,7 +49,13 @@ api.interceptors.response.use(res => {
     return Promise.resolve(res.data)
 }, err => {
     // 服务器响应发生错误时的处理
-    ElMessage.error('系统错误：' + err);
+    ElMessage.error('系统错误：' + err.response.data);
+    if (err.response.data.indexOf("/getUserInfo") > -1){
+        localStorage.setItem('javawebtoken', res.headers.authorization)
+        router.push({
+            path: '/login',
+        })
+    }
     Promise.reject(err)
 })
 

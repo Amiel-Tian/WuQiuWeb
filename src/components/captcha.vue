@@ -17,8 +17,8 @@ export default {
     }
     //监听
     watch(() => [props.token], ([newToken], [oldToken]) => {
-      if (newToken){
-        content.emit('update:token',newToken)
+      if (newToken) {
+        content.emit('update:token', newToken)
       }
     })
     onMounted(async () => {
@@ -27,9 +27,9 @@ export default {
     let methods = {
       getCaptcha() {
         toolApi.getCaptcha().then(res => {
-          if (res.success){
+          if (res.success) {
             data.img.value = res.data.base64Img;
-            content.emit('update:token',res.data.token)
+            content.emit('update:token', res.data.token)
           }
         })
       },

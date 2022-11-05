@@ -80,7 +80,6 @@ export default {
     })
     onMounted(async () => {
       methods.getUserInto()
-      console.log(routerPath)
     })
     let methods = {
       getUserInto() {

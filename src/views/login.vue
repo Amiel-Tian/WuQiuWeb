@@ -11,17 +11,17 @@
 
           <el-form class="form" label-width="120px">
             <el-row>
-              <el-input v-model="form.username" placeholder="请输入用户名" prefix-icon="User"/>
+              <el-input :disabled = "btnLoad" v-model="form.username" placeholder="请输入用户名" prefix-icon="User"/>
             </el-row>
             <el-row>
-              <el-input v-model="form.password" placeholder="请输pm入密码" show-password prefix-icon="Lock"/>
+              <el-input :disabled = "btnLoad" v-model="form.password" placeholder="请输pm入密码" show-password prefix-icon="Lock"/>
             </el-row>
             <el-row>
-              <el-input v-model="form.captcha" placeholder="请输入验证码" style="flex: 1" prefix-icon="Aim"/>
-              <captcha ref="captcha" v-model:token="form.token" style="margin-left: 1rem"></captcha>
+              <el-input :disabled = "btnLoad" v-model="form.captcha" placeholder="请输入验证码" style="flex: 1" prefix-icon="Aim"/>
+              <captcha ref="captcha" height="50" v-model:token="form.token" style="margin-left: 1rem"></captcha>
             </el-row>
             <el-row justify="center">
-              <el-button @click="onSubmit" style="width: 100%;">登录</el-button>
+              <el-button :loading="btnLoad" @click="onSubmit" style="width: 100%;">登录</el-button>
             </el-row>
           </el-form>
         </el-col>
@@ -50,6 +50,7 @@ export default {
 
     let data = {
       form: reactive({}),
+      btnLoad : ref(false)
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -63,6 +64,7 @@ export default {
 
     let methods = {
       onSubmit() {
+        data.btnLoad.value = true
         let param = tool.changeJson(data.form)
 
         userApi.login(param).then(res => {
@@ -77,6 +79,8 @@ export default {
           }
         }).catch((e) => {
           ElMessage.error(e);
+        }).finally(()=> {
+          data.btnLoad.value = false
         })
       },
     }
