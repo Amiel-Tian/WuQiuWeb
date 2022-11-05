@@ -21,4 +21,11 @@ export default {
             method: 'get',
         })
     },
+    page(param) {
+        return request({
+            url: '/sysUser/page',
+            method: 'get',
+            params: param,
+        })
+    },
 }
