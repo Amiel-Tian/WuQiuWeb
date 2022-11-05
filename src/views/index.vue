@@ -116,7 +116,9 @@ export default {
     height: 100vh;
   }
 }
-
+.el-main{
+  --el-main-padding: .5rem 1rem;
+}
 .el-header {
   padding: 0;
 }
