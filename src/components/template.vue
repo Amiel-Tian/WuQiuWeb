@@ -29,7 +29,7 @@
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作">
-          <template #default>
+          <template #default="scope">
             <el-button size="small" @click="">编辑</el-button>
             <el-popconfirm
                 @confirm="confirmDelete"
@@ -61,6 +61,7 @@
 <script>
 import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
+import {ElMessage, ElMessageBox} from 'element-plus';
 
 import userApi from "@/api/sys/user"
 

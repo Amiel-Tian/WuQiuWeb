@@ -65,7 +65,7 @@ export default {
   components: {menuTree},
   setup(props, content) {
     const router = useRouter()
-    const routerPath = ref(router.currentRoute.value.path)
+    let routerPath = ref(router.currentRoute.value.path)
 
     let data = {
       userInfo: ref({

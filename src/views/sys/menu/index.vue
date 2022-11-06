@@ -53,13 +53,15 @@
             <el-descriptions-item align="center" label="状态：">
               <el-tag>{{ form.type }}</el-tag>
             </el-descriptions-item>
+            <el-descriptions-item align="center" label="排序：">{{ form.sort }}</el-descriptions-item>
             <el-descriptions-item align="center" label="授权编码：">{{ form.perms }}</el-descriptions-item>
             <el-descriptions-item align="center" label="菜单地址：">{{ form.path }}</el-descriptions-item>
           </el-descriptions>
         </el-row>
         <el-divider content-position="left">{{ form.name ?'子项列表' : '菜单列表' }}</el-divider>
         <el-row justify="start" style="margin: .5rem">
-          <el-link type="primary">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
+          <el-link type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
+          <el-link type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
           <el-row justify="end" align="middle" style="flex: 1">
             <el-tooltip
                 effect="dark"
@@ -75,6 +77,7 @@
         <el-row>
           <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
             <el-table-column prop="name" label="菜单名称" show-overflow-tooltip/>
+            <el-table-column prop="sort" label="排序" show-overflow-tooltip/>
             <el-table-column prop="type" label="菜单类型" show-overflow-tooltip>
               <template #default="scope">
                 <el-tag>{{ scope.row.type }}</el-tag>
@@ -82,7 +85,6 @@
             </el-table-column>
             <el-table-column prop="path" label="菜单地址" show-overflow-tooltip/>
             <el-table-column prop="perms" label="授权编码" show-overflow-tooltip/>
-            <el-table-column prop="sort" label="排序" show-overflow-tooltip/>
             <el-table-column prop="statu" label="状态" show-overflow-tooltip>
               <template #default="scope">
                 <el-tag>{{ scope.row.statu }}</el-tag>
@@ -96,8 +98,8 @@
               </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作">
-              <template #default>
-                <el-button size="small" @click="">编辑</el-button>
+              <template #default="scope">
+                <el-button size="small" @click="editClick(scope.row)">编辑</el-button>
                 <el-popconfirm
                     @confirm="confirmDelete"
                     title="确认删除?">
@@ -126,6 +128,7 @@
     </el-row>
   </el-card>
 
+  <operation v-model:drawer="drawer" :id="editId" :parent-id="parentId" @success="drawer = false; refreshTreeClick()"></operation>
 </template>
 
 <script>
@@ -133,11 +136,13 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 import menuApi from "@/api/sys/menu";
 
+import operation from "@/views/sys/menu/operation"
+
 export default {
   name: "index",
   props: [],
   emits: [],
-  components: {},
+  components: {operation},
   setup(props, content) {
     const router = useRouter()
     const treeRef = ref()
@@ -163,6 +168,9 @@ export default {
         total: 0,//总数
       }),
 
+      editId: ref(""),
+      parentId: ref(""),
+      drawer: ref(false),
     }
     //监听搜索框
     watch(data.treeInput, (value) => {
@@ -238,7 +246,7 @@ export default {
       },
 
       getNav() {
-        menuApi.getNav().then(res => {
+        menuApi.getNavAll().then(res => {
           data.treeData.value = res.data.nav
         })
       },
@@ -247,6 +255,24 @@ export default {
       * 确认删除
       * */
       confirmDelete() {
+      },
+
+      /*
+      * 新增
+      *
+      * */
+      addClick() {
+        data.editId.value = undefined
+        data.parentId.value = data.form.value.id
+        data.drawer.value = true
+      },
+      /*
+      * 编辑按钮
+      *
+      * */
+      editClick(row) {
+        data.editId.value = row.id
+        data.drawer.value = true
       },
     }
 

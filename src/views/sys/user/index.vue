@@ -1,8 +1,8 @@
 <template>
   <page-title title="人员管理"></page-title>
   <el-card>
-    <el-row justify="start">
-      <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
+    <el-row justify="start" style="margin: .5rem">
+      <el-button type="primary" @click="addClick()" v-permission="['sys:user:save']">新建用户</el-button>
       <el-row justify="end" align="middle" style="flex: 1">
         <el-tooltip
             effect="dark"
@@ -27,14 +27,14 @@
         <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
         <el-table-column prop="email" label="邮箱" show-overflow-tooltip/>
         <el-table-column fixed="right" label="操作">
-          <template #default>
-            <el-button size="small" @click="">编辑</el-button>
-            <el-button size="small" @click="" type="primary">用户角色</el-button>
+          <template #default="scope">
+            <el-button v-permission="['sys:user:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
+            <el-button v-permission="['sys:user:role']" size="small" @click="" type="primary">用户权限</el-button>
             <el-popconfirm
                 @confirm="confirmDelete"
                 title="确认删除?">
               <template #reference>
-                <el-button size="small" type="danger" @click="">删除</el-button>
+                <el-button v-permission="['sys:user:delete']" size="small" type="danger" @click="">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -56,6 +56,8 @@
     </el-row>
 
   </el-card>
+
+  <operation v-model:drawer="drawer" :id="form.id" @success="drawer = false;getTableData()"></operation>
 </template>
 
 <script>
@@ -63,12 +65,12 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 
 import userApi from "@/api/sys/user"
-
+import operation from "@/views/sys/user/operation"
 export default {
   name: "index",
   props: [],
   emits: [],
-  components: {},
+  components: {operation},
   setup(props, content) {
     const router = useRouter()
     let data = {
@@ -84,6 +86,8 @@ export default {
         total: 0,//总数
       }),
 
+      form: ref({}),
+      drawer: ref(false)
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -132,6 +136,15 @@ export default {
       },
 
       confirmDelete() {
+      },
+
+      addClick(){
+        data.form.value= {}
+        data.drawer.value = true
+      },
+      editClick(row){
+        data.form.value = row
+        data.drawer.value = true
       },
     }
 

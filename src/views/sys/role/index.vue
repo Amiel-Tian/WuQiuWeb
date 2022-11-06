@@ -4,24 +4,15 @@
     <el-form :model="form" label-width="120px">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
-          <el-form-item label="菜单名称">
-            <el-input v-model="form.name"/>
+          <el-form-item label="角色名称">
+            <el-input v-model="form.name" placeholder="请输入角色名称" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="菜单名称">
-            <el-input v-model="form.name"/>
-          </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="菜单名称">
-            <el-input v-model="form.name"/>
-          </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="菜单名称">
-            <el-input v-model="form.name"/>
-          </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-row justify="center">
@@ -31,7 +22,7 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-row justify="start">
+    <el-row justify="start" style="margin: .5rem">
       <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
       <el-row justify="end" align="middle" style="flex: 1">
         <el-tooltip
@@ -59,8 +50,8 @@
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作">
-          <template #default>
-            <el-button size="small" @click="">编辑</el-button>
+          <template #default="scope">
+            <el-button size="small" @click="editClick(scope.row)">编辑</el-button>
             <el-button size="small" @click="" type="primary">角色授权</el-button>
             <el-popconfirm
                 @confirm="confirmDelete"
@@ -88,6 +79,7 @@
     </el-row>
   </el-card>
 
+  <operation v-model:drawer="drawer" :id="form.id" @success="drawer = false;getTableData()"></operation>
 </template>
 
 <script>
@@ -95,11 +87,12 @@ import {ref,unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 import roleApi from "@/api/sys/role";
 
+import operation from "@/views/sys/role/operation"
 export default {
   name: "index",
   props:[],
   emits:[],
-  components:{},
+  components:{operation},
   setup(props ,content){
     const router = useRouter()
     let data = {
@@ -115,6 +108,8 @@ export default {
         pageNum: 1, //目前页数
         total: 0,//总数
       }),
+
+      drawer: ref(false),
 
     }
     //监听
@@ -166,6 +161,14 @@ export default {
       * 确认删除
       * */
       confirmDelete(){},
+      addClick(){
+        data.form.value= {}
+        data.drawer.value = true
+      },
+      editClick(row){
+        data.form.value = row
+        data.drawer.value = true
+      },
     }
 
     return {
