@@ -1,49 +1,128 @@
 <template>
   <page-title title="菜单管理"></page-title>
   <el-card>
-    <el-row>
-      <el-col>
-        <el-button type="primary" v-permission="['sys:user:save']">新建菜单</el-button>
+    <el-row justify="space-around">
+      <el-col :span="treeWidth">
+        <el-divider content-position="left">菜单树</el-divider>
+        <el-input placeholder="输入搜索" v-model="treeInput" clearable >
+          <template #append>
+            <el-button icon="Search" @click="treeSearch"/>
+          </template>
+        </el-input>
+        <el-row justify="start" align="middle" style="flex: 1; padding: .5rem">
+          <el-tooltip
+              effect="dark"
+              content="刷新"
+              placement="top-start"
+          >
+            <el-icon class="op-btn" @click="refreshTreeClick">
+              <Refresh/>
+            </el-icon>
+          </el-tooltip>
+        </el-row>
+        <el-tree
+            ref="treeRef"
+            :data="treeData"
+            :props="treeProps"
+            @node-click="treeeNodeClick"
+            :filter-node-method="filterNode"
+        >
+          <template #default="{ node, data }">
+            <el-row justify="space-between">
+              <div>{{ node.label }}</div>
+              <div style="padding:0 1.5rem">
+                <el-tag size="small">{{ data.type }}</el-tag>
+              </div>
+            </el-row>
+          </template>
+        </el-tree>
       </el-col>
-      <el-col></el-col>
-    </el-row>
-    <el-row>
-      <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
-        <el-table-column prop="username" label="用户名" show-overflow-tooltip/>
-        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
-        <el-table-column prop="statu" label="状态" show-overflow-tooltip>
-          <template #default="scope">
-            <el-tag>{{ scope.row.statu }}</el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
-        <el-table-column prop="email" label="邮箱" show-overflow-tooltip/>
-        <el-table-column fixed="right" label="操作">
-          <template #default>
-            <el-button size="small" @click="">编辑</el-button>
-            <el-popconfirm
-                @confirm="confirmDelete"
-                title="确认删除?">
-              <template #reference>
-                <el-button size="small" type="danger" @click="">删除</el-button>
+      <el-col :span="24-treeWidth-1">
+        <el-row v-show="form.name">
+          <el-divider content-position="left">详细信息</el-divider>
+          <el-descriptions :title="form.title" :column="4" border style="width: 100%;">
+            <el-descriptions-item align="center" label="菜单名称：">{{ form.name }}</el-descriptions-item>
+            <el-descriptions-item align="center" label="菜单类型：">
+              <el-tag size="small">{{ form.type }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item align="center" label="图标：">
+              <el-icon>
+                <component v-if="form.icon" :is="form.icon"/>
+              </el-icon>
+            </el-descriptions-item>
+            <el-descriptions-item align="center" label="状态：">
+              <el-tag>{{ form.type }}</el-tag>
+            </el-descriptions-item>
+            <el-descriptions-item align="center" label="授权编码：">{{ form.perms }}</el-descriptions-item>
+            <el-descriptions-item align="center" label="菜单地址：">{{ form.path }}</el-descriptions-item>
+          </el-descriptions>
+        </el-row>
+        <el-divider content-position="left">{{ form.name ?'子项列表' : '菜单列表' }}</el-divider>
+        <el-row justify="start" style="margin: .5rem">
+          <el-link type="primary">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
+          <el-row justify="end" align="middle" style="flex: 1">
+            <el-tooltip
+                effect="dark"
+                content="刷新"
+                placement="top-start"
+            >
+              <el-icon class="op-btn" @click="refreshClick">
+                <Refresh/>
+              </el-icon>
+            </el-tooltip>
+          </el-row>
+        </el-row>
+        <el-row>
+          <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
+            <el-table-column prop="name" label="菜单名称" show-overflow-tooltip/>
+            <el-table-column prop="type" label="菜单类型" show-overflow-tooltip>
+              <template #default="scope">
+                <el-tag>{{ scope.row.type }}</el-tag>
               </template>
-            </el-popconfirm>
-          </template>
-        </el-table-column>
-      </el-table>
-      <el-pagination
-          v-model:currentPage="page.pageNum"
-          v-model:page-size="page.pageSize"
-          :page-sizes="[10, 20, 30, 40]"
-          :small="page.small"
-          :disabled="false"
-          :hide-on-single-page="page.onepage"
-          :background="page.background"
-          layout=" sizes, prev, pager, next, jumper, total"
-          :total="page.total"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-      />
+            </el-table-column>
+            <el-table-column prop="path" label="菜单地址" show-overflow-tooltip/>
+            <el-table-column prop="perms" label="授权编码" show-overflow-tooltip/>
+            <el-table-column prop="sort" label="排序" show-overflow-tooltip/>
+            <el-table-column prop="statu" label="状态" show-overflow-tooltip>
+              <template #default="scope">
+                <el-tag>{{ scope.row.statu }}</el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column prop="icon" label="菜单图标" show-overflow-tooltip>
+              <template #default="scope">
+                <el-icon>
+                  <component v-if="scope.row.icon" :is="scope.row.icon"/>
+                </el-icon>
+              </template>
+            </el-table-column>
+            <el-table-column fixed="right" label="操作">
+              <template #default>
+                <el-button size="small" @click="">编辑</el-button>
+                <el-popconfirm
+                    @confirm="confirmDelete"
+                    title="确认删除?">
+                  <template #reference>
+                    <el-button size="small" type="danger" @click="">删除</el-button>
+                  </template>
+                </el-popconfirm>
+              </template>
+            </el-table-column>
+          </el-table>
+          <el-pagination
+              v-model:currentPage="page.pageNum"
+              v-model:page-size="page.pageSize"
+              :page-sizes="[10, 20, 30, 40]"
+              :small="page.small"
+              :disabled="false"
+              :hide-on-single-page="page.onepage"
+              :background="page.background"
+              layout=" sizes, prev, pager, next, jumper, total"
+              :total="page.total"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+          />
+        </el-row>
+      </el-col>
     </el-row>
   </el-card>
 
@@ -61,10 +140,20 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const treeRef = ref()
     let data = {
+      treeWidth: ref(4),
+      treeInput: ref(""),
+      treeData: ref([]),
+      treeProps: {
+        children: 'children',
+        label: 'name',
+      },
+      form: ref({}),
+      search: ref({}),
       tableData: ref([]),
       tableDataLoad: ref(false),
-      page: reactive({
+      page: ref({
         small: true, //是否小型
         onepage: true, //是否一页不显示
         background: true, //是否有背景
@@ -75,52 +164,95 @@ export default {
       }),
 
     }
-    //监听
-    watch(() => [props.info], ([newInfo], [oldInfo]) => {
-      // if (newInfo){
-      //   Object.assign(data.form, newInfo)
-      // content.emit('update:info',newInfo)
-      // }
+    //监听搜索框
+    watch(data.treeInput, (value) => {
+      treeRef.value.filter(value)
     })
+
     onMounted(async () => {
+      methods.getNav()
       methods.getTableData()
     })
     let methods = {
       /*
-   * 页数改变
-   * */
-      handleSizeChange(number){
+      * 树型控件点击事件
+      * */
+      treeeNodeClick(datas, node, TreeNode, e) {
+        data.form.value = datas
+        data.search.value.parentId = datas.id
+        methods.getTableData();
+      },
+      /*
+      * 数过滤函数
+      * */
+      filterNode(value, datas) {
+        if (!value) return true
+        return datas.title.indexOf(value) != -1
+      },
+      treeSearch() {
+        treeRef.value.filter(data.treeInput)
+      },
+
+      /*
+      * 页数改变
+      *
+      * */
+      handleSizeChange(number) {
         methods.getTableData()
       },
       /*
       * 分页数改变
       * */
-      handleCurrentChange(number){
+      handleCurrentChange(number) {
         methods.getTableData()
       },
 
+      /*
+     * 刷新点击
+     * */
+      refreshClick() {
+        methods.getTableData();
+      },
+      refreshTreeClick() {
+        data.form.value = {}
+        data.search.value = {}
+
+        console.log(data.search)
+        methods.getNav();
+        methods.getTableData();
+      },
+
       /*获取列表*/
-      getTableData(){
+      getTableData() {
         data.tableDataLoad.value = true
         let param = {}
-        param = Object.assign(param, data.page)
+        param = Object.assign(param, data.page.value)
+        param = Object.assign(param, data.search.value)
 
         menuApi.page(param).then(res => {
           data.tableData.value = res.data.records
-          data.page.total = res.data.total
+          data.page.value.total = res.data.total
         }).finally(() => {
           data.tableDataLoad.value = false
+        })
+      },
+
+      getNav() {
+        menuApi.getNav().then(res => {
+          data.treeData.value = res.data.nav
         })
       },
 
       /*
       * 确认删除
       * */
-      confirmDelete(){},
+      confirmDelete() {
+      },
     }
 
     return {
       router,
+      treeRef,
       ...data,
       ...methods
     }

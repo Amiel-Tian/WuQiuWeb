@@ -1,12 +1,18 @@
 <template>
   <page-title title="人员管理"></page-title>
   <el-card>
-    <el-row justify="left">
+    <el-row justify="start">
       <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
-      <el-row justify="right" align="middle">
-        <el-icon class="">
-          <Refresh/>
-        </el-icon>
+      <el-row justify="end" align="middle" style="flex: 1">
+        <el-tooltip
+            effect="dark"
+            content="刷新"
+            placement="top-start"
+        >
+          <el-icon class="op-btn" @click="refreshClick">
+            <Refresh/>
+          </el-icon>
+        </el-tooltip>
       </el-row>
     </el-row>
     <el-row>
@@ -23,6 +29,7 @@
         <el-table-column fixed="right" label="操作">
           <template #default>
             <el-button size="small" @click="">编辑</el-button>
+            <el-button size="small" @click="" type="primary">用户角色</el-button>
             <el-popconfirm
                 @confirm="confirmDelete"
                 title="确认删除?">
@@ -67,7 +74,7 @@ export default {
     let data = {
       tableData: ref([]),
       tableDataLoad: ref(false),
-      page: reactive({
+      page: ref({
         small: true, //是否小型
         onepage: true, //是否一页不显示
         background: true, //是否有背景
@@ -89,21 +96,36 @@ export default {
       methods.getTableData()
     })
     let methods = {
+      /*
+      * 页数改变
+      *
+      * */
       handleSizeChange(number) {
         methods.getTableData()
       },
+      /*
+      * 分页数改变
+      * */
       handleCurrentChange(number) {
         methods.getTableData()
       },
 
+      /*
+      * 刷新点击
+      * */
+      refreshClick(){
+        methods.getTableData();
+      },
+
+      /*获取列表*/
       getTableData() {
         data.tableDataLoad.value = true
         let param = {}
-        param = Object.assign(param, data.page)
+        param = Object.assign(param, data.page.value)
 
         userApi.page(param).then(res => {
           data.tableData.value = res.data.records
-          data.page.total = res.data.total
+          data.page.value.total = res.data.total
         }).finally(() => {
           data.tableDataLoad.value = false
         })

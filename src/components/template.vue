@@ -1,24 +1,34 @@
 <template>
   <page-title title="人员管理"></page-title>
   <el-card>
-    <el-row>
-      <el-col>
-        <el-button  type="primary" v-permission="['sys:user:save']">新建用户</el-button>
-      </el-col>
-      <el-col></el-col>
+    <el-row justify="start" style="margin: .5rem">
+      <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
+      <el-row justify="end" align="middle" style="flex: 1">
+        <el-tooltip
+            effect="dark"
+            content="刷新"
+            placement="top-start"
+        >
+          <el-icon class="op-btn" @click="refreshClick">
+            <Refresh/>
+          </el-icon>
+        </el-tooltip>
+      </el-row>
     </el-row>
     <el-row>
       <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
-        <el-table-column prop="username" label="用户名" show-overflow-tooltip />
-        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip />
-        <el-table-column prop="statu" label="状态" show-overflow-tooltip >
+        <el-table-column prop="name" label="角色名" show-overflow-tooltip/>
+        <el-table-column prop="code" label="角色编码" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag>{{ scope.row.code }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="statu" label="状态" show-overflow-tooltip>
           <template #default="scope">
             <el-tag>{{ scope.row.statu }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="phone" label="手机号" show-overflow-tooltip />
-        <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
-        <el-table-column fixed="right" label="操作" >
+        <el-table-column fixed="right" label="操作">
           <template #default>
             <el-button size="small" @click="">编辑</el-button>
             <el-popconfirm
@@ -45,7 +55,6 @@
           @current-change="handleCurrentChange"
       />
     </el-row>
-
   </el-card>
 </template>
 
@@ -54,13 +63,12 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 
 import userApi from "@/api/sys/user"
+
 export default {
   name: "index",
   props: [],
   emits: [],
-  components: {
-
-  },
+  components: {},
   setup(props, content) {
     const router = useRouter()
     let data = {
@@ -90,19 +98,32 @@ export default {
     let methods = {
       /*
       * 页数改变
+      *
       * */
-      handleSizeChange(number){
+      handleSizeChange(number) {
         methods.getTableData()
       },
       /*
       * 分页数改变
+      *
       * */
-      handleCurrentChange(number){
+      handleCurrentChange(number) {
         methods.getTableData()
       },
 
-      /*获取列表*/
-      getTableData(){
+      /*
+      * 刷新点击
+      *
+      * */
+      refreshClick() {
+        methods.getTableData();
+      },
+
+      /*
+      * 获取列表
+      *
+      * */
+      getTableData() {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page)
@@ -117,8 +138,10 @@ export default {
 
       /*
       * 确认删除
+      *
       * */
-      confirmDelete(){},
+      confirmDelete() {
+      },
     }
 
     return {

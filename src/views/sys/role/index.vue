@@ -1,26 +1,67 @@
 <template>
-  <page-title title="权限管理"></page-title>
+  <page-title title="角色管理"></page-title>
   <el-card>
-    <el-row>
-      <el-col>
-        <el-button type="primary" v-permission="['sys:user:save']">新建权限</el-button>
-      </el-col>
-      <el-col></el-col>
+    <el-form :model="form" label-width="120px">
+      <el-row justify="start" style="margin: .5rem">
+        <el-col :span="5">
+          <el-form-item label="菜单名称">
+            <el-input v-model="form.name"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="菜单名称">
+            <el-input v-model="form.name"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="菜单名称">
+            <el-input v-model="form.name"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="菜单名称">
+            <el-input v-model="form.name"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-row justify="center">
+            <el-button @click="">搜索</el-button>
+            <el-button @click="">清空</el-button>
+          </el-row>
+        </el-col>
+      </el-row>
+    </el-form>
+    <el-row justify="start">
+      <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
+      <el-row justify="end" align="middle" style="flex: 1">
+        <el-tooltip
+            effect="dark"
+            content="刷新"
+            placement="top-start"
+        >
+          <el-icon class="op-btn" @click="refreshClick">
+            <Refresh/>
+          </el-icon>
+        </el-tooltip>
+      </el-row>
     </el-row>
     <el-row>
       <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
-        <el-table-column prop="username" label="用户名" show-overflow-tooltip/>
-        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
+        <el-table-column prop="name" label="角色名" show-overflow-tooltip/>
+        <el-table-column prop="code" label="角色编码" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag>{{ scope.row.code }}</el-tag>
+          </template>
+        </el-table-column>
         <el-table-column prop="statu" label="状态" show-overflow-tooltip>
           <template #default="scope">
             <el-tag>{{ scope.row.statu }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
-        <el-table-column prop="email" label="邮箱" show-overflow-tooltip/>
         <el-table-column fixed="right" label="操作">
           <template #default>
             <el-button size="small" @click="">编辑</el-button>
+            <el-button size="small" @click="" type="primary">角色授权</el-button>
             <el-popconfirm
                 @confirm="confirmDelete"
                 title="确认删除?">
@@ -64,7 +105,8 @@ export default {
     let data = {
       tableData: ref([]),
       tableDataLoad: ref(false),
-      page: reactive({
+      form: ref({}),
+      page: ref({
         small: true, //是否小型
         onepage: true, //是否一页不显示
         background: true, //是否有背景
@@ -83,7 +125,7 @@ export default {
       // }
     })
     onMounted(async () => {
-
+      methods.getTableData()
     })
     let methods = {
       /*
@@ -99,15 +141,22 @@ export default {
         methods.getTableData()
       },
 
+      /*
+     * 刷新点击
+     * */
+      refreshClick(){
+        methods.getTableData();
+      },
+
       /*获取列表*/
       getTableData(){
         data.tableDataLoad.value = true
         let param = {}
-        param = Object.assign(param, data.page)
+        param = Object.assign(param, data.page.value)
 
         roleApi.page(param).then(res => {
           data.tableData.value = res.data.records
-          data.page.total = res.data.total
+          data.page.value.total = res.data.total
         }).finally(() => {
           data.tableDataLoad.value = false
         })
