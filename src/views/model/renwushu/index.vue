@@ -4,7 +4,7 @@
     <operation></operation>
   </el-card>
 
-  <el-row class="divider"><el-divider content-position="left">记录列表</el-divider></el-row>
+  <el-card ><el-divider content-position="left">记录列表</el-divider></el-card>
   <el-card>
     <el-row>
       <el-table v-loading="tableDataLoad" :data="tableData" stripe style="width: 100%">
@@ -40,14 +40,12 @@ import userApi from "@/api/sys/user";
 import {ElMessage} from "element-plus";
 
 import operation from "@/views/model/renwushu/operation"
-import pageTitle from "@/components/pageTitle";
 export default {
   name: "index",
   props: [],
   emits: [],
   components: {
     operation,
-    pageTitle
   },
   setup(props, content) {
     const router = useRouter()
@@ -80,7 +78,8 @@ export default {
           Object.assign(data.userInfo, res)
         })
       },
-
+      handleSizeChange(){},
+      handleCurrentChange(){},
     }
 
     return {
@@ -93,9 +92,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.divider{
-  .el-divider__text{
-    background-color: #f3f3f3;
-  }
-}
+
 </style>

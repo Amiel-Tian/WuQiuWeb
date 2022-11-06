@@ -89,7 +89,6 @@ export default {
     }
     //监听
     watch(data.form, () => {
-      console.log(data.form)
 
       data.showData.value = data.form.contractNo || ""
       data.showData.value += data.form.customerName ? " " + data.form.customerName : ""
@@ -105,7 +104,6 @@ export default {
 
       data.showData.value += data.form.workTime ? " " + data.form.workTime + "小时" : ""
       data.showData.value += data.form.context ? "\n" + data.form.context + "" : ""
-      console.log(data.showData.value)
     })
     onMounted(async () => {
       methods.getUserInto();
