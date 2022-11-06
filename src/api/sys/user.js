@@ -28,4 +28,25 @@ export default {
             params: param,
         })
     },
+    add(param) {
+        return request({
+            url: '/sysUser/add',
+            method: 'post',
+            data: param,
+        })
+    },
+    update(param) {
+        return request({
+            url: '/sysUser/update',
+            method: 'PUT',
+            data: param,
+        })
+    },
+    get(id) {
+        return request({
+            url: '/sysUser/get',
+            method: 'get',
+            params: {id : id},
+        })
+    },
 }

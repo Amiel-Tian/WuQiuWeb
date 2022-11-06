@@ -4,14 +4,14 @@
       <el-icon>
         <component v-if="item.icon" :is="item.icon"/>
       </el-icon>
-      <span>{{ item.title }}</span>
+      <span>{{ item.name }}</span>
     </el-menu-item>
     <el-sub-menu v-if="item && item.type == '0'" :index="item.id + ''">
       <template #title>
         <el-icon>
           <component v-if="item.icon" :is="item.icon"/>
         </el-icon>
-        <span>{{ item.title }}</span>
+        <span>{{ item.name }}</span>
       </template>
       <menu-tree v-if="item.children" :menu-list="item.children"></menu-tree>
     </el-sub-menu>

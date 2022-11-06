@@ -42,5 +42,14 @@ export default {
             return list.indexOf(item) !== -1
         })
         return result
+    },
+
+    // 回显数据字典
+    selectDictLabel(datas, value) {
+        for (let index = 0; index < datas.length; index++) {
+            if (datas[index].itemValue == value) {
+                return datas[index].itemText;
+            }
+        }
     }
 }

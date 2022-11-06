@@ -47,7 +47,7 @@ export default {
     const captcha = ref(null)
 
     let data = {
-      form: reactive({}),
+      form: ref({}),
       btnLoad : ref(false)
     }
     //监听
@@ -63,7 +63,7 @@ export default {
     let methods = {
       onSubmit() {
         data.btnLoad.value = true
-        let param = tool.changeJson(data.form)
+        let param = tool.changeJson(data.form.value)
 
         userApi.login(param).then(res => {
           if (res.success) {

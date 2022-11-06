@@ -1,49 +1,37 @@
 import request from "@/utils/request";
 
 export default {
-    getNav() {
-        return request({
-            url: '/sysMenu/nav',
-            method: 'get',
-        })
-    },
-    getNavAll() {
-        return request({
-            url: '/sysMenu/navAll',
-            method: 'get',
-        })
-    },
     page(param) {
         return request({
-            url: '/sysMenu/page',
+            url: '/sysRole/page',
             method: 'get',
             params: param,
         })
     },
     datas(param) {
         return request({
-            url: '/sysMenu/datas',
+            url: '/sysRole/datas',
             method: 'get',
             params: param,
         })
     },
     get(id) {
         return request({
-            url: '/sysMenu/get',
+            url: '/sysRole/get',
             method: 'get',
             params: {id : id},
         })
     },
     add(param) {
         return request({
-            url: '/sysMenu/add',
+            url: '/sysRole/add',
             method: 'post',
             data: param,
         })
     },
     update(param) {
         return request({
-            url: '/sysMenu/update',
+            url: '/sysRole/update',
             method: 'PUT',
             data: param,
         })

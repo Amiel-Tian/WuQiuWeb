@@ -1,20 +1,42 @@
 <template>
   <page-title title="人员管理"></page-title>
-<!--  <el-card></el-card>-->
   <el-card>
-    <el-row>
-      <el-col>
-        <el-button  type="primary" v-permission="['sys:user:save']">新建用户</el-button>
-      </el-col>
-      <el-col></el-col>
+    <el-row justify="start" style="margin: .5rem">
+      <el-button type="primary" @click="addClick()" v-permission="['sys:user:save']">新建用户</el-button>
+      <el-row justify="end" align="middle" style="flex: 1">
+        <el-tooltip
+            effect="dark"
+            content="刷新"
+            placement="top-start"
+        >
+          <el-icon class="op-btn" @click="refreshClick">
+            <Refresh/>
+          </el-icon>
+        </el-tooltip>
+      </el-row>
     </el-row>
     <el-row>
-      <el-table v-loading="tableDataLoad" :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="username" label="用户名" show-overflow-tooltip />
-        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip />
-        <el-table-column fixed="right" label="操作" >
-          <template #default>
-
+      <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
+        <el-table-column prop="username" label="用户名" show-overflow-tooltip/>
+        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
+        <el-table-column prop="statu" label="状态" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag>{{ scope.row.statu }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
+        <el-table-column prop="email" label="邮箱" show-overflow-tooltip/>
+        <el-table-column fixed="right" label="操作">
+          <template #default="scope">
+            <el-button v-permission="['sys:user:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
+            <el-button v-permission="['sys:user:role']" size="small" @click="" type="primary">用户权限</el-button>
+            <el-popconfirm
+                @confirm="confirmDelete"
+                title="确认删除?">
+              <template #reference>
+                <el-button v-permission="['sys:user:delete']" size="small" type="danger" @click="">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -34,6 +56,8 @@
     </el-row>
 
   </el-card>
+
+  <operation v-model:drawer="drawer" :id="form.id" @success="drawer = false;getTableData()"></operation>
 </template>
 
 <script>
@@ -41,19 +65,18 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 
 import userApi from "@/api/sys/user"
+import operation from "@/views/sys/user/operation"
 export default {
   name: "index",
-  props: ["info"],
-  emits: ["update:info"],
-  components: {
-
-  },
+  props: [],
+  emits: [],
+  components: {operation},
   setup(props, content) {
     const router = useRouter()
     let data = {
       tableData: ref([]),
       tableDataLoad: ref(false),
-      page: reactive({
+      page: ref({
         small: true, //是否小型
         onepage: true, //是否一页不显示
         background: true, //是否有背景
@@ -63,6 +86,8 @@ export default {
         total: 0,//总数
       }),
 
+      form: ref({}),
+      drawer: ref(false)
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -75,25 +100,52 @@ export default {
       methods.getTableData()
     })
     let methods = {
-      handleSizeChange(number){
+      /*
+      * 页数改变
+      *
+      * */
+      handleSizeChange(number) {
         methods.getTableData()
       },
-      handleCurrentChange(number){
+      /*
+      * 分页数改变
+      * */
+      handleCurrentChange(number) {
         methods.getTableData()
       },
 
-      getTableData(){
+      /*
+      * 刷新点击
+      * */
+      refreshClick(){
+        methods.getTableData();
+      },
+
+      /*获取列表*/
+      getTableData() {
         data.tableDataLoad.value = true
         let param = {}
-        param = Object.assign(param, data.page)
-  
+        param = Object.assign(param, data.page.value)
+
         userApi.page(param).then(res => {
           data.tableData.value = res.data.records
-          data.page.total = res.data.total
+          data.page.value.total = res.data.total
         }).finally(() => {
           data.tableDataLoad.value = false
         })
-      }
+      },
+
+      confirmDelete() {
+      },
+
+      addClick(){
+        data.form.value= {}
+        data.drawer.value = true
+      },
+      editClick(row){
+        data.form.value = row
+        data.drawer.value = true
+      },
     }
 
     return {

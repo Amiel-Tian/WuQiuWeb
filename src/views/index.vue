@@ -56,7 +56,7 @@ import {useRouter} from "vue-router";
 
 import userApi from "@/api/sys/user";
 import menuApi from "@/api/sys/menu";
-import menuTree from "@/views/menu/menuTree";
+import menuTree from "@/views/sys/menu/menuTree";
 
 export default {
   name: "index",
@@ -65,11 +65,10 @@ export default {
   components: {menuTree},
   setup(props, content) {
     const router = useRouter()
-    const routerPath = ref(router.currentRoute.value.path)
+    let routerPath = ref(router.currentRoute.value.path)
 
     let data = {
-      routerPath: ref(""),
-      userInfo: reactive({
+      userInfo: ref({
         username: "--"
       }),
       menuList: ref([]),
@@ -85,7 +84,7 @@ export default {
     let methods = {
       getUserInto() {
         userApi.getUserInfo().then(res => {
-          Object.assign(data.userInfo, res)
+          data.userInfo.value = res
         })
         menuApi.getNav().then(resnav => {
           data.menuList.value = resnav.data.nav

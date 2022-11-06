@@ -21,3 +21,16 @@
     -khtml-user-select :none; /*早期的浏览器*/
     user-select: none;
 }
+.el-card{
+    margin: .5rem 0;
+}
+.el-tree-node__label{
+    flex: 1;
+}
+.op-btn{
+    cursor: pointer;
+    color: var(--el-text-color-secondary) !important;
+}
+.op-btn:hover{
+    color: var(--el-text-color-primary) !important;;
+}
