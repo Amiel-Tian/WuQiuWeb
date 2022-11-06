@@ -35,14 +35,12 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter, useRoute} from 'vue-router'
 import {ElMessage, ElMessageBox} from 'element-plus';
 
-import captcha from "@/components/captcha";
 import userApi from "@/api/sys/user";
 import tool from "@/utils/tool";
 
 export default {
   name: "login",
   components: {
-    captcha,
   },
   setup(props, content) {
     const router = useRouter()

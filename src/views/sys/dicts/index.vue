@@ -5,13 +5,13 @@
 <script>
 import {ref,unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
-import pageTitle from "@/components/pageTitle";
+
 export default {
   name: "index",
   props:[],
   emits:[],
   components:{
-    pageTitle
+
   },
   setup(props ,content){
     const router = useRouter()

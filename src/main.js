@@ -28,5 +28,11 @@ app.use(router)
 //全局变量
 import APP_CONFIG from "@/config/config";
 app.config.globalProperties.$appConfig = APP_CONFIG
+//注册全局组件
+import components from "@/components";
+app.use(components)
+//权限控制
+import directive from "@/directive";
+directive(app)
 
 app.mount('#app')

@@ -1,8 +1,12 @@
 <template>
   <page-title title="人员管理"></page-title>
+<!--  <el-card></el-card>-->
   <el-card>
     <el-row>
-
+      <el-col>
+        <el-button  type="primary" v-permission="['sys:user:save']">新建用户</el-button>
+      </el-col>
+      <el-col></el-col>
     </el-row>
     <el-row>
       <el-table v-loading="tableDataLoad" :data="tableData" stripe style="width: 100%">
@@ -33,7 +37,6 @@
 </template>
 
 <script>
-import pageTitle from "@/components/pageTitle";
 import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 
@@ -43,7 +46,7 @@ export default {
   props: ["info"],
   emits: ["update:info"],
   components: {
-    pageTitle
+
   },
   setup(props, content) {
     const router = useRouter()
@@ -84,7 +87,6 @@ export default {
         let param = {}
         param = Object.assign(param, data.page)
   
-        console.log(param)
         userApi.page(param).then(res => {
           data.tableData.value = res.data.records
           data.page.total = res.data.total
