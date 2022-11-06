@@ -27,8 +27,9 @@
             :ellipsis="false"
         >
           <el-menu-item index="0" @click="menuRightCollapse = !menuRightCollapse">_
-            <el-icon @click="">
-              <Menu/>
+            <el-icon >
+              <Fold v-show="!menuRightCollapse"/>
+              <Expand v-show="menuRightCollapse"/>
             </el-icon>
           </el-menu-item>
 
@@ -88,6 +89,7 @@ export default {
         })
         menuApi.getNav().then(resnav => {
           data.menuList.value = resnav.data.nav
+          sessionStorage.setItem('permission',resnav.data.authoritys)
         })
       },
 
