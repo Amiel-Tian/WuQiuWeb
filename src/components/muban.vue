@@ -1,24 +1,24 @@
 <template>
-  <page-title title="菜单管理"></page-title>
+  <page-title title="人员管理"></page-title>
   <el-card>
     <el-row>
       <el-col>
-        <el-button type="primary" v-permission="['sys:user:save']">新建菜单</el-button>
+        <el-button  type="primary" v-permission="['sys:user:save']">新建用户</el-button>
       </el-col>
       <el-col></el-col>
     </el-row>
     <el-row>
       <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
-        <el-table-column prop="username" label="用户名" show-overflow-tooltip/>
-        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
-        <el-table-column prop="statu" label="状态" show-overflow-tooltip>
+        <el-table-column prop="username" label="用户名" show-overflow-tooltip />
+        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip />
+        <el-table-column prop="statu" label="状态" show-overflow-tooltip >
           <template #default="scope">
             <el-tag>{{ scope.row.statu }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
-        <el-table-column prop="email" label="邮箱" show-overflow-tooltip/>
-        <el-table-column fixed="right" label="操作">
+        <el-table-column prop="phone" label="手机号" show-overflow-tooltip />
+        <el-table-column prop="email" label="邮箱" show-overflow-tooltip />
+        <el-table-column fixed="right" label="操作" >
           <template #default>
             <el-button size="small" @click="">编辑</el-button>
             <el-popconfirm
@@ -45,20 +45,22 @@
           @current-change="handleCurrentChange"
       />
     </el-row>
-  </el-card>
 
+  </el-card>
 </template>
 
 <script>
 import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
-import menuApi from "@/api/sys/menu";
 
+import userApi from "@/api/sys/user"
 export default {
   name: "index",
   props: [],
   emits: [],
-  components: {},
+  components: {
+
+  },
   setup(props, content) {
     const router = useRouter()
     let data = {
@@ -87,8 +89,8 @@ export default {
     })
     let methods = {
       /*
-   * 页数改变
-   * */
+      * 页数改变
+      * */
       handleSizeChange(number){
         methods.getTableData()
       },
@@ -105,7 +107,7 @@ export default {
         let param = {}
         param = Object.assign(param, data.page)
 
-        menuApi.page(param).then(res => {
+        userApi.page(param).then(res => {
           data.tableData.value = res.data.records
           data.page.total = res.data.total
         }).finally(() => {

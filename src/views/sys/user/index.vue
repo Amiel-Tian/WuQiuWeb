@@ -1,20 +1,35 @@
 <template>
   <page-title title="人员管理"></page-title>
-<!--  <el-card></el-card>-->
   <el-card>
-    <el-row>
-      <el-col>
-        <el-button  type="primary" v-permission="['sys:user:save']">新建用户</el-button>
-      </el-col>
-      <el-col></el-col>
+    <el-row justify="left">
+      <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
+      <el-row justify="right" align="middle">
+        <el-icon class="">
+          <Refresh/>
+        </el-icon>
+      </el-row>
     </el-row>
     <el-row>
-      <el-table v-loading="tableDataLoad" :data="tableData" stripe style="width: 100%">
-        <el-table-column prop="username" label="用户名" show-overflow-tooltip />
-        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip />
-        <el-table-column fixed="right" label="操作" >
+      <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
+        <el-table-column prop="username" label="用户名" show-overflow-tooltip/>
+        <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
+        <el-table-column prop="statu" label="状态" show-overflow-tooltip>
+          <template #default="scope">
+            <el-tag>{{ scope.row.statu }}</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
+        <el-table-column prop="email" label="邮箱" show-overflow-tooltip/>
+        <el-table-column fixed="right" label="操作">
           <template #default>
-
+            <el-button size="small" @click="">编辑</el-button>
+            <el-popconfirm
+                @confirm="confirmDelete"
+                title="确认删除?">
+              <template #reference>
+                <el-button size="small" type="danger" @click="">删除</el-button>
+              </template>
+            </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
@@ -41,13 +56,12 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 
 import userApi from "@/api/sys/user"
+
 export default {
   name: "index",
-  props: ["info"],
-  emits: ["update:info"],
-  components: {
-
-  },
+  props: [],
+  emits: [],
+  components: {},
   setup(props, content) {
     const router = useRouter()
     let data = {
@@ -75,25 +89,28 @@ export default {
       methods.getTableData()
     })
     let methods = {
-      handleSizeChange(number){
+      handleSizeChange(number) {
         methods.getTableData()
       },
-      handleCurrentChange(number){
+      handleCurrentChange(number) {
         methods.getTableData()
       },
 
-      getTableData(){
+      getTableData() {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page)
-  
+
         userApi.page(param).then(res => {
           data.tableData.value = res.data.records
           data.page.total = res.data.total
         }).finally(() => {
           data.tableDataLoad.value = false
         })
-      }
+      },
+
+      confirmDelete() {
+      },
     }
 
     return {
