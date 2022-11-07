@@ -16,7 +16,9 @@
       </el-row>
     </el-row>
     <el-row>
-      <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
+      <el-table v-loading="tableDataLoad" :data="tableData" @selection-change="handleSelectionChange" border stripe style="width: 100%">
+        <el-table-column type="selection" width="55" />
+        <el-table-column type="index" width="55" label="序号"/>
         <el-table-column prop="name" label="角色名" show-overflow-tooltip/>
         <el-table-column prop="code" label="角色编码" show-overflow-tooltip>
           <template #default="scope">
@@ -119,7 +121,10 @@ export default {
       refreshClick() {
         methods.getTableData();
       },
-
+      /*表格选择事件*/
+      handleSelectionChange(val){
+        data.tableSelect.value = val;
+      },
       /*
       * 获取列表
       *
