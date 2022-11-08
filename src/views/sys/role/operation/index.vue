@@ -13,23 +13,23 @@
         关闭
       </el-button>
     </template>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="form" label-width="120px" :disabled = "btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
           <el-form-item label="角色名">
-            <el-input v-model="form.username" placeholder="请输入角色名" clearable/>
+            <el-input v-model="form.name" placeholder="请输入角色名" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="角色编码">
-            <el-input v-model="form.loginname" placeholder="角色编码" clearable/>
+            <el-input v-model="form.code" placeholder="角色编码" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-form-item label="状态">
             <el-radio-group v-model="form.statu">
-              <el-radio label="正常" />
-              <el-radio label="停用" />
+              <el-radio label="1" >正常</el-radio>
+              <el-radio label="0" >停用</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -47,7 +47,7 @@
         </el-col>
         <el-col :span="24">
           <el-row justify="end">
-            <el-button @click="subment">保存</el-button>
+            <el-button :loading="btnLoad" @click="subment">保存</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -74,6 +74,7 @@ export default {
       iocnDrawer: ref(false),
       treeList: ref([]),
       form: ref({}),
+      btnLoad : ref(false),
       cascaderProps: {
         children: "children",
         label: "name",
@@ -90,7 +91,7 @@ export default {
         if (props.id) {
           roleApi.get(props.id).then(res => {
             data.form.value = res.data || {}
-            data.form.value.password = undefined
+            data.form.value.statu =  data.form.value.statu + ""
           })
         }
         methods.getNav();
@@ -106,6 +107,7 @@ export default {
         })
       },
       subment(){
+        data.btnLoad.value = true
         if (data.form.value.id){
           roleApi.update(data.form.value).then(res => {
             if (res.success){
@@ -113,6 +115,9 @@ export default {
             }else {
               ElMessage.error(res.msg)
             }
+
+            content.emit("success", {});
+            data.btnLoad.value = false
           })
         }else {
           roleApi.add(data.form.value).then(res => {
@@ -121,9 +126,11 @@ export default {
             }else {
               ElMessage.error(res.msg)
             }
+
+            content.emit("success", {});
+            data.btnLoad.value = false
           })
         }
-        content.emit("success", {});
       },
     }
 

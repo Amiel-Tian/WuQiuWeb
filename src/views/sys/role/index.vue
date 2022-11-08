@@ -4,9 +4,9 @@
     <el-form :model="form" label-width="120px">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
-          <el-form-item label="角色名称">
-            <el-input v-model="form.name" placeholder="请输入角色名称" clearable/>
-          </el-form-item>
+          <!--          <el-form-item label="角色名称">-->
+          <!--            <el-input v-model="form.name" placeholder="请输入角色名称" clearable/>-->
+          <!--          </el-form-item>-->
         </el-col>
         <el-col :span="5">
         </el-col>
@@ -23,7 +23,7 @@
       </el-row>
     </el-form>
     <el-row justify="start" style="margin: .5rem">
-      <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
+      <el-button type="primary" @click="addClick()" v-permission="['sys:role:save']">新建角色</el-button>
       <el-row justify="end" align="middle" style="flex: 1">
         <el-tooltip
             effect="dark"
@@ -38,6 +38,7 @@
     </el-row>
     <el-row>
       <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
+        <el-table-column type="index" width="55" label="序号"/>
         <el-table-column prop="name" label="角色名" show-overflow-tooltip/>
         <el-table-column prop="code" label="角色编码" show-overflow-tooltip>
           <template #default="scope">
@@ -51,13 +52,22 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
-            <el-button size="small" @click="editClick(scope.row)">编辑</el-button>
-            <el-button size="small" @click="" type="primary">角色授权</el-button>
+            <el-button v-permission="['sys:role:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
+            <el-popconfirm
+                @confirm="confirmStatus"
+                title="是否更改状态?">
+              <template #reference>
+                <el-button v-permission="['sys:role:statu']" size="small"
+                           :type="scope.row.statu == '1' ? 'warning' : 'primary'" @click="">
+                  {{ scope.row.statu == '1' ? '停用' : '启用' }}
+                </el-button>
+              </template>
+            </el-popconfirm>
             <el-popconfirm
                 @confirm="confirmDelete"
                 title="确认删除?">
               <template #reference>
-                <el-button size="small" type="danger" @click="">删除</el-button>
+                <el-button v-permission="['sys:role:delete']" size="small" type="danger" @click="">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -83,17 +93,18 @@
 </template>
 
 <script>
-import {ref,unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
+import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 import roleApi from "@/api/sys/role";
 
 import operation from "@/views/sys/role/operation"
+
 export default {
   name: "index",
-  props:[],
-  emits:[],
-  components:{operation},
-  setup(props ,content){
+  props: [],
+  emits: [],
+  components: {operation},
+  setup(props, content) {
     const router = useRouter()
     let data = {
       tableData: ref([]),
@@ -113,7 +124,7 @@ export default {
 
     }
     //监听
-    watch(() => [props.info], ([newInfo],[oldInfo]) => {
+    watch(() => [props.info], ([newInfo], [oldInfo]) => {
       // if (newInfo){
       //   Object.assign(data.form, newInfo)
       // content.emit('update:info',newInfo)
@@ -126,25 +137,25 @@ export default {
       /*
          * 页数改变
          * */
-      handleSizeChange(number){
+      handleSizeChange(number) {
         methods.getTableData()
       },
       /*
       * 分页数改变
       * */
-      handleCurrentChange(number){
+      handleCurrentChange(number) {
         methods.getTableData()
       },
 
       /*
      * 刷新点击
      * */
-      refreshClick(){
+      refreshClick() {
         methods.getTableData();
       },
 
       /*获取列表*/
-      getTableData(){
+      getTableData() {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page.value)
@@ -160,12 +171,18 @@ export default {
       /*
       * 确认删除
       * */
-      confirmDelete(){},
-      addClick(){
-        data.form.value= {}
+      confirmDelete() {
+      },
+      /*
+    * 确认更改
+    * */
+      confirmStatus() {
+      },
+      addClick() {
+        data.form.value = {}
         data.drawer.value = true
       },
-      editClick(row){
+      editClick(row) {
         data.form.value = row
         data.drawer.value = true
       },

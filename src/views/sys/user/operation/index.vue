@@ -13,7 +13,7 @@
         关闭
       </el-button>
     </template>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="form" label-width="120px" :disabled = "btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
           <el-form-item label="用户名">
@@ -27,7 +27,7 @@
         </el-col>
         <el-col :span="24">
           <el-form-item label="密码">
-            <el-input v-model="form.password" placeholder="输入密码" clearable/>
+            <el-input v-model="form.password" placeholder="输入密码" show-password clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -42,9 +42,9 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="状态">
-            <el-radio-group v-model="form.type">
-              <el-radio label="正常" />
-              <el-radio label="停用" />
+            <el-radio-group v-model="form.statu">
+              <el-radio label="1" >正常</el-radio>
+              <el-radio label="0" >停用</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -62,7 +62,7 @@
         </el-col>
         <el-col :span="24">
           <el-row justify="end">
-            <el-button @click="subment">保存</el-button>
+            <el-button @click="subment" :loading="btnLoad">保存</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -89,6 +89,7 @@ export default {
       iocnDrawer: ref(false),
       treeList: ref([]),
       form: ref({}),
+      btnLoad : ref(false),
     }
     //监听
     watch(() => [props.drawer], ([drawer]) => {
@@ -97,8 +98,11 @@ export default {
         if (props.id) {
           userApi.get(props.id).then(res => {
             data.form.value = res.data || {}
+            data.form.value.statu =  data.form.value.statu + ""
             data.form.value.password = undefined
           })
+        }else{
+          data.form.value.statu = "1"
         }
         methods.getRole();
       }
@@ -113,6 +117,7 @@ export default {
         })
       },
       subment(){
+        data.btnLoad.value = true
         if (data.form.value.id){
           userApi.update(data.form.value).then(res => {
             if (res.success){
@@ -120,6 +125,9 @@ export default {
             }else {
               ElMessage.error(res.msg)
             }
+            content.emit("success", {});
+
+            data.btnLoad.value = false;
           })
         }else {
           userApi.add(data.form.value).then(res => {
@@ -128,9 +136,11 @@ export default {
             }else {
               ElMessage.error(res.msg)
             }
+            content.emit("success", {});
+
+            data.btnLoad.value = false;
           })
         }
-        content.emit("success", {});
       },
     }
 

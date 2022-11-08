@@ -26,11 +26,11 @@
             mode="horizontal"
             :ellipsis="false"
         >
-          <el-menu-item index="0" @click="menuRightCollapse = !menuRightCollapse">_
+          <el-menu-item index="0" @click="menuRightCollapse = !menuRightCollapse">
             <el-icon >
               <Fold v-show="!menuRightCollapse"/>
               <Expand v-show="menuRightCollapse"/>
-            </el-icon>
+            </el-icon>_
           </el-menu-item>
 
           <div class="flex-grow"/>
