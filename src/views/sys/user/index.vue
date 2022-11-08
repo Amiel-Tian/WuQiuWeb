@@ -39,10 +39,10 @@
               </template>
             </el-popconfirm>
             <el-popconfirm
-                @confirm="confirmDelete"
+                @confirm="confirmDelete(scope.row)"
                 title="确认删除?">
               <template #reference>
-                <el-button v-permission="['sys:user:delete']" size="small" type="danger" @click="removeClick()">删除</el-button>
+                <el-button v-permission="['sys:user:delete']" size="small" type="danger">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -144,7 +144,11 @@ export default {
       },
 
       /*确认删除按键*/
-      confirmDelete() {
+      confirmDelete(row) {
+        let param = row
+        userApi.remove(param).then(res => {
+          methods.tableData()
+        })
       },
       /*确认修改*/
       confirmStatus() {
