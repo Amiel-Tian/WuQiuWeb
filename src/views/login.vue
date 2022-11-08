@@ -11,13 +11,16 @@
 
           <el-form class="form" label-width="120px">
             <el-row>
-              <el-input :disabled = "btnLoad" v-model="form.username" placeholder="请输入用户名" prefix-icon="User"/>
+              <el-input :disabled = "btnLoad" @keyup.enter.native="onSubmit"
+                        v-model="form.username" placeholder="请输入用户名" prefix-icon="User"/>
             </el-row>
             <el-row>
-              <el-input :disabled = "btnLoad" v-model="form.password" placeholder="请输入用户密码" show-password prefix-icon="Lock"/>
+              <el-input :disabled = "btnLoad" @keyup.enter.native="onSubmit"
+                        v-model="form.password" placeholder="请输入用户密码" show-password prefix-icon="Lock"/>
             </el-row>
             <el-row>
-              <el-input :disabled = "btnLoad" v-model="form.captcha" placeholder="请输入验证码" style="flex: 1" prefix-icon="Aim"/>
+              <el-input :disabled = "btnLoad" @keyup.enter.native="onSubmit"
+                        v-model="form.captcha" placeholder="请输入验证码" style="flex: 1" prefix-icon="Aim"/>
               <captcha ref="captcha" height="50" v-model:token="form.token" style="margin-left: 1rem"></captcha>
             </el-row>
             <el-row justify="center">
