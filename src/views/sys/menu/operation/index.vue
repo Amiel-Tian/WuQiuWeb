@@ -13,7 +13,7 @@
         关闭
       </el-button>
     </template>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="form" label-width="120px" :disabled = "btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
           <el-form-item label="上级菜单">
@@ -72,7 +72,7 @@
         </el-col>
         <el-col :span="24">
           <el-row justify="end">
-            <el-button @click="subment">保存</el-button>
+            <el-button @click="subment" :loading="btnLoad">保存</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -85,6 +85,7 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
 
 import menuApi from "@/api/sys/menu"
+import {ElMessage} from "element-plus";
 export default {
   name: "index",
   props: ["id", "drawer", "parentId"],
@@ -95,6 +96,7 @@ export default {
     let data = {
       form: ref({}),
       treeData: ref([]),
+      btnLoad : ref(false),
       cascaderProps: {
         children: "children",
         label: "name",
@@ -128,14 +130,29 @@ export default {
         })
       },
       subment(){
+        data.btnLoad.value = true
         let param = data.form.value
         if (param.id){
           menuApi.update(param).then(res => {
+            if (res.success){
+              ElMessage.success(res.msg)
+            }else {
+              ElMessage.error(res.msg)
+            }
+            content.emit("success", {});
 
+            data.btnLoad.value = false;
           })
         }else{
           menuApi.add(param).then(res => {
+            if (res.success){
+              ElMessage.success(res.msg)
+            }else {
+              ElMessage.error(res.msg)
+            }
+            content.emit("success", {});
 
+            data.btnLoad.value = false;
           })
         }
 

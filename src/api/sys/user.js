@@ -42,6 +42,13 @@ export default {
             data: param,
         })
     },
+    remove(param) {
+        return request({
+            url: '/sysUser/remove',
+            method: 'PUT',
+            data: param,
+        })
+    },
     get(id) {
         return request({
             url: '/sysUser/get',

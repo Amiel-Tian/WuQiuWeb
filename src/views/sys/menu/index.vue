@@ -40,7 +40,7 @@
       <el-col :span="24-treeWidth-1">
         <el-row v-show="form.name">
           <el-divider content-position="left">详细信息</el-divider>
-          <el-descriptions :title="form.title" :column="4" border style="width: 100%;">
+          <el-descriptions :title="form.title" :column="2" border style="width: 100%;">
             <el-descriptions-item align="center" label="菜单名称：">{{ form.name }}</el-descriptions-item>
             <el-descriptions-item align="center" label="菜单类型：">
               <el-tag size="small">{{ form.type }}</el-tag>
@@ -60,8 +60,8 @@
         </el-row>
         <el-divider content-position="left">{{ form.name ?'子项列表' : '菜单列表' }}</el-divider>
         <el-row justify="start" style="margin: .5rem">
-          <el-link type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
-          <el-link type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
+          <el-link v-permission="['sys:menu:save']" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
+          <el-link v-permission="['sys:menu:update']" type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
           <el-row justify="end" align="middle" style="flex: 1">
             <el-tooltip
                 effect="dark"
@@ -76,6 +76,7 @@
         </el-row>
         <el-row>
           <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
+            <el-table-column type="index" width="55" label="序号"/>
             <el-table-column prop="name" label="菜单名称" show-overflow-tooltip/>
             <el-table-column prop="sort" label="排序" show-overflow-tooltip/>
             <el-table-column prop="type" label="菜单类型" show-overflow-tooltip>
@@ -99,12 +100,12 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作">
               <template #default="scope">
-                <el-button size="small" @click="editClick(scope.row)">编辑</el-button>
+                <el-button v-permission="['sys:menu:update']"  size="small" @click="editClick(scope.row)">编辑</el-button>
                 <el-popconfirm
                     @confirm="confirmDelete"
                     title="确认删除?">
                   <template #reference>
-                    <el-button size="small" type="danger" @click="">删除</el-button>
+                    <el-button v-permission="['sys:menu:delete']"  size="small" type="danger" @click="">删除</el-button>
                   </template>
                 </el-popconfirm>
               </template>

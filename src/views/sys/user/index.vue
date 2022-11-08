@@ -17,6 +17,7 @@
     </el-row>
     <el-row>
       <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
+        <el-table-column type="index" width="55" label="序号"/>
         <el-table-column prop="username" label="用户名" show-overflow-tooltip/>
         <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
         <el-table-column prop="statu" label="状态" show-overflow-tooltip>
@@ -29,12 +30,19 @@
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button v-permission="['sys:user:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
-            <el-button v-permission="['sys:user:role']" size="small" @click="" type="primary">用户权限</el-button>
+            <el-popconfirm
+                @confirm="confirmStatus"
+                title="是否更改状态?">
+              <template #reference>
+                <el-button v-permission="['sys:user:statu']" size="small" :type="scope.row.statu == '1' ? 'warning' : 'primary'" @click="">
+                  {{ scope.row.statu == '1' ? '停用' : '启用' }}</el-button>
+              </template>
+            </el-popconfirm>
             <el-popconfirm
                 @confirm="confirmDelete"
                 title="确认删除?">
               <template #reference>
-                <el-button v-permission="['sys:user:delete']" size="small" type="danger" @click="">删除</el-button>
+                <el-button v-permission="['sys:user:delete']" size="small" type="danger" @click="removeClick()">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -135,7 +143,11 @@ export default {
         })
       },
 
+      /*确认删除按键*/
       confirmDelete() {
+      },
+      /*确认修改*/
+      confirmStatus() {
       },
 
       addClick(){
