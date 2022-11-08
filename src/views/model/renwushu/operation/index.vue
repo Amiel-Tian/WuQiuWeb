@@ -38,7 +38,7 @@
       <el-col>
         <el-input
             v-model="form.context"
-            :rows="5"
+            :rows="10"
             type="textarea"
             placeholder="请输入工作内容"
         />
@@ -62,7 +62,7 @@
       <el-input
           disabled
           v-model="showData"
-          :rows="5"
+          :rows="10"
           type="textarea"
           placeholder="显示信息"
       />

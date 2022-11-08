@@ -8,6 +8,13 @@ export default {
             params: param,
         })
     },
+    datas(param) {
+        return request({
+            url: '/renwuInfo/datas',
+            method: 'get',
+            params: param,
+        })
+    },
     add(param) {
         return request({
             url: '/renwuInfo/add',

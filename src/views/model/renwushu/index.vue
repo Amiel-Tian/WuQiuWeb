@@ -129,7 +129,7 @@ export default {
         param = Object.assign(param, data.page.value)
         param = Object.assign(param, data.search.value)
 
-        renwuApi.page(param).then(res => {
+        renwuApi.datas(param).then(res => {
           data.tableData.value = res.data.records
           data.page.value.total = res.data.total
         }).finally(() => {
