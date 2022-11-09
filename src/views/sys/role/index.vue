@@ -54,7 +54,7 @@
           <template #default="scope">
             <el-button v-permission="['sys:role:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
             <el-popconfirm
-                @confirm="confirmStatus"
+                @confirm="confirmStatus(scope.row)"
                 title="是否更改状态?">
               <template #reference>
                 <el-button v-permission="['sys:role:statu']" size="small"
@@ -64,7 +64,7 @@
               </template>
             </el-popconfirm>
             <el-popconfirm
-                @confirm="confirmDelete"
+                @confirm="confirmDelete(scope.row)"
                 title="确认删除?">
               <template #reference>
                 <el-button v-permission="['sys:role:delete']" size="small" type="danger" @click="">删除</el-button>
@@ -98,6 +98,8 @@ import {useRouter} from "vue-router";
 import roleApi from "@/api/sys/role";
 
 import operation from "@/views/sys/role/operation"
+import userApi from "@/api/sys/user";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "index",
@@ -171,12 +173,33 @@ export default {
       /*
       * 确认删除
       * */
-      confirmDelete() {
+      confirmDelete(row) {
+        let param = row
+        roleApi.remove(param).then(res => {
+          if (res.success){
+            ElMessage.success(res.msg)
+          }else{
+            ElMessage.warning(res.msg)
+          }
+          this.getTableData()
+        })
       },
-      /*
-    * 确认更改
-    * */
-      confirmStatus() {
+      /*确认修改*/
+      confirmStatus(row) {
+        let param = row
+        if (param.statu == "0") {
+          param.statu = "1"
+        } else {
+          param.statu = "0"
+        }
+        roleApi.update(param).then(res => {
+          if (res.success) {
+            ElMessage.success(res.msg)
+          } else {
+            ElMessage.warning(res.msg)
+          }
+          this.getTableData()
+        })
       },
       addClick() {
         data.form.value = {}

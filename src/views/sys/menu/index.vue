@@ -62,6 +62,13 @@
         <el-row justify="start" style="margin: .5rem">
           <el-link v-permission="['sys:menu:save']" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
           <el-link v-permission="['sys:menu:update']" type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
+          <el-popconfirm
+              @confirm="confirmDelete(form)"
+              title="确认删除?">
+            <template #reference>
+              <el-link v-permission="['sys:menu:delete']" type="danger" style="margin-left: .5rem">{{ form.name ?'删除此项' : '' }}</el-link>
+            </template>
+          </el-popconfirm>
           <el-row justify="end" align="middle" style="flex: 1">
             <el-tooltip
                 effect="dark"
@@ -102,7 +109,7 @@
               <template #default="scope">
                 <el-button v-permission="['sys:menu:update']"  size="small" @click="editClick(scope.row)">编辑</el-button>
                 <el-popconfirm
-                    @confirm="confirmDelete"
+                    @confirm="confirmDelete(scope.row)"
                     title="确认删除?">
                   <template #reference>
                     <el-button v-permission="['sys:menu:delete']"  size="small" type="danger" @click="">删除</el-button>
@@ -138,6 +145,8 @@ import {useRouter} from "vue-router";
 import menuApi from "@/api/sys/menu";
 
 import operation from "@/views/sys/menu/operation"
+import roleApi from "@/api/sys/role";
+import {ElMessage} from "element-plus";
 
 export default {
   name: "index",
@@ -226,7 +235,6 @@ export default {
         data.form.value = {}
         data.search.value = {}
 
-        console.log(data.search)
         methods.getNav();
         methods.getTableData();
       },
@@ -255,9 +263,17 @@ export default {
       /*
       * 确认删除
       * */
-      confirmDelete() {
+      confirmDelete(row) {
+        let param = row
+        menuApi.remove(param).then(res => {
+          if (res.success){
+            ElMessage.success(res.msg)
+          }else{
+            ElMessage.warning(res.msg)
+          }
+          this.refreshTreeClick()
+        })
       },
-
       /*
       * 新增
       *
