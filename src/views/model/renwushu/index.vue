@@ -130,8 +130,8 @@ export default {
         param = Object.assign(param, data.search.value)
 
         renwuApi.datas(param).then(res => {
-          data.tableData.value = res.data.records
-          data.page.value.total = res.data.total
+          data.tableData.value = res.data
+          data.page.value.total = 0
         }).finally(() => {
           data.tableDataLoad.value = false
         })
@@ -148,10 +148,18 @@ export default {
         data.form.value = row
       },
       /*确认删除*/
-      confirmDelete(){},
+      confirmDelete(row){
+        renwuApi.remove(row).then(res => {
+          if (res.success) {
+            ElMessage.success(res.msg)
+          }else{
+            ElMessage.warning(res.msg)
+          }
+          this.getTableData()
+        })
+      },
       /*批量复制*/
       async copyAll() {
-        console.log(data.tableSelect.value)
         let copyDate = "";
         if (data.tableData.value) {
           data.tableData.value.forEach(item => {

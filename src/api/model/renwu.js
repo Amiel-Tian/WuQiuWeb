@@ -36,4 +36,11 @@ export default {
             params: {id : id},
         })
     },
+    remove(param) {
+        return request({
+            url: '/renwuInfo/remove',
+            method: 'PUT',
+            data: param,
+        })
+    },
 }

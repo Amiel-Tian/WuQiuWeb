@@ -1,23 +1,23 @@
 <template>
-  <el-form :model="form" label-width="120px">
+  <el-form :model="form" label-width="120px" :disabled = "btnLoad">
     <el-row>
       <el-col :span="5">
         <el-form-item label="合同编号">
-          <el-input v-model="form.contractNo" placeholder="请输入合同编号" clearable/>
+          <el-input v-model="form.contractNo" @input="changeFrom()" placeholder="请输入合同编号" clearable/>
         </el-form-item>
       </el-col>
       <el-col :span="5">
         <el-form-item label="客户名称">
-          <el-input v-model="form.customerName" placeholder="请输入客户名称" clearable/>
+          <el-input v-model="form.customerName" @input="changeFrom()"  placeholder="请输入客户名称" clearable/>
         </el-form-item>
       </el-col>
       <el-col :span="5">
         <el-form-item label="申请人">
-          <el-input v-model="form.applicant" placeholder="请输入申请人" clearable/>
+          <el-input v-model="form.applicant" @input="changeFrom()"  placeholder="请输入申请人" clearable/>
         </el-form-item>
       </el-col>
       <el-col :span="5">
-        <el-form-item label="工作时间">
+        <el-form-item label="工作时间" >
           <el-date-picker
               v-model="form.dateTime"
               type="datetimerange"
@@ -25,12 +25,13 @@
               end-placeholder="End Date"
               :default-time="defaultTime"
               value-format="YYYY.MM.DD"
+              @change="changeFrom()"
           />
         </el-form-item>
       </el-col>
       <el-col :span="4">
         <el-form-item label="工作时长">
-          <el-input-number v-model="form.workTime" placeholder="小时" :min="1" :max="1000"/>
+          <el-input-number @input="changeFrom()"  v-model="form.workTime" placeholder="小时" :min="1" :max="1000"/>
         </el-form-item>
       </el-col>
     </el-row>
@@ -41,11 +42,12 @@
             :rows="10"
             type="textarea"
             placeholder="请输入工作内容"
+            @input="changeFrom()"
         />
       </el-col>
     </el-row>
     <el-row justify="end" style="margin-top: 1rem">
-      <el-button type="primary" @click="submentClick()">记录此条数据</el-button>
+      <el-button type="primary" :loading="btnLoad" @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}</el-button>
     </el-row>
     <el-divider/>
     <el-row justify="space-between">
@@ -95,11 +97,13 @@ export default {
         new Date(2000, 1, 1, 8, 30, 0),
         new Date(2000, 2, 1, 17, 30, 0),
       ]),
-      showData: ref("")
+      showData: ref(""),
+      btnLoad: ref(false),
     }
 
     watch(() => [props.info.id], async ([info]) => {
       if (info) {
+        data.btnLoad.value = true
         await renwuApi.get(info).then(res => {
           data.form.value = res.data
           if (data.form.value.startDate && data.form.value.endDate) {
@@ -107,38 +111,23 @@ export default {
             data.form.value.dateTime.push(data.form.value.startDate)
             data.form.value.dateTime.push(data.form.value.endDate)
           }
+          data.btnLoad.value = false
         })
+
+        methods.changeFrom()
       }
     })
     //监听
-    watch(data.form.value, () => {
-      console.log(data.form.value)
-      data.showData.value = data.form.value.contractNo || ""
-      data.showData.value += data.form.value.customerName ? " " + data.form.value.customerName : ""
-      data.showData.value += data.form.value.applicant ? "_" + data.form.value.applicant : ""
-      data.showData.value += data.form.value.recipient ? "to" + data.form.value.recipient : ""
-      if (data.form.value.dateTime) {
-        data.form.value.startDate = data.form.value.dateTime[0]
-        data.form.value.endDate = data.form.value.dateTime[1]
-
-        data.showData.value += data.form.value.startDate ? " " + data.form.value.startDate : ""
-        data.showData.value += data.form.value.endDate ? "-" + data.form.value.endDate : ""
-      } else {
-        data.form.value.startDate = undefined
-        data.form.value.endDate = undefined
-      }
-
-      data.showData.value += data.form.value.workTime ? " " + data.form.value.workTime + "小时" : ""
-      data.showData.value += data.form.value.context ? "\n" + data.form.value.context + "" : ""
-    }, {
-      // deep: true,
-      // immediate: true
-    })
+    // watch(data.form.value, () => {
+    // }, {
+    //   // deep: true,
+    //   // immediate: true
+    // })
     onMounted(async () => {
-      methods.getUserInto();
+      methods.getUserInfo();
     })
     let methods = {
-      getUserInto() {
+      getUserInfo() {
         userApi.getUserInfo().then(res => {
           data.userInfo.value = res
 
@@ -146,6 +135,7 @@ export default {
         })
       },
       submentClick() {
+        data.btnLoad.value = true
         let param = data.form.value;
 
         param.startDate = param.startDate ? param.startDate.replaceAll(".", "-") + " 08:30:00" : ""
@@ -155,14 +145,42 @@ export default {
           renwuApi.update(param).then(res => {
             ElMessage.success(res.msg)
             data.form.value = {}
+            data.form.value.recipient = data.userInfo.value.username
+            data.btnLoad.value = false
+            this.changeFrom()
+            content.emit('success', param)
           })
         } else {
           renwuApi.add(param).then(res => {
             ElMessage.success(res.msg)
             data.form.value = {}
+            data.form.value.recipient = data.userInfo.value.username
+            data.btnLoad.value = false
+            this.changeFrom()
+            content.emit('success', param)
           })
         }
-        content.emit('success', param)
+      },
+      changeFrom(){
+        if (data.form.value) {
+          data.showData.value = data.form.value.contractNo || ""
+          data.showData.value += data.form.value.customerName ? " " + data.form.value.customerName : ""
+          data.showData.value += data.form.value.applicant ? "_" + data.form.value.applicant : ""
+          data.showData.value += data.form.value.recipient ? "to" + data.form.value.recipient : ""
+          if (data.form.value.dateTime) {
+            data.form.value.startDate = data.form.value.dateTime[0]
+            data.form.value.endDate = data.form.value.dateTime[1]
+
+            data.showData.value += data.form.value.startDate ? " " + data.form.value.startDate : ""
+            data.showData.value += data.form.value.endDate ? "-" + data.form.value.endDate : ""
+          } else {
+            data.form.value.startDate = undefined
+            data.form.value.endDate = undefined
+          }
+
+          data.showData.value += data.form.value.workTime ? " " + data.form.value.workTime + "小时" : ""
+          data.showData.value += data.form.value.context ? "\n" + data.form.value.context + "" : ""
+        }
       },
       async copy(content) {
         try {
