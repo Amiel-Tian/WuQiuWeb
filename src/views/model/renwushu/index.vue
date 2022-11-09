@@ -7,7 +7,17 @@
   <el-card>
     <el-divider content-position="left">记录列表</el-divider>
     <el-row justify="start" style="margin: .5rem">
-      <el-link type="primary" @click="copyAll">批量复制</el-link>
+      <el-row :gutter="1">
+        <el-link type="primary" @click="copyAll">批量复制</el-link>
+        <el-date-picker
+            style="margin: 0 1.5rem"
+            v-model="search.year"
+            type="month"
+            size="small"
+            placeholder="选择日期"
+            value-format="YYYY-MM"
+        />
+      </el-row>
       <el-row justify="end" align="middle" style="flex: 1">
         <el-tooltip
             effect="dark"
@@ -35,7 +45,7 @@
           <template #default="scope">
             <el-button size="small" @click="editClick(scope.row)">编辑</el-button>
             <el-popconfirm
-                @confirm="confirmDelete"
+                @confirm="confirmDelete(scope.row)"
                 title="确认删除?">
               <template #reference>
                 <el-button size="small" type="danger" @click="">删除</el-button>
