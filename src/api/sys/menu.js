@@ -48,4 +48,11 @@ export default {
             data: param,
         })
     },
+    remove(param) {
+        return request({
+            url: '/sysMenu/remove',
+            method: 'PUT',
+            data: param,
+        })
+    },
 }

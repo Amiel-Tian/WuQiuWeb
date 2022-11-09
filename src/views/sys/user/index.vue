@@ -31,7 +31,7 @@
           <template #default="scope">
             <el-button v-permission="['sys:user:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
             <el-popconfirm
-                @confirm="confirmStatus"
+                @confirm="confirmStatus(scope.row)"
                 title="是否更改状态?">
               <template #reference>
                 <el-button v-permission="['sys:user:statu']" size="small" :type="scope.row.statu == '1' ? 'warning' : 'primary'" @click="">
@@ -71,6 +71,7 @@
 <script>
 import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
+import {ElMessage, ElMessageBox} from 'element-plus';
 
 import userApi from "@/api/sys/user"
 import operation from "@/views/sys/user/operation"
@@ -147,11 +148,30 @@ export default {
       confirmDelete(row) {
         let param = row
         userApi.remove(param).then(res => {
-          methods.tableData()
+          if (res.success){
+            ElMessage.success(res.msg)
+          }else{
+            ElMessage.warning(res.msg)
+          }
+          this.getTableData()
         })
       },
       /*确认修改*/
-      confirmStatus() {
+      confirmStatus(row) {
+        let param = row
+        if ( param.statu == "0"){
+          param.statu = "1"
+        }else{
+          param.statu = "0"
+        }
+        userApi.update(param).then(res => {
+          if (res.success){
+            ElMessage.success(res.msg)
+          }else{
+            ElMessage.warning(res.msg)
+          }
+          this.getTableData()
+        })
       },
 
       addClick(){

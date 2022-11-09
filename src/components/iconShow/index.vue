@@ -56,7 +56,7 @@ export default {
   border-left: 1px solid var(--el-border-color);
   border-radius: 4px;
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(5, 20%);
 
   .icon-li {
     text-align: center;

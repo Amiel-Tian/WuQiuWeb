@@ -93,6 +93,9 @@ export default {
             data.form.value = res.data || {}
             data.form.value.statu =  data.form.value.statu + ""
           })
+        }else{
+          data.form.value = {}
+          data.form.value.statu = "1"
         }
         methods.getNav();
       }
@@ -117,6 +120,7 @@ export default {
             }
 
             content.emit("success", {});
+            data.form.value = {}
             data.btnLoad.value = false
           })
         }else {
@@ -128,6 +132,7 @@ export default {
             }
 
             content.emit("success", {});
+            data.form.value = {}
             data.btnLoad.value = false
           })
         }

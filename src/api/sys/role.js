@@ -36,4 +36,11 @@ export default {
             data: param,
         })
     },
+    remove(param) {
+        return request({
+            url: '/sysRole/remove',
+            method: 'PUT',
+            data: param,
+        })
+    },
 }

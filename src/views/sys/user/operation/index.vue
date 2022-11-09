@@ -102,6 +102,7 @@ export default {
             data.form.value.password = undefined
           })
         }else{
+          data.form.value = {}
           data.form.value.statu = "1"
         }
         methods.getRole();
@@ -126,7 +127,7 @@ export default {
               ElMessage.error(res.msg)
             }
             content.emit("success", {});
-
+            data.form.value = {}
             data.btnLoad.value = false;
           })
         }else {
@@ -137,7 +138,7 @@ export default {
               ElMessage.error(res.msg)
             }
             content.emit("success", {});
-
+            data.form.value = {}
             data.btnLoad.value = false;
           })
         }

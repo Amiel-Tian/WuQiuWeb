@@ -61,13 +61,23 @@
                 v-model="iocnDrawer"
                 :show-close="true"
             >
-              <icon-show v-model:icon="form.icon" @success="iocnDrawer = false"></icon-show>
+              <div >
+                <icon-show v-model:icon="form.icon" @success="iocnDrawer = false"></icon-show>
+              </div>
             </el-drawer>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="排序">
             <el-input-number v-model="form.sort" :min="1" :max="1000" placeholder="数字"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="状态">
+            <el-radio-group v-model="form.statu">
+              <el-radio label="1" >正常</el-radio>
+              <el-radio label="0" >停用</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="24">
@@ -110,13 +120,19 @@ export default {
     watch(() => [props.drawer], ([drawer]) => {
       content.emit('update:drawer', drawer)
       if (drawer){
+        if (props.id) {
+          menuApi.get(props.id).then(res => {
+            data.form.value = res.data || {}
+              data.form.value.statu =  data.form.value.statu + ""
+          })
+        }else {
+          data.form.value = {}
+          data.form.value.statu = "1"
+        }
+        if (props.parentId) {
+          data.form.value.parentId = props.parentId || ""
+        }
 
-        menuApi.get(props.id).then(res => {
-          data.form.value = res.data || {}
-          if (props.parentId){
-            data.form.value.parentId = props.parentId || ""
-          }
-        })
         methods.getNav()
       }
     })
@@ -132,6 +148,9 @@ export default {
       subment(){
         data.btnLoad.value = true
         let param = data.form.value
+        if (!param.parentId){
+          param.parentId = "0"
+        }
         if (param.id){
           menuApi.update(param).then(res => {
             if (res.success){
@@ -140,7 +159,7 @@ export default {
               ElMessage.error(res.msg)
             }
             content.emit("success", {});
-
+            data.form.value = {}
             data.btnLoad.value = false;
           })
         }else{
@@ -155,7 +174,7 @@ export default {
             data.btnLoad.value = false;
           })
         }
-
+        data.form.value = {}
         content.emit("success", {});
       }
     }
