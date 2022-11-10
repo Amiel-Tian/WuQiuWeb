@@ -93,9 +93,9 @@
             </el-table-column>
             <el-table-column prop="path" label="菜单地址" show-overflow-tooltip/>
             <el-table-column prop="perms" label="授权编码" show-overflow-tooltip/>
-            <el-table-column prop="statu" label="状态" show-overflow-tooltip>
+            <el-table-column prop="status" label="状态" show-overflow-tooltip>
               <template #default="scope">
-                <el-tag>{{ scope.row.statu }}</el-tag>
+                <el-tag>{{ scope.row.status }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="icon" label="菜单图标" show-overflow-tooltip>
