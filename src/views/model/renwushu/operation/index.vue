@@ -81,7 +81,7 @@ import {ElMessage} from "element-plus";
 
 import renwuApi from "@/api/model/renwu";
 import menuApi from "@/api/sys/menu";
-import tool from "@/utils/tool"
+import tool from "@/utils/model"
 
 export default {
   name: "index",
