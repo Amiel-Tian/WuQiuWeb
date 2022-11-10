@@ -47,7 +47,8 @@
       </el-col>
     </el-row>
     <el-row justify="end" style="margin-top: 1rem">
-      <el-button type="primary" :loading="btnLoad" @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}</el-button>
+      <el-button v-permission="['sys:renwu:add']" v-if="!form.id" type="primary" :loading="btnLoad" @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}</el-button>
+      <el-button v-permission="['sys:renwu:update']"  v-if="form.id" type="primary" :loading="btnLoad" @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}</el-button>
     </el-row>
     <el-divider/>
     <el-row justify="space-between">

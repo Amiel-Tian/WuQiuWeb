@@ -8,7 +8,7 @@
     <el-divider content-position="left">记录列表</el-divider>
     <el-row justify="start" style="margin: .5rem">
       <el-row :gutter="1">
-        <el-link type="primary" @click="copyAll">批量复制</el-link>
+        <el-link type="primary" v-permission="['sys:renwu:copyAll']" @click="copyAll">批量复制</el-link>
         <el-date-picker
             style="margin: 0 1.5rem"
             v-model="search.year"
@@ -43,12 +43,12 @@
         <el-table-column prop="workTime" label="工作时长" show-overflow-tooltip />
         <el-table-column fixed="right" label="操作" >
           <template #default="scope">
-            <el-button size="small" @click="editClick(scope.row)">编辑</el-button>
+            <el-button v-permission="['sys:renwu:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
             <el-popconfirm
                 @confirm="confirmDelete(scope.row)"
                 title="确认删除?">
               <template #reference>
-                <el-button size="small" type="danger" @click="">删除</el-button>
+                <el-button v-permission="['sys:renwu:delete']" size="small" type="danger" @click="">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
