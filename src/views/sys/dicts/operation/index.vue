@@ -5,7 +5,7 @@
       :show-close="false"
   >
     <template #header="{ close, titleId, titleClass }">
-      <h4 :id="titleId" :class="titleClass">{{ form ? form.username || '编辑' : '新增' }}</h4>
+      <h4 :id="titleId" :class="titleClass">{{ form ? form.dictName || '编辑' : '新增' }}</h4>
       <el-button type="danger" @click="close">
         <el-icon class="el-icon--left">
           <CircleCloseFilled/>
@@ -16,31 +16,16 @@
     <el-form :model="form" label-width="120px" :disabled = "btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
-          <el-form-item label="用户名">
-            <el-input v-model="form.username" placeholder="请选择用户名" clearable/>
+          <el-form-item label="字典名">
+            <el-input v-model="form.dictName" placeholder="请输入字典名" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="登录名">
-            <el-input v-model="form.loginname" placeholder="请输入登录名" clearable/>
+          <el-form-item label="字典编码">
+            <el-input v-model="form.dictType" placeholder="请输入字典编码" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="密码">
-            <el-input v-model="form.password" placeholder="输入密码" show-password clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="手机号">
-            <el-input v-model="form.phone" placeholder="输入手机号" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="邮箱">
-            <el-input v-model="form.phone" placeholder="输入邮箱" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
           <el-form-item label="状态">
             <el-radio-group v-model="form.status">
               <el-radio label="1" >正常</el-radio>
@@ -49,20 +34,29 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="权限">
-            <el-select v-model="form.roleIdList" multiple placeholder="请选择权限" style="width: 100%;" clearable>
-              <el-option
-                  v-for="item in treeList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-              />
-            </el-select>
+          <el-form-item label="是否级联">
+            <el-radio-group v-model="form.cascaded">
+              <el-radio label="1" >是</el-radio>
+              <el-radio label="0" >否</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="字典类型">
+            <el-radio-group v-model="form.isSys">
+              <el-radio label="0" >系统字典</el-radio>
+              <el-radio label="1" >业务字典</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="备注">
+            <el-input v-model="form.remarks"  type="textarea" :row="5" placeholder="备注" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
           <el-row justify="end">
-            <el-button @click="subment" :loading="btnLoad">保存</el-button>
+            <el-button :loading="btnLoad" @click="subment">保存</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -71,13 +65,12 @@
 </template>
 
 <script>
-import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
-import {ElMessage, ElMessageBox} from 'element-plus';
+import {onMounted, ref, watch} from "vue";
+import {ElMessage} from "element-plus";
 
-import userApi from "@/api/sys/user"
-import roleApi from "@/api/sys/role"
-
+import dictType from "@/api/sys/dictType";
+import dictData from "@/api/sys/dictData";
 export default {
   name: "index",
   props: ["id","drawer"],
@@ -86,60 +79,55 @@ export default {
   setup(props, content) {
     const router = useRouter()
     let data = {
-      iocnDrawer: ref(false),
-      treeList: ref([]),
       form: ref({}),
-      btnLoad : ref(false),
+      btnLoad: ref(false),
     }
+
     //监听
     watch(() => [props.drawer], ([drawer]) => {
       content.emit('update:drawer', drawer)
       if (drawer) {
         if (props.id) {
-          userApi.get(props.id).then(res => {
+          dictType.get(props.id).then(res => {
             data.form.value = res.data || {}
-            data.form.value.status =  data.form.value.status + ""
-            data.form.value.password = undefined
           })
         }else{
           data.form.value = {}
           data.form.value.status = "1"
+          data.form.value.isSys = "1"
+          data.form.value.cascaded = "0"
         }
-        methods.getRole();
       }
     })
     onMounted(async () => {
 
     })
     let methods = {
-      getRole(){
-        roleApi.datas().then(res => {
-          data.treeList.value = res.data
-        })
-      },
       subment(){
         data.btnLoad.value = true
         if (data.form.value.id){
-          userApi.update(data.form.value).then(res => {
+          dictType.update(data.form.value).then(res => {
             if (res.success){
               ElMessage.success(res.msg)
             }else {
               ElMessage.error(res.msg)
             }
+
             content.emit("success", {});
             data.form.value = {}
-            data.btnLoad.value = false;
+            data.btnLoad.value = false
           })
         }else {
-          userApi.add(data.form.value).then(res => {
+          dictType.add(data.form.value).then(res => {
             if (res.success){
               ElMessage.success(res.msg)
             }else {
               ElMessage.error(res.msg)
             }
+
             content.emit("success", {});
             data.form.value = {}
-            data.btnLoad.value = false;
+            data.btnLoad.value = false
           })
         }
       },
@@ -154,6 +142,6 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 
 </style>

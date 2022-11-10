@@ -5,11 +5,10 @@ import router from '@/router'
 //全局变量
 import APP_CONFIG from "@/config/config";
 //超时时间
-axios.defaults.timeout = 1000 * 60 * 2;
 const api = axios.create({
     // baseURL: APP_CONFIG.VUE_APP_API_HOST_DEFAULT, // 请求的公共地址部分
     baseURL: "api", // 请求的公共地址部分
-    timeout: 3000 // 请求超时时间 当请求时间超过5秒还未取得结果时 提示用户请求超时
+    timeout: 1000 * 5 // 请求超时时间 当请求时间超过5秒还未取得结果时 提示用户请求超时
 })
 // interceptors axios的拦截器对象
 api.interceptors.request.use(config => {

@@ -5,7 +5,7 @@
       :show-close="false"
   >
     <template #header="{ close, titleId, titleClass }">
-      <h4 :id="titleId" :class="titleClass">{{ form ? form.name || '新增菜单' : '新增菜单' }}</h4>
+      <h4 :id="titleId" :class="titleClass">{{ form ? form.name || '编辑菜单' : '新增菜单' }}</h4>
       <el-button type="danger" @click="close">
         <el-icon class="el-icon--left">
           <CircleCloseFilled/>

@@ -1,6 +1,27 @@
 <template>
   <page-title title="人员管理"></page-title>
   <el-card>
+    <el-form :model="form" label-width="120px">
+      <el-row justify="start" style="margin: .5rem">
+        <el-col :span="5">
+          <!--          <el-form-item label="角色名称">-->
+          <!--            <el-input v-model="form.name" placeholder="请输入角色名称" clearable/>-->
+          <!--          </el-form-item>-->
+        </el-col>
+        <el-col :span="5">
+        </el-col>
+        <el-col :span="5">
+        </el-col>
+        <el-col :span="5">
+        </el-col>
+        <el-col :span="4">
+          <el-row justify="center">
+            <el-button @click="">搜索</el-button>
+            <el-button @click="">清空</el-button>
+          </el-row>
+        </el-col>
+      </el-row>
+    </el-form>
     <el-row justify="start" style="margin: .5rem">
       <el-button type="primary" v-permission="['sys:user:save']">新建用户</el-button>
       <el-row justify="end" align="middle" style="flex: 1">
@@ -32,12 +53,12 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
-            <el-button size="small" @click="">编辑</el-button>
+            <el-button v-permission="['sys:user:update']" size="small" @click="">编辑</el-button>
             <el-popconfirm
                 @confirm="confirmDelete"
                 title="确认删除?">
               <template #reference>
-                <el-button size="small" type="danger" @click="">删除</el-button>
+                <el-button v-permission="['sys:user:delete']" size="small" type="danger" @click="">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
