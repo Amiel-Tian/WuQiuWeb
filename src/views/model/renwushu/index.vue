@@ -184,6 +184,9 @@ export default {
             copyDate += "\n";
             copyDate += "\n";
           })
+        }else{
+          ElMessage.warning("内容为空")
+          return
         }
         try {
           await toClipboard(copyDate)

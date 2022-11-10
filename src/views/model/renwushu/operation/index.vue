@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="form" label-width="120px" :disabled = "btnLoad">
+  <el-form :model="form" label-width="100px" :disabled = "btnLoad">
     <el-row>
       <el-col :span="5">
         <el-form-item label="合同编号">
@@ -25,7 +25,7 @@
               end-placeholder="End Date"
               :default-time="defaultTime"
               value-format="YYYY.MM.DD"
-              @change="changeFrom()"
+              @change="changeTime()"
           />
         </el-form-item>
       </el-col>
@@ -81,6 +81,7 @@ import {ElMessage} from "element-plus";
 
 import renwuApi from "@/api/model/renwu";
 import menuApi from "@/api/sys/menu";
+import tool from "@/utils/tool"
 
 export default {
   name: "index",
@@ -161,6 +162,13 @@ export default {
           })
         }
       },
+      changeTime(){
+        if (data.form.value.dateTime) {
+          let day = tool.getWeekday(data.form.value.dateTime[0], data.form.value.dateTime[1])
+          data.form.value.workTime = day * 8
+        }
+        this.changeFrom()
+      },
       changeFrom(){
         if (data.form.value) {
           data.showData.value = data.form.value.contractNo || ""
@@ -183,6 +191,10 @@ export default {
         }
       },
       async copy(content) {
+        if (!content){
+          ElMessage.warning("内容为空")
+          return
+        }
         try {
           await toClipboard(content)
           ElMessage.success("复制成功");
