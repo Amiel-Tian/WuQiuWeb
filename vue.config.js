@@ -9,7 +9,7 @@ module.exports = {
       // 配置跨域
       '/api': {
         target: `http://localhost:2200/renwushu`, //请求后台接口
-        // target: `http://60.205.4.143/lookHouseApi`, //请求后台接口
+        // target: `http://60.205.4.143/renwushuApi`, //请求后台接口
         changeOrigin: true, // 允许跨域
         ws: true,
         pathRewrite: {

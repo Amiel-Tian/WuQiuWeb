@@ -45,9 +45,9 @@
             <el-tag>{{ scope.row.code }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="statu" label="状态" show-overflow-tooltip>
+        <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ scope.row.statu }}</el-tag>
+            <el-tag>{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作">
@@ -57,9 +57,9 @@
                 @confirm="confirmStatus(scope.row)"
                 title="是否更改状态?">
               <template #reference>
-                <el-button v-permission="['sys:role:statu']" size="small"
-                           :type="scope.row.statu == '1' ? 'warning' : 'primary'" @click="">
-                  {{ scope.row.statu == '1' ? '停用' : '启用' }}
+                <el-button v-permission="['sys:role:status']" size="small"
+                           :type="scope.row.status == '1' ? 'warning' : 'primary'" @click="">
+                  {{ scope.row.status == '1' ? '停用' : '启用' }}
                 </el-button>
               </template>
             </el-popconfirm>
@@ -187,10 +187,10 @@ export default {
       /*确认修改*/
       confirmStatus(row) {
         let param = row
-        if (param.statu == "0") {
-          param.statu = "1"
+        if (param.status == "0") {
+          param.status = "1"
         } else {
-          param.statu = "0"
+          param.status = "0"
         }
         roleApi.update(param).then(res => {
           if (res.success) {

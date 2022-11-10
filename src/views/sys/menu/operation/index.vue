@@ -74,7 +74,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="状态">
-            <el-radio-group v-model="form.statu">
+            <el-radio-group v-model="form.status">
               <el-radio label="1" >正常</el-radio>
               <el-radio label="0" >停用</el-radio>
             </el-radio-group>
@@ -123,11 +123,11 @@ export default {
         if (props.id) {
           menuApi.get(props.id).then(res => {
             data.form.value = res.data || {}
-              data.form.value.statu =  data.form.value.statu + ""
+              data.form.value.status =  data.form.value.status + ""
           })
         }else {
           data.form.value = {}
-          data.form.value.statu = "1"
+          data.form.value.status = "1"
         }
         if (props.parentId) {
           data.form.value.parentId = props.parentId || ""
