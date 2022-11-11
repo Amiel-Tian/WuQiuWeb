@@ -5,7 +5,7 @@
       :show-close="false"
   >
     <template #header="{ close, titleId, titleClass }">
-      <h4 :id="titleId" :class="titleClass">{{ form ? form.dictName || '编辑' : '新增' }}</h4>
+      <h4 :id="titleId" :class="titleClass">{{form ? form.id ? form.dictName || '编辑' : '新增' : '新增' }}</h4>
       <el-button type="danger" @click="close">
         <el-icon class="el-icon--left">
           <CircleCloseFilled/>
