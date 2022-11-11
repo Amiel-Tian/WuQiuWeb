@@ -97,8 +97,9 @@ export default {
     const router = useRouter()
     let data = {
       tableData: ref([]),
+      tableSelect: ref([]),
       tableDataLoad: ref(false),
-      page: reactive({
+      page: ref({
         small: true, //是否小型
         onepage: true, //是否一页不显示
         background: true, //是否有背景
@@ -153,11 +154,11 @@ export default {
       getTableData() {
         data.tableDataLoad.value = true
         let param = {}
-        param = Object.assign(param, data.page)
+        param = Object.assign(param, data.page.value)
 
         userApi.page(param).then(res => {
           data.tableData.value = res.data.records
-          data.page.total = res.data.total
+          data.page.value.total = res.data.total
         }).finally(() => {
           data.tableDataLoad.value = false
         })

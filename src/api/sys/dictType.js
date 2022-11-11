@@ -43,4 +43,10 @@ export default {
             data: param,
         })
     },
+    getTreeDict() {
+        return request({
+            url: '/sysDictType/getTreeDict',
+            method: 'get',
+        })
+    },
 }
