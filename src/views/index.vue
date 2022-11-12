@@ -87,7 +87,7 @@ export default {
       getUserInto() {
         data.loading.value = true
         userApi.getUserInfo().then(res => {
-          data.userInfo.value = res
+          data.userInfo.value = res.data
         })
         menuApi.getNav().then(resnav => {
           data.menuList.value = resnav.data.nav

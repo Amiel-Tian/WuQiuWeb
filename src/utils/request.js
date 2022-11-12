@@ -29,20 +29,12 @@ api.interceptors.response.use(res => {
             localStorage.setItem('javawebtoken', res.headers.authorization)
         }
     }
-    if (res.data.code == "106" || !window.localStorage.getItem("javawebtoken")) {
+    if (res.data.code == "106" || res.data.code == "115" || !window.localStorage.getItem("javawebtoken")) {
+        localStorage.setItem('javawebtoken', res.headers.authorization)
         //用户未登录
         router.push({
             path: '/login',
         })
-    }
-    if (res.data.code == "115") {
-        //退出登录
-        if (res.headers) {
-            localStorage.setItem('javawebtoken', res.headers.authorization)
-            router.push({
-                path: '/login',
-            })
-        }
     }
 
     return Promise.resolve(res.data)
