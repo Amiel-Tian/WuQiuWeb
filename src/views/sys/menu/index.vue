@@ -40,7 +40,7 @@
       <el-col :span="24-treeWidth-1">
         <el-row v-show="form.name">
           <el-divider content-position="left">详细信息</el-divider>
-          <el-descriptions :title="form.title" :column="2" border style="width: 100%;">
+          <el-descriptions :title="form.name" :column="2" border style="width: 100%;">
             <el-descriptions-item align="center" label="菜单名称：">{{ form.name }}</el-descriptions-item>
             <el-descriptions-item align="center" label="图标：">
               <el-icon>
@@ -206,7 +206,7 @@ export default {
       * */
       filterNode(value, datas) {
         if (!value) return true
-        return datas.title.indexOf(value) != -1
+        return datas.name.indexOf(value) != -1
       },
       treeSearch() {
         treeRef.value.filter(data.treeInput)
