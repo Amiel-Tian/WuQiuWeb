@@ -1,5 +1,5 @@
 <template>
-  <page-title title="人员管理"></page-title>
+  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <el-row justify="start" style="margin: .5rem">
       <el-button type="primary" @click="addClick()" v-permission="['sys:user:save']">新建用户</el-button>
@@ -22,7 +22,7 @@
         <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
         <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
+            <el-tag :type="scope.row.status == '0' ? 'info' : ''">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
@@ -159,7 +159,9 @@ export default {
       },
       /*确认修改*/
       confirmStatus(row) {
-        let param = row
+        let param = {}
+        param.id = row.id
+        param.status = row.status
         if ( param.status == "0"){
           param.status = "1"
         }else{

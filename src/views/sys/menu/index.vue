@@ -1,5 +1,5 @@
 <template>
-  <page-title title="菜单管理"></page-title>
+  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <el-row justify="space-around">
       <el-col :span="treeWidth">
@@ -95,7 +95,7 @@
             <el-table-column prop="perms" label="授权编码" show-overflow-tooltip/>
             <el-table-column prop="status" label="状态" show-overflow-tooltip>
               <template #default="scope">
-                <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
+                <el-tag :type="scope.row.status == '0' ? 'info' : ''">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="icon" label="菜单图标" show-overflow-tooltip>

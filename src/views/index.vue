@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height: 100%;">
+  <el-container  v-loading="loading" style="height: 100%;">
 
     <el-aside :width="menuRightCollapse ? 'auto' : '220px'" class="aside">
       <el-scrollbar>
@@ -8,7 +8,6 @@
             background-color="#545c64"
             text-color="#fff"
             class="el-menu-vertical-demo"
-            default-active="1"
             :collapse="menuRightCollapse"
             :router="true"
             :default-active="routerPath"
@@ -66,14 +65,15 @@ export default {
   components: {menuTree},
   setup(props, content) {
     const router = useRouter()
-    let routerPath = ref(router.currentRoute.value.path)
 
     let data = {
+      routerPath :  ref(router.currentRoute.value.path),
       userInfo: ref({
         username: "--"
       }),
       menuList: ref([]),
       menuRightCollapse: ref(false),
+      loading: ref(false),
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -81,15 +81,18 @@ export default {
     })
     onMounted(async () => {
       methods.getUserInto()
+      data.routerPath.value = router.currentRoute.value.path
     })
     let methods = {
       getUserInto() {
+        data.loading.value = true
         userApi.getUserInfo().then(res => {
-          data.userInfo.value = res
+          data.userInfo.value = res.data
         })
         menuApi.getNav().then(resnav => {
           data.menuList.value = resnav.data.nav
           sessionStorage.setItem('permission',resnav.data.authoritys)
+          data.loading.value = false
         })
         dictTypeApi.getTreeDict().then(resdict => {
           sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
@@ -103,7 +106,6 @@ export default {
 
     return {
       router,
-      routerPath,
       ...data,
       ...methods
     }
