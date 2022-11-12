@@ -11,11 +11,12 @@
         <el-link type="primary" v-permission="['sys:renwu:copyAll']" @click="copyAll">批量复制</el-link>
         <el-date-picker
             style="margin: 0 1.5rem"
-            v-model="search.year"
+            v-model="search.month"
             type="month"
             size="small"
             placeholder="选择日期"
             value-format="YYYY-MM"
+            @change="getTableData()"
         />
       </el-row>
       <el-row justify="end" align="middle" style="flex: 1">
@@ -114,6 +115,10 @@ export default {
 
     })
     onMounted(async () => {
+      let now = new Date()
+      let year = now.getFullYear(); //得到年份
+      let month = now.getMonth() + 1; //得到月份
+      data.search.value.month = year + "-" + month
       methods.getUserInto();
       methods.getTableData();
     })
