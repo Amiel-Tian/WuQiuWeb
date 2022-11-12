@@ -1,5 +1,5 @@
 <template>
-  <page-title title="菜单管理"></page-title>
+  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <el-row justify="space-around">
       <el-col :span="treeWidth">

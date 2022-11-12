@@ -1,5 +1,5 @@
 <template>
-  <page-title title="角色管理"></page-title>
+  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <el-form :model="form" label-width="120px">
       <el-row justify="start" style="margin: .5rem">

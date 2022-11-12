@@ -1,5 +1,5 @@
 <template>
-  <page-title title="字典管理"></page-title>
+  <page-title :title="router.currentRoute.value.meta.title"></page-title>
 
   <el-card>
     <el-form :model="form" label-width="120px">

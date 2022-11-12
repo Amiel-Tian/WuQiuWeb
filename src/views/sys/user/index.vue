@@ -1,5 +1,5 @@
 <template>
-  <page-title title="人员管理"></page-title>
+  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <el-row justify="start" style="margin: .5rem">
       <el-button type="primary" @click="addClick()" v-permission="['sys:user:save']">新建用户</el-button>

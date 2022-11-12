@@ -32,7 +32,7 @@ export default [
     {
         name: 'sys/roles',
         path: '/sys/roles',
-        meta: { title: '权限管理', icon: '' },
+        meta: { title: '角色管理', icon: '' },
         components: {
             //index为声明的router-view的name
             index: () =>
