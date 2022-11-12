@@ -1,5 +1,5 @@
 <template>
-  <page-title title="任务书"></page-title>
+  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card >
     <operation :info="form" @success="getTableData()"></operation>
   </el-card>
