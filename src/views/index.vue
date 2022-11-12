@@ -57,6 +57,7 @@ import {useRouter} from "vue-router";
 import userApi from "@/api/sys/user";
 import menuApi from "@/api/sys/menu";
 import menuTree from "@/views/sys/menu/menuTree";
+import dictTypeApi from "@/api/sys/dictType";
 
 export default {
   name: "index",
@@ -89,6 +90,9 @@ export default {
         menuApi.getNav().then(resnav => {
           data.menuList.value = resnav.data.nav
           sessionStorage.setItem('permission',resnav.data.authoritys)
+        })
+        dictTypeApi.getTreeDict().then(resdict => {
+
         })
       },
 

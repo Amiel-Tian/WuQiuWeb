@@ -61,7 +61,7 @@
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
             <el-button v-permission="['sys:dict:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
-            <el-button v-permission="['sys:dict:data']" size="small" type="primary"  @click="dataClick(scope.row)">数据</el-button>
+            <el-button v-permission="['sys:dict:data']" size="small" type="primary"  @click="dataClick(scope.row)">字典项</el-button>
             <el-popconfirm
                 @confirm="confirmDelete(scope.row)"
                 title="确认删除?">
@@ -89,7 +89,7 @@
   </el-card>
 
   <operation v-model:drawer="drawer" :id="form.id" @success="drawer = false;getTableData()"></operation>
-  <dict-data v-model:drawer="drawerData" :id="form.id" @success="drawer = false;getTableData()"></dict-data>
+  <dict-data v-model:drawer="drawerData" :id="form.id" ></dict-data>
 </template>
 
 <script>
@@ -116,6 +116,7 @@ export default {
     let data = {
       form: ref({}),
       tableData: ref([]),
+      tableSelect: ref([]),
       tableDataLoad: ref(false),
       page: reactive({
         small: true, //是否小型
