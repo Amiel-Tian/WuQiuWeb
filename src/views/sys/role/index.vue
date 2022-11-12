@@ -47,7 +47,7 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ scope.row.status }}</el-tag>
+            <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作">
@@ -108,6 +108,7 @@ export default {
   components: {operation},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       tableData: ref([]),
       tableDataLoad: ref(false),
@@ -213,6 +214,7 @@ export default {
 
     return {
       router,
+      proxy,
       ...data,
       ...methods
     }

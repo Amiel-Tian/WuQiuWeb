@@ -45,17 +45,17 @@
         <el-table-column prop="dictType" label="字典编码" show-overflow-tooltip/>
         <el-table-column prop="cascaded" label="是否级联" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ scope.row.cascaded }}</el-tag>
+            <el-tag >{{ proxy.$tools.selectDictLabel(proxy.$appConfig.DICTTREE,scope.row.cascaded) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="isSys" label="字典类型" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ scope.row.isSys }}</el-tag>
+            <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.DICTTYPE,scope.row.isSys) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ scope.row.status }}</el-tag>
+            <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作">
@@ -113,6 +113,7 @@ export default {
   },
   setup(props ,content){
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       form: ref({}),
       tableData: ref([]),
@@ -218,6 +219,7 @@ export default {
     }
 
     return {
+      proxy,
       router,
       ...data,
       ...methods

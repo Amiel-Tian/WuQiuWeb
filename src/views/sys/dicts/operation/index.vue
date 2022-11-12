@@ -28,24 +28,21 @@
         <el-col :span="24">
           <el-form-item label="状态">
             <el-radio-group v-model="form.status">
-              <el-radio label="1" >正常</el-radio>
-              <el-radio label="0" >停用</el-radio>
+              <el-radio v-for="item in statusList" :label="item.value" >{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="是否级联">
             <el-radio-group v-model="form.cascaded">
-              <el-radio label="1" >是</el-radio>
-              <el-radio label="0" >否</el-radio>
+              <el-radio v-for="item in dictTreeList" :label="item.value" >{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item label="字典类型">
             <el-radio-group v-model="form.isSys">
-              <el-radio label="0" >系统字典</el-radio>
-              <el-radio label="1" >业务字典</el-radio>
+              <el-radio v-for="item in dictTypeList" :label="item.value" >{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -66,7 +63,7 @@
 
 <script>
 import {useRouter} from "vue-router";
-import {onMounted, ref, watch} from "vue";
+import {getCurrentInstance, onMounted, ref, watch} from "vue";
 import {ElMessage} from "element-plus";
 
 import dictType from "@/api/sys/dictType";
@@ -78,9 +75,13 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       form: ref({}),
       btnLoad: ref(false),
+      statusList : ref([]),
+      dictTreeList : ref([]),
+      dictTypeList : ref([]),
     }
 
     //监听
@@ -97,12 +98,21 @@ export default {
           data.form.value.isSys = "1"
           data.form.value.cascaded = "0"
         }
+        methods.loadDictList();
       }
     })
     onMounted(async () => {
 
     })
     let methods = {
+      loadDictList(){
+        let statusList = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
+        data.statusList.value = statusList
+        let dictTreeList = proxy.$tools.selectDict(proxy.$appConfig.DICTTREE)
+        data.dictTreeList.value = dictTreeList
+        let dictTypeList = proxy.$tools.selectDict(proxy.$appConfig.DICTTYPE)
+        data.dictTypeList.value = dictTypeList
+      },
       subment(){
         data.btnLoad.value = true
         if (data.form.value.id){
@@ -135,6 +145,7 @@ export default {
 
     return {
       router,
+      proxy,
       ...data,
       ...methods
     }

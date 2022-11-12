@@ -38,13 +38,13 @@
     <el-form :model="formData" label-width="100px" :disabled = "btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
-              <el-form-item label="角色名称">
-                <el-input v-model="formData.dictValue" placeholder="请输入角色名称" clearable/>
+              <el-form-item label="字典项名称">
+                <el-input v-model="formData.dictValue" placeholder="请输入字典项名称" clearable/>
               </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="角色编码">
-            <el-input v-model="formData.dictKey" placeholder="请输入角色名称" clearable/>
+          <el-form-item label="字典项编码">
+            <el-input v-model="formData.dictKey" placeholder="字典项编码" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="5">
@@ -91,7 +91,7 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ scope.row.status }}</el-tag>
+            <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作">
@@ -136,7 +136,7 @@
 
 <script>
 import {useRouter} from "vue-router";
-import {onMounted, reactive, ref, watch} from "vue";
+import {getCurrentInstance, onMounted, reactive, ref, watch} from "vue";
 import {ElMessage} from "element-plus";
 
 import dictType from "@/api/sys/dictType";
@@ -150,6 +150,7 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       tableData: ref([]),
       tableSelect: ref([]),
@@ -304,6 +305,7 @@ export default {
     }
     return {
       router,
+      proxy,
       ...data,
       ...methods
     }

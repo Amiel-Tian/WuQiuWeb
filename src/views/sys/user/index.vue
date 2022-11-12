@@ -22,7 +22,7 @@
         <el-table-column prop="loginname" label="登录名" show-overflow-tooltip/>
         <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag>{{ scope.row.status }}</el-tag>
+            <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="phone" label="手机号" show-overflow-tooltip/>
@@ -82,6 +82,7 @@ export default {
   components: {operation},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       tableData: ref([]),
       tableDataLoad: ref(false),
@@ -186,6 +187,7 @@ export default {
 
     return {
       router,
+      proxy,
       ...data,
       ...methods
     }

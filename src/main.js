@@ -25,9 +25,11 @@ for (let i in Elicons) {
 import router from './router/index.js'
 app.use(router)
 
-//全局变量
+//全局变量、方法
 import APP_CONFIG from "@/config/config";
 app.config.globalProperties.$appConfig = APP_CONFIG
+import tool from "@/utils/tool";
+app.config.globalProperties.$tools = tool
 //注册全局组件
 import components from "@/components";
 app.use(components)

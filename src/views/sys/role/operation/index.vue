@@ -28,8 +28,7 @@
         <el-col :span="24">
           <el-form-item label="状态">
             <el-radio-group v-model="form.status">
-              <el-radio label="1" >正常</el-radio>
-              <el-radio label="0" >停用</el-radio>
+              <el-radio v-for="item in statusList" :label="item.value" >{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -70,11 +69,13 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       iocnDrawer: ref(false),
       treeList: ref([]),
       form: ref({}),
       btnLoad : ref(false),
+      statusList : ref([]),
       cascaderProps: {
         children: "children",
         label: "name",
@@ -98,6 +99,7 @@ export default {
           data.form.value.status = "1"
         }
         methods.getNav();
+        methods.loadDictList();
       }
     })
     onMounted(async () => {
@@ -108,6 +110,10 @@ export default {
         menuApi.getNavAll().then(res => {
           data.treeList.value = res.data.nav
         })
+      },
+      loadDictList(){
+        let res = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
+        data.statusList.value = res
       },
       subment(){
         data.btnLoad.value = true
@@ -141,6 +147,7 @@ export default {
 
     return {
       router,
+      proxy,
       ...data,
       ...methods
     }

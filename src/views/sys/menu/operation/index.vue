@@ -44,9 +44,7 @@
         <el-col :span="12">
           <el-form-item label="菜单类型">
             <el-radio-group v-model="form.type">
-              <el-radio :label="0">目录</el-radio>
-              <el-radio :label="1">菜单</el-radio>
-              <el-radio :label="2">功能</el-radio>
+              <el-radio v-for="item in menuTypeList" :label="item.value" >{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -75,8 +73,7 @@
         <el-col :span="12">
           <el-form-item label="状态">
             <el-radio-group v-model="form.status">
-              <el-radio label="1" >正常</el-radio>
-              <el-radio label="0" >停用</el-radio>
+              <el-radio v-for="item in statusList" :label="item.value" >{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -103,10 +100,13 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       form: ref({}),
       treeData: ref([]),
       btnLoad : ref(false),
+      statusList : ref([]),
+      menuTypeList : ref([]),
       cascaderProps: {
         children: "children",
         label: "name",
@@ -124,6 +124,7 @@ export default {
           menuApi.get(props.id).then(res => {
             data.form.value = res.data || {}
               data.form.value.status =  data.form.value.status + ""
+              data.form.value.type =  data.form.value.type + ""
           })
         }else {
           data.form.value = {}
@@ -134,6 +135,7 @@ export default {
         }
 
         methods.getNav()
+        methods.loadDictList();
       }
     })
     onMounted(async () => {
@@ -144,6 +146,12 @@ export default {
         menuApi.getNavAll().then(res => {
           data.treeData.value = res.data.nav
         })
+      },
+      loadDictList(){
+        let res = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
+        data.statusList.value = res
+        let menus = proxy.$tools.selectDict(proxy.$appConfig.MENUTYPE)
+        data.menuTypeList.value = menus
       },
       subment(){
         data.btnLoad.value = true
@@ -181,6 +189,7 @@ export default {
 
     return {
       router,
+      proxy,
       ...data,
       ...methods
     }
