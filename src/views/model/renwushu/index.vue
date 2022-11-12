@@ -125,7 +125,7 @@ export default {
     let methods = {
       getUserInto() {
         userApi.getUserInfo().then(res => {
-          data.userInfo.value = res
+          data.userInfo.value = res.data
         })
       },
 
