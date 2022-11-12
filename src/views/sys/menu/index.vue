@@ -31,7 +31,7 @@
             <el-row justify="space-between">
               <div>{{ node.label }}</div>
               <div style="padding:0 1.5rem">
-                <el-tag size="small">{{ data.type }}</el-tag>
+                <el-tag size="small">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.MENUTYPE,data.type) }}</el-tag>
               </div>
             </el-row>
           </template>
@@ -43,7 +43,7 @@
           <el-descriptions :title="form.title" :column="2" border style="width: 100%;">
             <el-descriptions-item align="center" label="菜单名称：">{{ form.name }}</el-descriptions-item>
             <el-descriptions-item align="center" label="菜单类型：">
-              <el-tag size="small">{{ form.type }}</el-tag>
+              <el-tag size="small">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.MENUTYPE,form.type) }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item align="center" label="图标：">
               <el-icon>
@@ -51,7 +51,7 @@
               </el-icon>
             </el-descriptions-item>
             <el-descriptions-item align="center" label="状态：">
-              <el-tag>{{ form.type }}</el-tag>
+              <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,form.status || "1") }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item align="center" label="排序：">{{ form.sort }}</el-descriptions-item>
             <el-descriptions-item align="center" label="授权编码：">{{ form.perms }}</el-descriptions-item>
@@ -88,14 +88,14 @@
             <el-table-column prop="sort" label="排序" show-overflow-tooltip/>
             <el-table-column prop="type" label="菜单类型" show-overflow-tooltip>
               <template #default="scope">
-                <el-tag>{{ scope.row.type }}</el-tag>
+                <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.MENUTYPE,scope.row.type) }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="path" label="菜单地址" show-overflow-tooltip/>
             <el-table-column prop="perms" label="授权编码" show-overflow-tooltip/>
             <el-table-column prop="status" label="状态" show-overflow-tooltip>
               <template #default="scope">
-                <el-tag>{{ scope.row.status }}</el-tag>
+                <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
               </template>
             </el-table-column>
             <el-table-column prop="icon" label="菜单图标" show-overflow-tooltip>
@@ -155,6 +155,7 @@ export default {
   components: {operation},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     const treeRef = ref()
     let data = {
       treeWidth: ref(4),
@@ -295,6 +296,7 @@ export default {
 
     return {
       router,
+      proxy,
       treeRef,
       ...data,
       ...methods

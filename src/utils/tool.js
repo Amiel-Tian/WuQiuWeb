@@ -44,11 +44,41 @@ export default {
         return result
     },
 
-    // 回显数据字典
-    selectDictLabel(datas, value) {
-        for (let index = 0; index < datas.length; index++) {
-            if (datas[index].itemValue == value) {
-                return datas[index].itemText;
+    /*  获取数据字典
+   * dictValue,value
+   * */
+    selectDict(dictValue){
+        const list = sessionStorage.getItem('dictionaries') ? JSON.parse(sessionStorage.getItem('dictionaries')) : [];
+        let datas = list
+        if (dictValue){
+            datas = datas.filter(f => {return f.value == dictValue})
+        }
+        if (datas && datas.length > 0){
+            return datas[0].children
+        }
+        return [];
+    },
+   /*  回显数据字典
+   * dictValue,value
+   * */
+    selectDictLabel(dictValue, value) {
+        const list = sessionStorage.getItem('dictionaries') ? JSON.parse(sessionStorage.getItem('dictionaries')) : [];
+        dictValue += ""
+        value += ""
+        let datas = list
+        if (!dictValue || !value){
+            return "";
+        }
+        if (dictValue){
+            datas = datas.filter(f => {return f.value == dictValue})
+        }
+        for (let data of datas) {
+            if (data.children){
+                for (let children of data.children) {
+                    if (children.value == value){
+                        return children.name
+                    }
+                }
             }
         }
     }

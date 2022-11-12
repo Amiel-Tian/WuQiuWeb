@@ -43,8 +43,7 @@
         <el-col :span="12">
           <el-form-item label="状态">
             <el-radio-group v-model="form.status">
-              <el-radio label="1" >正常</el-radio>
-              <el-radio label="0" >停用</el-radio>
+              <el-radio v-for="item in statusList" :label="item.value" >{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -85,11 +84,13 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
       iocnDrawer: ref(false),
       treeList: ref([]),
       form: ref({}),
       btnLoad : ref(false),
+      statusList : ref([]),
     }
     //监听
     watch(() => [props.drawer], ([drawer]) => {
@@ -106,6 +107,7 @@ export default {
           data.form.value.status = "1"
         }
         methods.getRole();
+        methods.loadDictList();
       }
     })
     onMounted(async () => {
@@ -116,6 +118,10 @@ export default {
         roleApi.datas().then(res => {
           data.treeList.value = res.data
         })
+      },
+      loadDictList(){
+        let res = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
+        data.statusList.value = res
       },
       subment(){
         data.btnLoad.value = true
@@ -147,6 +153,7 @@ export default {
 
     return {
       router,
+      proxy,
       ...data,
       ...methods
     }

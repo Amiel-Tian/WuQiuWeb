@@ -95,7 +95,9 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
+      statusList: ref([]),
       tableData: ref([]),
       tableSelect: ref([]),
       tableDataLoad: ref(false),
@@ -121,6 +123,10 @@ export default {
       methods.getTableData()
     })
     let methods = {
+      loadDictList(){
+        let statusList = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
+        data.statusList.value = statusList
+      },
       /*
       * 页数改变
       *
@@ -173,6 +179,7 @@ export default {
     }
 
     return {
+      proxy,
       router,
       ...data,
       ...methods

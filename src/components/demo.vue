@@ -1,4 +1,8 @@
 <template>
+<!--
+{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}
+v-permission="['sys:dict:update']"
+-->
 
 </template>
 
@@ -15,6 +19,7 @@ export default {
   },
   setup(props ,content){
     const router = useRouter()
+    const {proxy} = getCurrentInstance();
     let data = {
 
     }
@@ -33,6 +38,7 @@ export default {
     }
 
     return {
+      proxy,
       router,
       ...data,
       ...methods

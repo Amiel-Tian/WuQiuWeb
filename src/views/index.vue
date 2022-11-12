@@ -92,7 +92,7 @@ export default {
           sessionStorage.setItem('permission',resnav.data.authoritys)
         })
         dictTypeApi.getTreeDict().then(resdict => {
-
+          sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
         })
       },
 
