@@ -42,25 +42,25 @@
           <el-divider content-position="left">详细信息</el-divider>
           <el-descriptions :title="form.title" :column="2" border style="width: 100%;">
             <el-descriptions-item align="center" label="菜单名称：">{{ form.name }}</el-descriptions-item>
-            <el-descriptions-item align="center" label="菜单类型：">
-              <el-tag size="small">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.MENUTYPE,form.type) }}</el-tag>
-            </el-descriptions-item>
             <el-descriptions-item align="center" label="图标：">
               <el-icon>
                 <component v-if="form.icon" :is="form.icon"/>
               </el-icon>
             </el-descriptions-item>
-            <el-descriptions-item align="center" label="状态：">
-              <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,form.status || "1") }}</el-tag>
+            <el-descriptions-item align="center" label="菜单类型：">
+              <el-tag size="small">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.MENUTYPE,form.type) }}</el-tag>
             </el-descriptions-item>
             <el-descriptions-item align="center" label="排序：">{{ form.sort }}</el-descriptions-item>
             <el-descriptions-item align="center" label="授权编码：">{{ form.perms }}</el-descriptions-item>
+            <el-descriptions-item align="center" label="状态：">
+              <el-tag>{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,form.status || "1") }}</el-tag>
+            </el-descriptions-item>
             <el-descriptions-item align="center" label="菜单地址：">{{ form.path }}</el-descriptions-item>
           </el-descriptions>
         </el-row>
-        <el-divider content-position="left">{{ form.name ?'子项列表' : '菜单列表' }}</el-divider>
+        <el-divider content-position="left" v-if="form.type != '2'">{{ form.name ?'子项列表' : '菜单列表' }}</el-divider>
         <el-row justify="start" style="margin: .5rem">
-          <el-link v-permission="['sys:menu:save']" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
+          <el-link v-permission="['sys:menu:save']" v-if="form.type != '2'" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
           <el-link v-permission="['sys:menu:update']" type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
           <el-popconfirm
               @confirm="confirmDelete(form)"
@@ -69,7 +69,7 @@
               <el-link v-permission="['sys:menu:delete']" type="danger" style="margin-left: .5rem">{{ form.name ?'删除此项' : '' }}</el-link>
             </template>
           </el-popconfirm>
-          <el-row justify="end" align="middle" style="flex: 1">
+          <el-row justify="end" v-if="form.type != '2'" align="middle" style="flex: 1">
             <el-tooltip
                 effect="dark"
                 content="刷新"
@@ -81,7 +81,7 @@
             </el-tooltip>
           </el-row>
         </el-row>
-        <el-row>
+        <el-row  v-if="form.type != '2'">
           <el-table v-loading="tableDataLoad" :data="tableData" border stripe style="width: 100%">
             <el-table-column type="index" width="55" label="序号"/>
             <el-table-column prop="name" label="菜单名称" show-overflow-tooltip/>
