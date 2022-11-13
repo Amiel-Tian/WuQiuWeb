@@ -1,6 +1,6 @@
 <template>
   <template v-for="(item) in menuList">
-    <el-menu-item v-if=" item && item.type == '1'" :index="item.path">
+    <el-menu-item v-if=" item && item.type == '1'" @click="menuClick" :name="item.name" :index="item.path">
       <el-icon>
         <component v-if="item.icon" :is="item.icon"/>
       </el-icon>
@@ -13,7 +13,7 @@
         </el-icon>
         <span>{{ item.name }}</span>
       </template>
-      <menu-tree v-if="item.children" :menu-list="item.children"></menu-tree>
+      <menu-tree @menuClick="menuClick" v-if="item.children" :menu-list="item.children"></menu-tree>
     </el-sub-menu>
   </template>
 </template>
@@ -25,7 +25,7 @@ import {useRouter} from "vue-router";
 export default {
   name: "menuTree",
   props: ["menuList"],
-  emits: ["update:menuList"],
+  emits: ["update:menuList","menuClick"],
   components: {},
   setup(props, content) {
     const router = useRouter()
@@ -36,7 +36,19 @@ export default {
     })
     onMounted(async () => {
     })
-    let methods = {}
+    let methods = {
+      menuClick(e){
+        let datas = props.menuList
+        if (e.name){
+        }
+        let fil = datas.filter(f => {return f.path == e.index})
+        if (fil && fil.length > 0){
+          content.emit('menuClick',fil[0])
+          return
+        }
+        content.emit('menuClick',e)
+      }
+    }
 
     return {
       router,
