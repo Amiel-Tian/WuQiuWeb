@@ -121,7 +121,6 @@ export default {
         userApi.logout()
       },
       menuClick(e){
-        console.log(e, "sd")
         let fil = data.editableTabs.value.filter(f => {return f.name == e.path})
         if (fil && fil.length > 0){
           data.editableTabsValue.value = e.path
