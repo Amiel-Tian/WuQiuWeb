@@ -43,4 +43,25 @@ export default {
             data: param,
         })
     },
+    datasPro(param) {
+        return request({
+            url: '/renwuProject/datas',
+            method: 'get',
+            params: param,
+        })
+    },
+    addPro(param) {
+        return request({
+            url: '/renwuProject/add',
+            method: 'post',
+            data: param,
+        })
+    },
+    updatePro(param) {
+        return request({
+            url: '/renwuProject/update',
+            method: 'PUT',
+            data: param,
+        })
+    },
 }

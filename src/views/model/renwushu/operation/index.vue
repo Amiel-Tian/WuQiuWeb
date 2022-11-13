@@ -1,23 +1,37 @@
 <template>
-  <el-form :model="form" label-width="100px" :disabled = "btnLoad">
+  <el-form :model="form" label-width="100px" :disabled="btnLoad">
     <el-row>
       <el-col :span="5">
         <el-form-item label="合同编号">
-          <el-input v-model="form.contractNo" @input="changeFrom()" placeholder="请输入合同编号" clearable/>
+          <!--          <el-input v-model="form.contractNo" @input="changeFrom()" placeholder="请输入合同编号" clearable/>-->
+          <el-autocomplete
+              style="width: 100%;"
+              v-model="form.contractNo"
+              :fetch-suggestions="querySearch"
+              clearable
+              placeholder="请输入合同编号"
+              @select="handleSelect"
+          >
+            <template #default="{ item }">
+              <el-row>
+                {{ item.num }}
+              </el-row>
+            </template>
+          </el-autocomplete>
         </el-form-item>
       </el-col>
       <el-col :span="5">
         <el-form-item label="客户名称">
-          <el-input v-model="form.customerName" @input="changeFrom()"  placeholder="请输入客户名称" clearable/>
+          <el-input v-model="form.customerName" @input="changeFrom()" placeholder="请输入客户名称" clearable/>
         </el-form-item>
       </el-col>
       <el-col :span="5">
         <el-form-item label="申请人">
-          <el-input v-model="form.applicant" @input="changeFrom()"  placeholder="请输入申请人" clearable/>
+          <el-input v-model="form.applicant" @input="changeFrom()" placeholder="请输入申请人" clearable/>
         </el-form-item>
       </el-col>
       <el-col :span="5">
-        <el-form-item label="工作时间" >
+        <el-form-item label="工作时间">
           <el-date-picker
               v-model="form.dateTime"
               type="datetimerange"
@@ -31,7 +45,7 @@
       </el-col>
       <el-col :span="4">
         <el-form-item label="工作时长">
-          <el-input-number @input="changeFrom()"  v-model="form.workTime" placeholder="小时" :min="1" :max="1000"/>
+          <el-input-number @input="changeFrom()" v-model="form.workTime" placeholder="小时" :min="1" :max="1000"/>
         </el-form-item>
       </el-col>
     </el-row>
@@ -47,8 +61,12 @@
       </el-col>
     </el-row>
     <el-row justify="end" style="margin-top: 1rem">
-      <el-button v-permission="['sys:renwu:add']" v-if="!form.id" type="primary" :loading="btnLoad" @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}</el-button>
-      <el-button v-permission="['sys:renwu:update']"  v-if="form.id" type="primary" :loading="btnLoad" @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}</el-button>
+      <el-button v-permission="['sys:renwu:add']" v-if="!form.id" type="primary" :loading="btnLoad"
+                 @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}
+      </el-button>
+      <el-button v-permission="['sys:renwu:update']" v-if="form.id" type="primary" :loading="btnLoad"
+                 @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}
+      </el-button>
     </el-row>
     <el-divider/>
     <el-row justify="space-between">
@@ -78,7 +96,7 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import useClipboard from 'vue-clipboard3'
 import {useRouter} from "vue-router";
 import userApi from "@/api/sys/user";
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 
 import renwuApi from "@/api/model/renwu";
 import menuApi from "@/api/sys/menu";
@@ -101,6 +119,7 @@ export default {
       ]),
       showData: ref(""),
       btnLoad: ref(false),
+      contractNoList: ref([]),
     }
 
     watch(() => [props.info.id], async ([info]) => {
@@ -118,6 +137,7 @@ export default {
 
         methods.changeFrom()
       }
+      methods.getNumDatas()
     })
     //监听
     // watch(data.form.value, () => {
@@ -127,21 +147,76 @@ export default {
     // })
     onMounted(async () => {
       methods.getUserInfo();
+      methods.getNumDatas()
     })
     let methods = {
       getUserInfo() {
         userApi.getUserInfo().then(res => {
-          data.userInfo.value = res
+          data.userInfo.value = res.data
 
           data.form.value.recipient = data.userInfo.value.username
         })
       },
+      /*获取列表*/
+      getNumDatas() {
+        let param = {}
+        renwuApi.datasPro(param).then(res => {
+          data.contractNoList.value = res.data
+        }).finally(() => {
+        })
+      },
       submentClick() {
+
         data.btnLoad.value = true
         let param = data.form.value;
 
-        param.startDate = param.startDate ? param.startDate.replaceAll(".", "-") + " 08:30:00" : ""
-        param.endDate = param.endDate ? param.endDate.replaceAll(".", "-") + " 17:30:00" : ""
+        // param.startDate = param.startDate ? param.startDate.replaceAll(".", "-") + " 08:30:00" : ""
+        // param.endDate = param.endDate ? param.endDate.replaceAll(".", "-") + " 17:30:00" : ""
+
+        if (param.contractNo) {
+          let fil = data.contractNoList.value.filter(f => {
+            return f.num == param.contractNo
+          })
+          if (fil && fil.length > 0) {
+            if (fil[0].num != param.contractNo || fil[0].name != param.customerName || fil[0].person != param.applicant) {
+              ElMessageBox.confirm('检测到合同内容发生变化，是否同步修改合同内容?', '提示',
+                  {
+                    confirmButtonText: '修改',
+                    cancelButtonText: '不修改',
+                    type: 'warning',
+                  }).then(() => {
+                let pro = {
+                  id: fil[0].id,
+                  num: param.contractNo,
+                  name: param.customerName,
+                  person: param.applicant,
+                }
+                renwuApi.updatePro(pro).then(res => {
+                  if (res.success){
+                    ElMessage.success(res.msg)
+                  }else{
+                    ElMessage.warning(res.msg)
+                  }
+
+                })
+              }).catch(() => {
+                ElMessage({
+                  type: 'info',
+                  message: 'canceled',
+                })
+              })
+            }
+          } else {
+            let pro = {
+              num: param.contractNo,
+              name: param.customerName,
+              person: param.applicant,
+            }
+            renwuApi.addPro(pro).then(res => {
+
+            })
+          }
+        }
 
         if (param.id) {
           renwuApi.update(param).then(res => {
@@ -163,14 +238,14 @@ export default {
           })
         }
       },
-      changeTime(){
+      changeTime() {
         if (data.form.value.dateTime) {
           let day = tool.getWeekday(data.form.value.dateTime[0], data.form.value.dateTime[1])
           data.form.value.workTime = day * 8
         }
         this.changeFrom()
       },
-      changeFrom(){
+      changeFrom() {
         if (data.form.value) {
           data.showData.value = data.form.value.contractNo || ""
           data.showData.value += data.form.value.customerName ? " " + data.form.value.customerName : ""
@@ -191,8 +266,23 @@ export default {
           data.showData.value += data.form.value.context ? "\n" + data.form.value.context + "" : ""
         }
       },
+      querySearch(queryString, cb) {
+        const results = queryString
+            ? data.contractNoList.value.filter(f => {
+              return f.num.indexOf(queryString) > -1
+            })
+            : data.contractNoList.value
+        // call callback function to return suggestions
+        cb(results)
+      },
+      handleSelect(item) {
+        console.log(item)
+        data.form.value.contractNo = item.num
+        data.form.value.customerName = item.name
+        data.form.value.applicant = item.person
+      },
       async copy(content) {
-        if (!content){
+        if (!content) {
           ElMessage.warning("内容为空")
           return
         }

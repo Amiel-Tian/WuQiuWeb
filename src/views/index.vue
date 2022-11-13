@@ -12,7 +12,7 @@
             :router="true"
             :default-active="routerPath"
         >
-          <menu-tree v-model:menu-list="menuList"></menu-tree>
+          <menu-tree @menuClick="menuClick" v-model:menu-list="menuList"></menu-tree>
         </el-menu>
       </el-scrollbar>
     </el-aside>
@@ -42,7 +42,23 @@
       </el-header>
 
       <el-main>
-        <router-view name="index"></router-view>
+<!--        <el-tabs-->
+<!--            v-model="editableTabsValue"-->
+<!--            type="card"-->
+<!--            class="demo-tabs"-->
+<!--            closable-->
+<!--            @tab-click="tabClick"-->
+<!--            @tab-remove="removeTab"-->
+<!--        >-->
+<!--          <el-tab-pane-->
+<!--              v-for="item in editableTabs"-->
+<!--              :key="item.name"-->
+<!--              :label="item.title"-->
+<!--              :name="item.name"-->
+<!--          >-->
+            <router-view name="index"></router-view>
+<!--          </el-tab-pane>-->
+<!--        </el-tabs>-->
       </el-main>
 
     </el-container>
@@ -74,6 +90,8 @@ export default {
       menuList: ref([]),
       menuRightCollapse: ref(false),
       loading: ref(false),
+      editableTabsValue: ref(""),
+      editableTabs: ref([]),
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -101,7 +119,28 @@ export default {
 
       onSubmit() {
         userApi.logout()
-      }
+      },
+      menuClick(e){
+        console.log(e, "sd")
+        let fil = data.editableTabs.value.filter(f => {return f.name == e.path})
+        if (fil && fil.length > 0){
+          data.editableTabsValue.value = e.path
+        }else{
+          data.editableTabs.value.push({
+            title: e.name,
+            name: e.path,
+            content: e.path,
+          })
+          data.editableTabsValue.value = e.path
+        }
+
+      },
+      tabClick(tabsPaneContext, e){
+
+      },
+      removeTab(targetName){
+
+      },
     }
 
     return {
