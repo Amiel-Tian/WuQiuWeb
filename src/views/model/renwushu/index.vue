@@ -170,6 +170,7 @@ export default {
           }else{
             ElMessage.warning(res.msg)
           }
+          data.form.value = {}
           this.getTableData()
         })
       },
@@ -182,8 +183,8 @@ export default {
             copyDate += item.customerName ? " " + item.customerName : ""
             copyDate += item.applicant ? "_" + item.applicant : ""
             copyDate += item.recipient ? "to" + item.recipient : ""
-            copyDate += item.startDate ? " " + item.startDate : ""
-            copyDate += item.endDate ? "-" + item.endDate : ""
+            copyDate += item.startDate ? " " + item.startDate.substring(0,10).replaceAll("-","."): ""
+            copyDate += item.endDate ? "-" + item.endDate.substring(0,10).replaceAll("-",".") : ""
             copyDate += item.workTime ? " " + item.workTime + "小时" : ""
             copyDate += item.context ? "\n" + item.context + "" : ""
             copyDate += "\n";

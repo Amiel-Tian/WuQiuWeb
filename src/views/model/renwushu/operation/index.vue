@@ -38,7 +38,7 @@
               start-placeholder="Start Date"
               end-placeholder="End Date"
               :default-time="defaultTime"
-              value-format="YYYY.MM.DD"
+              value-format="YYYY-MM-DD HH:mm:ss"
               @change="changeTime()"
           />
         </el-form-item>
@@ -255,8 +255,8 @@ export default {
             data.form.value.startDate = data.form.value.dateTime[0]
             data.form.value.endDate = data.form.value.dateTime[1]
 
-            data.showData.value += data.form.value.startDate ? " " + data.form.value.startDate : ""
-            data.showData.value += data.form.value.endDate ? "-" + data.form.value.endDate : ""
+            data.showData.value += data.form.value.startDate ? " " + data.form.value.startDate.substring(0,10).replaceAll("-",".") : ""
+            data.showData.value += data.form.value.endDate ? "-" + data.form.value.endDate.substring(0,10).replaceAll("-",".") : ""
           } else {
             data.form.value.startDate = undefined
             data.form.value.endDate = undefined
