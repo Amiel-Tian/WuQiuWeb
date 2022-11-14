@@ -1,7 +1,7 @@
 <template>
   <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card >
-    <operation :info="form" @success="getTableData()"></operation>
+    <operation :info="form" v-model:drawer="drawer" @success="getTableData()"></operation>
   </el-card>
 
   <el-card>
@@ -99,6 +99,7 @@ export default {
       tableData: ref([]),
       tableSelect: ref([]),
       tableDataLoad: ref(false),
+      drawer: ref(false),
       page: ref({
         small: true, //是否小型
         onepage: true, //是否一页不显示
@@ -160,6 +161,7 @@ export default {
       * 编辑
       * */
       editClick(row){
+        data.drawer.value = true
         data.form.value = row
       },
       /*确认删除*/

@@ -3,7 +3,6 @@
     <el-row>
       <el-col :span="5">
         <el-form-item label="合同编号">
-          <!--          <el-input v-model="form.contractNo" @input="changeFrom()" placeholder="请输入合同编号" clearable/>-->
           <el-autocomplete
               style="width: 100%;"
               v-model="form.contractNo"
@@ -11,10 +10,15 @@
               clearable
               placeholder="请输入合同编号"
               @select="handleSelect"
+              @change="changeForm()"
+              @clear="changeForm()"
           >
             <template #default="{ item }">
               <el-row>
                 {{ item.num }}
+              </el-row>
+              <el-row justify="end" class="op-btn">
+                {{ item.name }}
               </el-row>
             </template>
           </el-autocomplete>
@@ -22,12 +26,12 @@
       </el-col>
       <el-col :span="5">
         <el-form-item label="客户名称">
-          <el-input v-model="form.customerName" @input="changeFrom()" placeholder="请输入客户名称" clearable/>
+          <el-input v-model="form.customerName" @input="changeForm()" placeholder="请输入客户名称" clearable/>
         </el-form-item>
       </el-col>
       <el-col :span="5">
         <el-form-item label="申请人">
-          <el-input v-model="form.applicant" @input="changeFrom()" placeholder="请输入申请人" clearable/>
+          <el-input v-model="form.applicant" @input="changeForm()" placeholder="请输入申请人" clearable/>
         </el-form-item>
       </el-col>
       <el-col :span="5">
@@ -45,7 +49,7 @@
       </el-col>
       <el-col :span="4">
         <el-form-item label="工作时长">
-          <el-input-number @input="changeFrom()" v-model="form.workTime" placeholder="小时" :min="1" :max="1000"/>
+          <el-input-number @input="changeForm()" v-model="form.workTime" placeholder="小时" :min="1" :max="1000"/>
         </el-form-item>
       </el-col>
     </el-row>
@@ -56,7 +60,7 @@
             :rows="10"
             type="textarea"
             placeholder="请输入工作内容"
-            @input="changeFrom()"
+            @input="changeForm()"
         />
       </el-col>
     </el-row>
@@ -66,6 +70,9 @@
       </el-button>
       <el-button v-permission="['sys:renwu:update']" v-if="form.id" type="primary" :loading="btnLoad"
                  @click="submentClick()">{{ form.id ? '保存修改此条数据' : '记录此条数据' }}
+      </el-button>
+      <el-button v-permission="['sys:renwu:clear']" :loading="btnLoad"
+                 @click="clearClick">{{ form.id ? '取消修改' : '清空' }}
       </el-button>
     </el-row>
     <el-divider/>
@@ -99,13 +106,12 @@ import userApi from "@/api/sys/user";
 import {ElMessage, ElMessageBox} from "element-plus";
 
 import renwuApi from "@/api/model/renwu";
-import menuApi from "@/api/sys/menu";
 import tool from "@/utils/model"
 
 export default {
   name: "index",
-  props: ["info"],
-  emits: ["success"],
+  props: ["info", "drawer"],
+  emits: ["update:drawer", "success","clear"],
   components: {},
   setup(props, content) {
     const router = useRouter()
@@ -122,20 +128,22 @@ export default {
       contractNoList: ref([]),
     }
 
-    watch(() => [props.info.id], async ([info]) => {
-      if (info) {
+    watch(() => [props.drawer], async ([drawer]) => {
+      if (drawer) {
         data.btnLoad.value = true
-        await renwuApi.get(info).then(res => {
+        await renwuApi.get(props.info.id).then(res => {
           data.form.value = res.data
-          if (data.form.value.startDate && data.form.value.endDate) {
-            data.form.value.dateTime = []
-            data.form.value.dateTime.push(data.form.value.startDate)
-            data.form.value.dateTime.push(data.form.value.endDate)
+          if ( data.form.value) {
+            if (data.form.value.startDate && data.form.value.endDate) {
+              data.form.value.dateTime = []
+              data.form.value.dateTime.push(data.form.value.startDate)
+              data.form.value.dateTime.push(data.form.value.endDate)
+            }
+            data.btnLoad.value = false
           }
-          data.btnLoad.value = false
         })
 
-        methods.changeFrom()
+        methods.changeForm()
       }
       methods.getNumDatas()
     })
@@ -154,7 +162,6 @@ export default {
         userApi.getUserInfo().then(res => {
           data.userInfo.value = res.data
 
-          data.form.value.recipient = data.userInfo.value.username
         })
       },
       /*获取列表*/
@@ -224,8 +231,9 @@ export default {
             data.form.value = {}
             data.form.value.recipient = data.userInfo.value.username
             data.btnLoad.value = false
-            this.changeFrom()
+            this.changeForm()
             content.emit('success', param)
+            content.emit('update:drawer', !props.drawer)
           })
         } else {
           renwuApi.add(param).then(res => {
@@ -233,19 +241,30 @@ export default {
             data.form.value = {}
             data.form.value.recipient = data.userInfo.value.username
             data.btnLoad.value = false
-            this.changeFrom()
+            this.changeForm()
             content.emit('success', param)
+            content.emit('update:drawer', !props.drawer)
           })
         }
+      },
+      clearClick(){
+        methods.clearForm()
+        content.emit('update:drawer', !props.drawer)
       },
       changeTime() {
         if (data.form.value.dateTime) {
           let day = tool.getWeekday(data.form.value.dateTime[0], data.form.value.dateTime[1])
           data.form.value.workTime = day * 8
         }
-        this.changeFrom()
+        this.changeForm()
       },
-      changeFrom() {
+      clearForm(){
+        data.form.value = {
+          recipient : data.userInfo.value.username
+        }
+        methods.changeForm()
+      },
+      changeForm() {
         if (data.form.value) {
           data.showData.value = data.form.value.contractNo || ""
           data.showData.value += data.form.value.customerName ? " " + data.form.value.customerName : ""
@@ -276,10 +295,11 @@ export default {
         cb(results)
       },
       handleSelect(item) {
-        console.log(item)
         data.form.value.contractNo = item.num
         data.form.value.customerName = item.name
         data.form.value.applicant = item.person
+
+        methods.changeForm()
       },
       async copy(content) {
         if (!content) {
