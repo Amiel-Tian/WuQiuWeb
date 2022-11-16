@@ -230,26 +230,30 @@ export default {
             ElMessage.success(res.msg)
             data.form.value = {}
             data.form.value.recipient = data.userInfo.value.username
+            content.emit('success', param)
+            content.emit('update:drawer', false)
+          }).finally(() => {
             data.btnLoad.value = false
             this.changeForm()
-            content.emit('success', param)
-            content.emit('update:drawer', !props.drawer)
+            this.getNumDatas()
           })
         } else {
           renwuApi.add(param).then(res => {
             ElMessage.success(res.msg)
             data.form.value = {}
             data.form.value.recipient = data.userInfo.value.username
+            content.emit('success', param)
+            content.emit('update:drawer', false)
+          }).finally(() => {
             data.btnLoad.value = false
             this.changeForm()
-            content.emit('success', param)
-            content.emit('update:drawer', !props.drawer)
+            this.getNumDatas()
           })
         }
       },
       clearClick(){
         methods.clearForm()
-        content.emit('update:drawer', !props.drawer)
+        content.emit('update:drawer', false)
       },
       changeTime() {
         if (data.form.value.dateTime) {
@@ -266,6 +270,10 @@ export default {
       },
       changeForm() {
         if (data.form.value) {
+          if(!data.form.value.recipient){
+            data.form.value.recipient = data.userInfo.value.username
+          }
+
           data.showData.value = data.form.value.contractNo || ""
           data.showData.value += data.form.value.customerName ? " " + data.form.value.customerName : ""
           data.showData.value += data.form.value.applicant ? "_" + data.form.value.applicant : ""
