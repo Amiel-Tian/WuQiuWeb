@@ -1,6 +1,30 @@
 <template>
   <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
+    <el-form :model="searchForm" label-width="120px">
+      <el-row justify="start" style="margin: .5rem">
+        <el-col :span="5">
+        </el-col>
+        <el-col :span="5">
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="用户名">
+            <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="5">
+          <el-form-item label="登录名">
+            <el-input v-model="searchForm.loginname" placeholder="请输入登录名" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="4">
+          <el-row justify="center">
+            <el-button type="primary" @click="getTableData()">搜索</el-button>
+            <el-button @click="searchForm = {}; getTableData()">清空</el-button>
+          </el-row>
+        </el-col>
+      </el-row>
+    </el-form>
     <el-row justify="start" style="margin: .5rem">
       <el-button type="primary" @click="addClick()" v-permission="['sys:user:save']">新建用户</el-button>
       <el-row justify="end" align="middle" style="flex: 1">
@@ -97,7 +121,8 @@ export default {
       }),
 
       form: ref({}),
-      drawer: ref(false)
+      drawer: ref(false),
+      searchForm: ref({}),
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -136,6 +161,7 @@ export default {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page.value)
+        param = Object.assign(param, data.searchForm.value)
 
         userApi.page(param).then(res => {
           data.tableData.value = res.data.records

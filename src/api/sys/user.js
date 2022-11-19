@@ -42,6 +42,13 @@ export default {
             data: param,
         })
     },
+    updateInfo(param) {
+        return request({
+            url: '/sysUser/updateInfo',
+            method: 'PUT',
+            data: param,
+        })
+    },
     remove(param) {
         return request({
             url: '/sysUser/remove',

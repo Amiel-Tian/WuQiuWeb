@@ -36,7 +36,8 @@
           <!--    <el-menu-item index="1"></el-menu-item>-->
           <el-sub-menu index="2">
             <template #title>{{ userInfo.username }}</template>
-            <el-menu-item index="2-1" @click="onSubmit">退出登录</el-menu-item>
+            <el-menu-item index="2-1" @click="toPersonal">个人信息</el-menu-item>
+            <el-menu-item index="2-5" @click="onSubmit">退出登录</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-header>
@@ -98,11 +99,11 @@ export default {
 
     })
     onMounted(async () => {
-      methods.getUserInto()
+      methods.getUserInfo()
       data.routerPath.value = router.currentRoute.value.path
     })
     let methods = {
-      getUserInto() {
+      getUserInfo() {
         data.loading.value = true
         userApi.getUserInfo().then(res => {
           data.userInfo.value = res.data
@@ -119,6 +120,11 @@ export default {
 
       onSubmit() {
         userApi.logout()
+      },
+      toPersonal() {
+        router.push({
+          path: '/sys/user/personal',
+        })
       },
       menuClick(e){
         let fil = data.editableTabs.value.filter(f => {return f.name == e.path})

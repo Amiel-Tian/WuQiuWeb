@@ -1,23 +1,23 @@
 <template>
   <page-title title="人员管理"></page-title>
   <el-card>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="searchForm" label-width="120px">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
-          <!--          <el-form-item label="角色名称">-->
-          <!--            <el-input v-model="form.name" placeholder="请输入角色名称" clearable/>-->
-          <!--          </el-form-item>-->
         </el-col>
         <el-col :span="5">
         </el-col>
         <el-col :span="5">
         </el-col>
         <el-col :span="5">
+          <el-form-item label="用户名">
+            <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable/>
+          </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-row justify="center">
-            <el-button @click="">搜索</el-button>
-            <el-button @click="">清空</el-button>
+            <el-button type="primary" @click="getTableData()">搜索</el-button>
+            <el-button @click="searchForm = {}; getTableData()">清空</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -110,7 +110,8 @@ export default {
         pageNum: 1, //目前页数
         total: 0,//总数
       }),
-
+      searchForm: ref({}),
+      search: ref({}),
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -153,6 +154,7 @@ export default {
       handleSelectionChange(val){
         data.tableSelect.value = val;
       },
+      clearSearchForm(){},
       /*
       * 获取列表
       *
@@ -161,6 +163,7 @@ export default {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page.value)
+        param = Object.assign(param, data.searchForm.value)
 
         userApi.page(param).then(res => {
           data.tableData.value = res.data.records

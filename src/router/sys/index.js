@@ -30,6 +30,16 @@ export default [
         }
     },
     {
+        name: 'sys/user/personal',
+        path: '/sys/user/personal',
+        meta: { title: '个人中心', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/sys/user/personal')
+        }
+    },
+    {
         name: 'sys/roles',
         path: '/sys/roles',
         meta: { title: '角色管理', icon: '' },
