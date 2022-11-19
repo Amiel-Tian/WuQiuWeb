@@ -13,23 +13,26 @@
         关闭
       </el-button>
     </template>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="searchForm" label-width="120px">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
-          <!--          <el-form-item label="角色名称">-->
-          <!--            <el-input v-model="form.name" placeholder="请输入角色名称" clearable/>-->
-          <!--          </el-form-item>-->
         </el-col>
         <el-col :span="5">
         </el-col>
         <el-col :span="5">
+          <el-form-item label="字典项名">
+            <el-input v-model="searchForm.dictValue" placeholder="请输入字典项名" clearable/>
+          </el-form-item>
         </el-col>
         <el-col :span="5">
+          <el-form-item label="字典项编码">
+            <el-input v-model="searchForm.dictKey" placeholder="请输入字典项编码" clearable/>
+          </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-row justify="center">
-            <el-button @click="">搜索</el-button>
-            <el-button @click="">清空</el-button>
+            <el-button type="primary" @click="getTableData()">搜索</el-button>
+            <el-button @click="searchForm.dictValue = '';searchForm.dictKey = ''; getTableData()">清空</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -165,7 +168,7 @@ export default {
         total: 0,//总数
       }),
 
-      search: ref({}),
+      searchForm: ref({}),
       form: ref({}),
       formData: ref({}),
       btnLoad: ref(false),
@@ -178,7 +181,7 @@ export default {
         if (props.id) {
           dictType.get(props.id).then(res => {
             data.form.value = res.data || {}
-            data.search.value.dictId = data.form.value.id || ""
+            data.searchForm.value.dictId = data.form.value.id || ""
             methods.getTableData()
           })
         }else{
@@ -224,7 +227,7 @@ export default {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page.value)
-        param = Object.assign(param, data.search.value)
+        param = Object.assign(param, data.searchForm.value)
 
         dictData.page(param).then(res => {
           data.tableData.value = res.data.records

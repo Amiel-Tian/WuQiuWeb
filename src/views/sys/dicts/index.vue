@@ -2,23 +2,26 @@
   <page-title :title="router.currentRoute.value.meta.title"></page-title>
 
   <el-card>
-    <el-form :model="form" label-width="120px">
+    <el-form :model="searchForm" label-width="120px">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
-          <!--          <el-form-item label="角色名称">-->
-          <!--            <el-input v-model="form.name" placeholder="请输入角色名称" clearable/>-->
-          <!--          </el-form-item>-->
         </el-col>
         <el-col :span="5">
         </el-col>
         <el-col :span="5">
+          <el-form-item label="字典名">
+            <el-input v-model="searchForm.dictName" placeholder="请输入字典名" clearable/>
+          </el-form-item>
         </el-col>
         <el-col :span="5">
+          <el-form-item label="字典编码">
+            <el-input v-model="searchForm.dictType" placeholder="请输入字典编码" clearable/>
+          </el-form-item>
         </el-col>
         <el-col :span="4">
           <el-row justify="center">
-            <el-button @click="">搜索</el-button>
-            <el-button @click="">清空</el-button>
+            <el-button type="primary" @click="getTableData()">搜索</el-button>
+            <el-button @click="searchForm = {}; getTableData()">清空</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -116,6 +119,7 @@ export default {
     const {proxy} = getCurrentInstance();
     let data = {
       form: ref({}),
+      searchForm: ref({}),
       tableData: ref([]),
       tableSelect: ref([]),
       tableDataLoad: ref(false),
@@ -177,6 +181,7 @@ export default {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page)
+        param = Object.assign(param, data.searchForm.value)
 
         dictType.page(param).then(res => {
           data.tableData.value = res.data.records

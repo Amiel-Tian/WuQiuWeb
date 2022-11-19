@@ -8,7 +8,7 @@ import APP_CONFIG from "@/config/config";
 const api = axios.create({
     // baseURL: APP_CONFIG.VUE_APP_API_HOST_DEFAULT, // 请求的公共地址部分
     baseURL: "api", // 请求的公共地址部分
-    timeout: 1000 * 5 // 请求超时时间 当请求时间超过5秒还未取得结果时 提示用户请求超时
+    timeout: 1000 * 60 * 5 // 请求超时时间 当请求时间超过5秒还未取得结果时 提示用户请求超时
 })
 // interceptors axios的拦截器对象
 api.interceptors.request.use(config => {
@@ -40,13 +40,20 @@ api.interceptors.response.use(res => {
     return Promise.resolve(res.data)
 }, err => {
     // 服务器响应发生错误时的处理
-    ElMessage.error('系统错误');
-    if (err.response.data.indexOf("/getUserInfo") > -1){
-        localStorage.setItem('javawebtoken', res.headers.authorization)
+    let response = err.response
+    console.log(err)
+    if (response.data.code == "106" || !window.localStorage.getItem("javawebtoken")) {
+        localStorage.setItem('javawebtoken', undefined)
+        ElMessage.warning(response.data.msg);
+        //用户未登录
         router.push({
             path: '/login',
         })
+        Promise.reject(err)
+        return
     }
+
+    ElMessage.error('系统错误');
     Promise.reject(err)
 })
 

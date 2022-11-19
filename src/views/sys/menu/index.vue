@@ -59,6 +59,27 @@
           </el-descriptions>
         </el-row>
         <el-divider content-position="left" v-if="form.type != '2'">{{ form.name ?'子项列表' : '菜单列表' }}</el-divider>
+        <el-form :model="searchForm" label-width="120px">
+          <el-row justify="start" style="margin: .5rem">
+            <el-col :span="5">
+            </el-col>
+            <el-col :span="5">
+            </el-col>
+            <el-col :span="5">
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="菜单名">
+                <el-input v-model="searchForm.name" placeholder="请输入菜单名" clearable/>
+              </el-form-item>
+            </el-col>
+            <el-col :span="4">
+              <el-row justify="center">
+                <el-button type="primary" @click="getTableData()">搜索</el-button>
+                <el-button @click="searchForm.name = ''; getTableData()">清空</el-button>
+              </el-row>
+            </el-col>
+          </el-row>
+        </el-form>
         <el-row justify="start" style="margin: .5rem">
           <el-link v-permission="['sys:menu:save']" v-if="form.type != '2'" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
           <el-link v-permission="['sys:menu:update']" type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
@@ -166,7 +187,7 @@ export default {
         label: 'name',
       },
       form: ref({}),
-      search: ref({}),
+      searchForm: ref({}),
       tableData: ref([]),
       tableDataLoad: ref(false),
       page: ref({
@@ -198,7 +219,7 @@ export default {
       * */
       treeeNodeClick(datas, node, TreeNode, e) {
         data.form.value = datas
-        data.search.value.parentId = datas.id
+        data.searchForm.value.parentId = datas.id
         methods.getTableData();
       },
       /*
@@ -234,7 +255,7 @@ export default {
       },
       refreshTreeClick() {
         data.form.value = {}
-        data.search.value = {}
+        data.searchForm.value = {}
 
         methods.getNav();
         methods.getTableData();
@@ -245,7 +266,7 @@ export default {
         data.tableDataLoad.value = true
         let param = {}
         param = Object.assign(param, data.page.value)
-        param = Object.assign(param, data.search.value)
+        param = Object.assign(param, data.searchForm.value)
 
         menuApi.page(param).then(res => {
           data.tableData.value = res.data.records

@@ -8,6 +8,7 @@ v-permission="['sys:dict:update']"
 
 <script>
 import {ref,unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
+import {ElMessage, ElMessageBox} from 'element-plus';
 import {useRouter} from "vue-router";
 
 export default {
