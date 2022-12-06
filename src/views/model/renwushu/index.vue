@@ -179,8 +179,8 @@ export default {
       /*批量复制*/
       async copyAll() {
         let copyDate = "";
-        if (data.tableData.value) {
-          data.tableData.value.forEach(item => {
+        if (data.tableSelect.value && data.tableSelect.value.length > 0) {
+          data.tableSelect.value.forEach(item => {
             copyDate += item.contractNo || ""
             copyDate += item.customerName ? " " + item.customerName : ""
             copyDate += item.applicant ? "_" + item.applicant : ""
