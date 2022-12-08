@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="form" label-width="100px" :disabled="btnLoad">
+  <el-form ref="formRef" :model="form" :rules="rules" label-width="100px" :disabled="btnLoad">
     <el-row>
       <el-col :span="5">
         <el-form-item label="合同编号">
@@ -35,7 +35,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="5">
-        <el-form-item label="工作时间">
+        <el-form-item label="工作时间" prop="dateTime">
           <el-date-picker
               v-model="form.dateTime"
               type="datetimerange"
@@ -48,7 +48,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="4">
-        <el-form-item label="工作时长">
+        <el-form-item label="工作时长" prop="workTime">
           <el-input-number @input="changeForm()" v-model="form.workTime" placeholder="小时" :min="1" :max="1000"/>
         </el-form-item>
       </el-col>
@@ -111,10 +111,11 @@ import tool from "@/utils/model"
 export default {
   name: "index",
   props: ["info", "drawer"],
-  emits: ["update:drawer", "success","clear"],
+  emits: ["update:drawer", "success", "clear"],
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const formRef = ref()
     const {toClipboard} = useClipboard()
     let data = {
       userInfo: ref({}),
@@ -126,6 +127,22 @@ export default {
       showData: ref(""),
       btnLoad: ref(false),
       contractNoList: ref([]),
+      rules: {
+        dateTime: [
+          {
+            required: true,
+            message: '请工作时间',
+            trigger: 'change',
+          },
+        ],
+        workTime: [
+          {
+            required: true,
+            message: '请输入工作时长',
+            trigger: 'change',
+          },
+        ],
+      },
     }
 
     watch(() => [props.drawer], async ([drawer]) => {
@@ -133,7 +150,7 @@ export default {
         data.btnLoad.value = true
         await renwuApi.get(props.info.id).then(res => {
           data.form.value = res.data
-          if ( data.form.value) {
+          if (data.form.value) {
             if (data.form.value.startDate && data.form.value.endDate) {
               data.form.value.dateTime = []
               data.form.value.dateTime.push(data.form.value.startDate)
@@ -173,85 +190,90 @@ export default {
         })
       },
       submentClick() {
+        if (!formRef) {
+          return
+        }
+        formRef.value.validate((valid, fields) => {
+          if (valid) {
+            data.btnLoad.value = true
+            let param = data.form.value;
 
-        data.btnLoad.value = true
-        let param = data.form.value;
+            if (param.contractNo) {
+              let fil = data.contractNoList.value.filter(f => {
+                return f.num == param.contractNo
+              })
+              if (fil && fil.length > 0) {
+                if (fil[0].num != param.contractNo || fil[0].name != param.customerName || fil[0].person != param.applicant) {
+                  ElMessageBox.confirm('检测到合同内容发生变化，是否同步修改合同内容?', '提示',
+                      {
+                        confirmButtonText: '修改',
+                        cancelButtonText: '不修改',
+                        type: 'warning',
+                      }).then(() => {
+                    let pro = {
+                      id: fil[0].id,
+                      num: param.contractNo,
+                      name: param.customerName,
+                      person: param.applicant,
+                    }
+                    renwuApi.updatePro(pro).then(res => {
+                      if (res.success) {
+                        ElMessage.success(res.msg)
+                      } else {
+                        ElMessage.warning(res.msg)
+                      }
 
-        // param.startDate = param.startDate ? param.startDate.replaceAll(".", "-") + " 08:30:00" : ""
-        // param.endDate = param.endDate ? param.endDate.replaceAll(".", "-") + " 17:30:00" : ""
-
-        if (param.contractNo) {
-          let fil = data.contractNoList.value.filter(f => {
-            return f.num == param.contractNo
-          })
-          if (fil && fil.length > 0) {
-            if (fil[0].num != param.contractNo || fil[0].name != param.customerName || fil[0].person != param.applicant) {
-              ElMessageBox.confirm('检测到合同内容发生变化，是否同步修改合同内容?', '提示',
-                  {
-                    confirmButtonText: '修改',
-                    cancelButtonText: '不修改',
-                    type: 'warning',
-                  }).then(() => {
+                    })
+                  }).catch(() => {
+                    ElMessage({
+                      type: 'info',
+                      message: 'canceled',
+                    })
+                  })
+                }
+              } else {
                 let pro = {
-                  id: fil[0].id,
                   num: param.contractNo,
                   name: param.customerName,
                   person: param.applicant,
                 }
-                renwuApi.updatePro(pro).then(res => {
-                  if (res.success){
-                    ElMessage.success(res.msg)
-                  }else{
-                    ElMessage.warning(res.msg)
-                  }
+                renwuApi.addPro(pro).then(res => {
 
                 })
-              }).catch(() => {
-                ElMessage({
-                  type: 'info',
-                  message: 'canceled',
-                })
+              }
+            }
+
+            if (param.id) {
+              renwuApi.update(param).then(res => {
+                ElMessage.success(res.msg)
+                data.form.value = {}
+                data.form.value.recipient = data.userInfo.value.username
+                content.emit('success', param)
+                content.emit('update:drawer', false)
+              }).finally(() => {
+                data.btnLoad.value = false
+                this.changeForm()
+                this.getNumDatas()
+              })
+            } else {
+              renwuApi.add(param).then(res => {
+                ElMessage.success(res.msg)
+                data.form.value = {}
+                data.form.value.recipient = data.userInfo.value.username
+                content.emit('success', param)
+                content.emit('update:drawer', false)
+              }).finally(() => {
+                data.btnLoad.value = false
+                this.changeForm()
+                this.getNumDatas()
               })
             }
           } else {
-            let pro = {
-              num: param.contractNo,
-              name: param.customerName,
-              person: param.applicant,
-            }
-            renwuApi.addPro(pro).then(res => {
-
-            })
+            ElMessage.warning("必填项未填写！")
           }
-        }
-
-        if (param.id) {
-          renwuApi.update(param).then(res => {
-            ElMessage.success(res.msg)
-            data.form.value = {}
-            data.form.value.recipient = data.userInfo.value.username
-            content.emit('success', param)
-            content.emit('update:drawer', false)
-          }).finally(() => {
-            data.btnLoad.value = false
-            this.changeForm()
-            this.getNumDatas()
-          })
-        } else {
-          renwuApi.add(param).then(res => {
-            ElMessage.success(res.msg)
-            data.form.value = {}
-            data.form.value.recipient = data.userInfo.value.username
-            content.emit('success', param)
-            content.emit('update:drawer', false)
-          }).finally(() => {
-            data.btnLoad.value = false
-            this.changeForm()
-            this.getNumDatas()
-          })
-        }
+        })
       },
-      clearClick(){
+      clearClick() {
         methods.clearForm()
         content.emit('update:drawer', false)
       },
@@ -262,15 +284,15 @@ export default {
         }
         this.changeForm()
       },
-      clearForm(){
+      clearForm() {
         data.form.value = {
-          recipient : data.userInfo.value.username
+          recipient: data.userInfo.value.username
         }
         methods.changeForm()
       },
       changeForm() {
         if (data.form.value) {
-          if(!data.form.value.recipient){
+          if (!data.form.value.recipient) {
             data.form.value.recipient = data.userInfo.value.username
           }
 
@@ -282,8 +304,8 @@ export default {
             data.form.value.startDate = data.form.value.dateTime[0]
             data.form.value.endDate = data.form.value.dateTime[1]
 
-            data.showData.value += data.form.value.startDate ? " " + data.form.value.startDate.substring(0,10).replaceAll("-",".") : ""
-            data.showData.value += data.form.value.endDate ? "-" + data.form.value.endDate.substring(0,10).replaceAll("-",".") : ""
+            data.showData.value += data.form.value.startDate ? " " + data.form.value.startDate.substring(0, 10).replaceAll("-", ".") : ""
+            data.showData.value += data.form.value.endDate ? "-" + data.form.value.endDate.substring(0, 10).replaceAll("-", ".") : ""
           } else {
             data.form.value.startDate = undefined
             data.form.value.endDate = undefined
@@ -325,6 +347,7 @@ export default {
 
     return {
       router,
+      formRef,
       ...data,
       ...methods
     }
