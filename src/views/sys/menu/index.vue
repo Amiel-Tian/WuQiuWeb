@@ -24,6 +24,9 @@
             ref="treeRef"
             :data="treeData"
             :props="treeProps"
+            node-key="id"
+            highlight-current
+            :current-node-key="currentTreeeNodeKey"
             @node-click="treeeNodeClick"
             :filter-node-method="filterNode"
         >
@@ -182,6 +185,8 @@ export default {
       treeWidth: ref(4),
       treeInput: ref(""),
       treeData: ref([]),
+      currentTreeeNode: ref({}),
+      currentTreeeNodeKey: ref(""),
       treeProps: {
         children: 'children',
         label: 'name',
@@ -220,6 +225,7 @@ export default {
       treeeNodeClick(datas, node, TreeNode, e) {
         data.form.value = datas
         data.searchForm.value.parentId = datas.id
+        data.currentTreeeNode.value = datas
         methods.getTableData();
       },
       /*
@@ -254,8 +260,15 @@ export default {
         methods.getTableData();
       },
       refreshTreeClick() {
-        data.form.value = {}
-        data.searchForm.value = {}
+        let node = data.currentTreeeNode.value;
+        if (node){
+          data.form.value = node
+          data.searchForm.value.parentId = node.id
+          data.currentTreeeNodeKey.value = node.id
+        }else{
+          data.form.value = {}
+          data.searchForm.value = {}
+        }
 
         methods.getNav();
         methods.getTableData();

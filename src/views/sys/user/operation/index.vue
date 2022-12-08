@@ -13,15 +13,15 @@
         关闭
       </el-button>
     </template>
-    <el-form :model="form" label-width="120px" :disabled = "btnLoad">
+    <el-form ref="formRef" :model="form" label-width="120px" :rules="rules" :disabled="btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
-          <el-form-item label="用户名">
+          <el-form-item label="用户名" prop="username">
             <el-input v-model="form.username" placeholder="请选择用户名" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="登录名">
+          <el-form-item label="登录名" prop="loginname">
             <el-input v-model="form.loginname" placeholder="请输入登录名" clearable/>
           </el-form-item>
         </el-col>
@@ -41,14 +41,14 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="状态">
+          <el-form-item label="状态" prop="status">
             <el-radio-group v-model="form.status">
-              <el-radio v-for="item in statusList" :label="item.value" >{{ item.name }}</el-radio>
+              <el-radio v-for="item in statusList" :label="item.value">{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="权限">
+          <el-form-item label="权限" prop="roleIdList">
             <el-select v-model="form.roleIdList" multiple placeholder="请选择权限" style="width: 100%;" clearable>
               <el-option
                   v-for="item in treeList"
@@ -61,7 +61,7 @@
         </el-col>
         <el-col :span="24">
           <el-row justify="end">
-            <el-button @click="subment" :loading="btnLoad">保存</el-button>
+            <el-button @click="subment()" :loading="btnLoad">保存</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -79,18 +79,49 @@ import roleApi from "@/api/sys/role"
 
 export default {
   name: "index",
-  props: ["id","drawer"],
-  emits: [ "update:drawer", "success"],
+  props: ["id", "drawer"],
+  emits: ["update:drawer", "success"],
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const formRef = ref()
     const {proxy} = getCurrentInstance();
     let data = {
       iocnDrawer: ref(false),
       treeList: ref([]),
       form: ref({}),
-      btnLoad : ref(false),
-      statusList : ref([]),
+      btnLoad: ref(false),
+      statusList: ref([]),
+      rules: {
+        username: [
+          {
+            required: true,
+            message: '请输入用户名',
+            trigger: 'change',
+          },
+        ],
+        loginname: [
+          {
+            required: true,
+            message: '请输入登录名',
+            trigger: 'change',
+          },
+        ],
+        status: [
+          {
+            required: true,
+            message: '请选择状态',
+            trigger: 'change',
+          },
+        ],
+        roleIdList: [
+          {
+            required: true,
+            message: '请选择权限',
+            trigger: 'change',
+          },
+        ],
+      },
     }
     //监听
     watch(() => [props.drawer], ([drawer]) => {
@@ -99,10 +130,10 @@ export default {
         if (props.id) {
           userApi.get(props.id).then(res => {
             data.form.value = res.data || {}
-            data.form.value.status =  data.form.value.status + ""
+            data.form.value.status = data.form.value.status + ""
             data.form.value.password = undefined
           })
-        }else{
+        } else {
           data.form.value = {}
           data.form.value.status = "1"
         }
@@ -114,45 +145,52 @@ export default {
 
     })
     let methods = {
-      getRole(){
+      getRole() {
         roleApi.datas().then(res => {
           data.treeList.value = res.data
         })
       },
-      loadDictList(){
+      loadDictList() {
         let res = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
         data.statusList.value = res
       },
-      subment(){
-        data.btnLoad.value = true
-        if (data.form.value.id){
-          userApi.update(data.form.value).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
+      subment() {
+        formRef.value.validate((valid, fields) => {
+          if (valid) {
+            data.btnLoad.value = true
+            if (data.form.value.id) {
+              userApi.update(data.form.value).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+                content.emit("success", {});
+                data.form.value = {}
+                data.btnLoad.value = false;
+              })
+            } else {
+              userApi.add(data.form.value).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+                content.emit("success", {});
+                data.form.value = {}
+                data.btnLoad.value = false;
+              })
             }
-            content.emit("success", {});
-            data.form.value = {}
-            data.btnLoad.value = false;
-          })
-        }else {
-          userApi.add(data.form.value).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
-            }
-            content.emit("success", {});
-            data.form.value = {}
-            data.btnLoad.value = false;
-          })
-        }
+          } else {
+            ElMessage.warning("必填项未填写！")
+          }
+        })
       },
     }
 
     return {
       router,
+      formRef,
       proxy,
       ...data,
       ...methods
