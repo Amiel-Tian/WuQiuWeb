@@ -5,7 +5,7 @@
       :show-close="false"
   >
     <template #header="{ close, titleId, titleClass }">
-      <h4 :id="titleId" :class="titleClass">{{form ? form.id ? form.dictName || '编辑' : '新增' : '新增' }}</h4>
+      <h4 :id="titleId" :class="titleClass">{{ form ? form.id ? form.dictName || '编辑' : '新增' : '新增' }}</h4>
       <el-button type="danger" @click="close">
         <el-icon class="el-icon--left">
           <CircleCloseFilled/>
@@ -38,15 +38,15 @@
       </el-row>
     </el-form>
     <el-divider content-position="left">添加字典项</el-divider>
-    <el-form :model="formData" label-width="100px" :disabled = "btnLoad">
+    <el-form ref="formRef" :rules="rules" :model="formData" label-width="100px" :disabled="btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
-              <el-form-item label="字典项名称">
-                <el-input v-model="formData.dictValue" placeholder="请输入字典项名称" clearable/>
-              </el-form-item>
+          <el-form-item label="字典项名称" prop="dictValue">
+            <el-input v-model="formData.dictValue" placeholder="请输入字典项名称" clearable/>
+          </el-form-item>
         </el-col>
         <el-col :span="5">
-          <el-form-item label="字典项编码">
+          <el-form-item label="字典项编码" prop="dictKey">
             <el-input v-model="formData.dictKey" placeholder="字典项编码" clearable/>
           </el-form-item>
         </el-col>
@@ -62,7 +62,10 @@
         </el-col>
         <el-col :span="4">
           <el-row justify="center">
-            <el-button :loading="btnLoad" type="primary" @click="subment()">{{ formData.id ? '保存修改' : '添加' }}</el-button>
+            <el-button :loading="btnLoad" type="primary" @click="subment()">{{
+                formData.id ? '保存修改' : '添加'
+              }}
+            </el-button>
             <el-button :loading="btnLoad" @click="">清空</el-button>
           </el-row>
         </el-col>
@@ -82,8 +85,9 @@
       </el-row>
     </el-row>
     <el-row>
-      <el-table v-loading="tableDataLoad" :data="tableData" @selection-change="handleSelectionChange" border stripe style="width: 100%">
-        <el-table-column type="selection" width="55" />
+      <el-table v-loading="tableDataLoad" :data="tableData" @selection-change="handleSelectionChange" border stripe
+                style="width: 100%">
+        <el-table-column type="selection" width="55"/>
         <el-table-column type="index" width="55" label="序号"/>
         <el-table-column prop="dictValue" label="字典项名" show-overflow-tooltip/>
         <el-table-column prop="dictKey" label="字典项编码" show-overflow-tooltip/>
@@ -94,7 +98,9 @@
         </el-table-column>
         <el-table-column prop="status" label="状态" show-overflow-tooltip>
           <template #default="scope">
-            <el-tag :type="scope.row.status == '0' ? 'info' : ''">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS,scope.row.status) }}</el-tag>
+            <el-tag :type="scope.row.status == '0' ? 'info' : ''">
+              {{ proxy.$tools.selectDictLabel(proxy.$appConfig.STATUS, scope.row.status) }}
+            </el-tag>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="操作">
@@ -146,13 +152,15 @@ import dictType from "@/api/sys/dictType";
 import dictData from "@/api/sys/dictData";
 import userApi from "@/api/sys/user";
 import roleApi from "@/api/sys/role";
+
 export default {
   name: "index",
-  props: ["id","drawer"],
-  emits: [ "update:drawer"],
+  props: ["id", "drawer"],
+  emits: ["update:drawer"],
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const formRef = ref()
     const {proxy} = getCurrentInstance();
     let data = {
       tableData: ref([]),
@@ -172,6 +180,22 @@ export default {
       form: ref({}),
       formData: ref({}),
       btnLoad: ref(false),
+      rules: {
+        dictValue: [
+          {
+            required: true,
+            message: '请输入字典项名',
+            trigger: 'change',
+          },
+        ],
+        dictKey: [
+          {
+            required: true,
+            message: '请输入字典项编码',
+            trigger: 'change',
+          },
+        ],
+      },
     }
 
     //监听
@@ -184,7 +208,7 @@ export default {
             data.searchForm.value.dictId = data.form.value.id || ""
             methods.getTableData()
           })
-        }else{
+        } else {
           data.form.value = {}
         }
       }
@@ -237,39 +261,48 @@ export default {
         })
       },
 
-      subment(){
-        data.btnLoad.value = true
-
-        let param = data.formData.value
-        if (param.id){
-          dictData.update(param).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
-            }
-            this.getTableData()
-            data.formData.value = {}
-            data.btnLoad.value = false
-          })
-        }else {
-          if (!param.status){
-            param.status = "1"
-          }
-          if (!param.dictId){
-            param.dictId = data.form.value.id
-          }
-          dictData.add(param).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
-            }
-            this.getTableData()
-            data.formData.value = {}
-            data.btnLoad.value = false
-          })
+      subment() {
+        if (!formRef) {
+          return
         }
+        formRef.value.validate((valid, fields) => {
+          if (valid) {
+            data.btnLoad.value = true
+
+            let param = data.formData.value
+            if (param.id) {
+              dictData.update(param).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+                this.getTableData()
+                data.formData.value = {}
+                data.btnLoad.value = false
+              })
+            } else {
+              if (!param.status) {
+                param.status = "1"
+              }
+              if (!param.dictId) {
+                param.dictId = data.form.value.id
+              }
+              dictData.add(param).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+                this.getTableData()
+                data.formData.value = {}
+                data.btnLoad.value = false
+              })
+            }
+          } else {
+            ElMessage.warning("必填项未填写！")
+          }
+        })
       },
       /*
       * 确认删除
@@ -277,9 +310,9 @@ export default {
       confirmDelete(row) {
         let param = row
         dictData.remove(param).then(res => {
-          if (res.success){
+          if (res.success) {
             ElMessage.success(res.msg)
-          }else{
+          } else {
             ElMessage.warning(res.msg)
           }
           this.getTableData()
@@ -302,12 +335,13 @@ export default {
           this.getTableData()
         })
       },
-      editClick(row){
+      editClick(row) {
         data.formData.value = row
       },
     }
     return {
       router,
+      formRef,
       proxy,
       ...data,
       ...methods

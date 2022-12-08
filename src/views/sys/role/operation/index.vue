@@ -13,27 +13,27 @@
         关闭
       </el-button>
     </template>
-    <el-form :model="form" label-width="120px" :disabled = "btnLoad">
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" :disabled="btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
-          <el-form-item label="角色名">
+          <el-form-item label="角色名" prop="name">
             <el-input v-model="form.name" placeholder="请输入角色名" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="角色编码">
+          <el-form-item label="角色编码" prop="code">
             <el-input v-model="form.code" placeholder="角色编码" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="状态">
+          <el-form-item label="状态" prop="status">
             <el-radio-group v-model="form.status">
-              <el-radio v-for="item in statusList" :label="item.value" >{{ item.name }}</el-radio>
+              <el-radio v-for="item in statusList" :label="item.value">{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="角色授权">
+          <el-form-item label="角色授权" prop="menuIdList">
             <el-cascader
                 style="width: 100%;"
                 v-model="form.menuIdList"
@@ -64,25 +64,56 @@ import menuApi from "@/api/sys/menu"
 
 export default {
   name: "index",
-  props: ["id","drawer"],
-  emits: [ "update:drawer", "success"],
+  props: ["id", "drawer"],
+  emits: ["update:drawer", "success"],
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const formRef = ref()
     const {proxy} = getCurrentInstance();
     let data = {
       iocnDrawer: ref(false),
       treeList: ref([]),
       form: ref({}),
-      btnLoad : ref(false),
-      statusList : ref([]),
+      btnLoad: ref(false),
+      statusList: ref([]),
       cascaderProps: {
         children: "children",
         label: "name",
         value: "id",
-        checkStrictly : true,
-        emitPath : false,
+        checkStrictly: true,
+        emitPath: false,
         multiple: true,
+      },
+      rules: {
+        name: [
+          {
+            required: true,
+            message: '请输入角色名',
+            trigger: 'change',
+          },
+        ],
+        code: [
+          {
+            required: true,
+            message: '请输入角色编码',
+            trigger: 'change',
+          },
+        ],
+        status: [
+          {
+            required: true,
+            message: '请选择状态',
+            trigger: 'change',
+          },
+        ],
+        menuIdList: [
+          {
+            required: true,
+            message: '请选择菜单',
+            trigger: 'change',
+          },
+        ],
       },
     }
     //监听
@@ -92,9 +123,9 @@ export default {
         if (props.id) {
           roleApi.get(props.id).then(res => {
             data.form.value = res.data || {}
-            data.form.value.status =  data.form.value.status + ""
+            data.form.value.status = data.form.value.status + ""
           })
-        }else{
+        } else {
           data.form.value = {}
           data.form.value.status = "1"
         }
@@ -111,42 +142,52 @@ export default {
           data.treeList.value = res.data.nav
         })
       },
-      loadDictList(){
+      loadDictList() {
         let res = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
         data.statusList.value = res
       },
-      subment(){
-        data.btnLoad.value = true
-        if (data.form.value.id){
-          roleApi.update(data.form.value).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
-            }
-
-            content.emit("success", {});
-            data.form.value = {}
-            data.btnLoad.value = false
-          })
-        }else {
-          roleApi.add(data.form.value).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
-            }
-
-            content.emit("success", {});
-            data.form.value = {}
-            data.btnLoad.value = false
-          })
+      subment() {
+        if (!formRef){
+          return
         }
+        formRef.value.validate((valid, fields) => {
+          if (valid) {
+            data.btnLoad.value = true
+            if (data.form.value.id) {
+              roleApi.update(data.form.value).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+
+                content.emit("success", {});
+                data.form.value = {}
+                data.btnLoad.value = false
+              })
+            } else {
+              roleApi.add(data.form.value).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+
+                content.emit("success", {});
+                data.form.value = {}
+                data.btnLoad.value = false
+              })
+            }
+          } else {
+            ElMessage.warning("必填项未填写！")
+          }
+        })
       },
     }
 
     return {
       router,
+      formRef,
       proxy,
       ...data,
       ...methods

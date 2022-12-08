@@ -13,7 +13,7 @@
         关闭
       </el-button>
     </template>
-    <el-form :model="form" label-width="120px" :disabled = "btnLoad">
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" :disabled="btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
           <el-form-item label="上级菜单">
@@ -27,7 +27,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="24">
-          <el-form-item label="菜单名称">
+          <el-form-item label="菜单名称" prop="name">
             <el-input v-model="form.name" placeholder="请输入菜单名称" clearable/>
           </el-form-item>
         </el-col>
@@ -37,14 +37,14 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="授权编码">
+          <el-form-item label="授权编码" prop="perms">
             <el-input v-model="form.perms" placeholder="请输入授权编码" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="菜单类型">
+          <el-form-item label="菜单类型" prop="type">
             <el-radio-group v-model="form.type">
-              <el-radio v-for="item in menuTypeList" :label="item.value" >{{ item.name }}</el-radio>
+              <el-radio v-for="item in menuTypeList" :label="item.value">{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -59,7 +59,7 @@
                 v-model="iocnDrawer"
                 :show-close="true"
             >
-              <div >
+              <div>
                 <icon-show v-model:icon="form.icon" @success="iocnDrawer = false"></icon-show>
               </div>
             </el-drawer>
@@ -71,9 +71,9 @@
           </el-form-item>
         </el-col>
         <el-col :span="12">
-          <el-form-item label="状态">
+          <el-form-item label="状态" prop="status">
             <el-radio-group v-model="form.status">
-              <el-radio v-for="item in statusList" :label="item.value" >{{ item.name }}</el-radio>
+              <el-radio v-for="item in statusList" :label="item.value">{{ item.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
         </el-col>
@@ -93,40 +93,72 @@ import {useRouter} from "vue-router";
 
 import menuApi from "@/api/sys/menu"
 import {ElMessage} from "element-plus";
+
 export default {
   name: "index",
   props: ["id", "drawer", "parentId"],
-  emits: ["update:drawer","success"],
+  emits: ["update:drawer", "success"],
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const formRef = ref()
     const {proxy} = getCurrentInstance();
     let data = {
       form: ref({}),
       treeData: ref([]),
-      btnLoad : ref(false),
-      statusList : ref([]),
-      menuTypeList : ref([]),
+      btnLoad: ref(false),
+      statusList: ref([]),
+      menuTypeList: ref([]),
       cascaderProps: {
         children: "children",
         label: "name",
         value: "id",
-        checkStrictly : true,
-        emitPath : false,
+        checkStrictly: true,
+        emitPath: false,
       },
-      iocnDrawer: ref(false)
+      iocnDrawer: ref(false),
+      rules: {
+        name: [
+          {
+            required: true,
+            message: '请输入菜单名',
+            trigger: 'change',
+          },
+        ],
+        perms: [
+          {
+            required: true,
+            message: '请输入授权编码',
+            trigger: 'change',
+          },
+        ],
+        status: [
+          {
+            required: true,
+            message: '请选择状态',
+            trigger: 'change',
+          },
+        ],
+        type: [
+          {
+            required: true,
+            message: '请选择菜单类型',
+            trigger: 'change',
+          },
+        ],
+      },
     }
     //监听
     watch(() => [props.drawer], ([drawer]) => {
       content.emit('update:drawer', drawer)
-      if (drawer){
+      if (drawer) {
         if (props.id) {
           menuApi.get(props.id).then(res => {
             data.form.value = res.data || {}
-              data.form.value.status =  data.form.value.status + ""
-              data.form.value.type =  data.form.value.type + ""
+            data.form.value.status = data.form.value.status + ""
+            data.form.value.type = data.form.value.type + ""
           })
-        }else {
+        } else {
           data.form.value = {}
           data.form.value.status = "1"
         }
@@ -147,48 +179,58 @@ export default {
           data.treeData.value = res.data.nav
         })
       },
-      loadDictList(){
+      loadDictList() {
         let res = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
         data.statusList.value = res
         let menus = proxy.$tools.selectDict(proxy.$appConfig.MENUTYPE)
         data.menuTypeList.value = menus
       },
-      subment(){
-        data.btnLoad.value = true
-        let param = data.form.value
-        if (!param.parentId){
-          param.parentId = "0"
+      subment() {
+        if (!formRef) {
+          return
         }
-        if (param.id){
-          menuApi.update(param).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
+        formRef.value.validate((valid, fields) => {
+          if (valid) {
+            data.btnLoad.value = true
+            let param = data.form.value
+            if (!param.parentId) {
+              param.parentId = "0"
             }
-            content.emit("success", {});
-            data.form.value = {}
-            data.btnLoad.value = false;
-          })
-        }else{
-          menuApi.add(param).then(res => {
-            if (res.success){
-              ElMessage.success(res.msg)
-            }else {
-              ElMessage.error(res.msg)
-            }
-            content.emit("success", {});
+            if (param.id) {
+              menuApi.update(param).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+                content.emit("success", {});
+                data.form.value = {}
+                data.btnLoad.value = false;
+              })
+            } else {
+              menuApi.add(param).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                } else {
+                  ElMessage.error(res.msg)
+                }
+                content.emit("success", {});
 
-            data.btnLoad.value = false;
-          })
-        }
-        data.form.value = {}
-        content.emit("success", {});
+                data.btnLoad.value = false;
+              })
+            }
+            data.form.value = {}
+            content.emit("success", {});
+          } else {
+            ElMessage.warning("必填项未填写！")
+          }
+        })
       }
     }
 
     return {
       router,
+      formRef,
       proxy,
       ...data,
       ...methods
