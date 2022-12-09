@@ -1,17 +1,17 @@
 <template>
   <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
-    <el-form :model="userInfo" label-width="120px" :disabled="loading">
+    <el-form ref="formRef" :rules="rules" :model="userInfo" label-width="120px" :disabled="loading">
       <el-row justify="space-between">
         <el-col :span="12">
           <el-row>
             <el-col>
-              <el-form-item label="用户名">
+              <el-form-item label="用户名" prop="username">
                 <el-input v-model="userInfo.username" placeholder="请输入用户名" clearable/>
               </el-form-item>
             </el-col>
             <el-col>
-              <el-form-item label="登录名">
+              <el-form-item label="登录名" prop="loginname">
                 <el-input v-model="userInfo.loginname" placeholder="请输入登录名" clearable/>
               </el-form-item>
             </el-col>
@@ -63,6 +63,7 @@ export default {
   components: {},
   setup(props, content) {
     const router = useRouter()
+    const formRef = ref()
     const {proxy} = getCurrentInstance();
     let data = {
       userInfo: ref({
@@ -70,6 +71,22 @@ export default {
       }),
       loading: ref(false),
       form: ref({}),
+      rules: {
+        username: [
+          {
+            required: true,
+            message: '请输入用户名',
+            trigger: 'change',
+          },
+        ],
+        loginname: [
+          {
+            required: true,
+            message: '请输入用户名密码',
+            trigger: 'change',
+          },
+        ],
+      },
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -89,39 +106,49 @@ export default {
         })
       },
       subment() {
-        ElMessageBox.prompt('请输入当前登录密码', '提示',
-            {
-              confirmButtonText: '确定',
-              cancelButtonText: '取消',
-              inputType: "password",
-              type: 'info',
-              // inputPattern:/s/,
-              // inputErrorMessage: '不能为空',
-            }
-        ).then(({value}) => {
-          let param = data.userInfo.value
-          param.passwordVer = value
+        if (!formRef) {
+          return
+        }
+        formRef.value.validate((valid, fields) => {
+          if (valid) {
+            ElMessageBox.prompt('请输入当前登录密码', '提示',
+                {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  inputType: "password",
+                  type: 'info',
+                  // inputPattern:/s/,
+                  // inputErrorMessage: '不能为空',
+                }
+            ).then(({value}) => {
+              let param = data.userInfo.value
+              param.passwordVer = value
 
-          userApi.updateInfo(param).then(res => {
-            if (res.success) {
-              ElMessage.success(res.msg)
-              this.getUserInfo()
-              if (param.password) {
-                userApi.logout()
-              }
-            } else {
-              ElMessage.warning(res.msg)
-            }
-          })
+              userApi.updateInfo(param).then(res => {
+                if (res.success) {
+                  ElMessage.success(res.msg)
+                  this.getUserInfo()
+                  if (param.password) {
+                    userApi.logout()
+                  }
+                } else {
+                  ElMessage.warning(res.msg)
+                }
+              })
 
-        }).catch(() => {
-          ElMessage.info("取消修改")
+            }).catch(() => {
+              ElMessage.info("取消修改")
+            })
+          } else {
+            ElMessage.warning("必填项未填写！")
+          }
         })
       }
     }
 
     return {
       proxy,
+      formRef,
       router,
       ...data,
       ...methods

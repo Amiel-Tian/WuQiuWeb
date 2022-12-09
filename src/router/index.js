@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import login from "@/views/login";
 import home from "@/views/index";
 import sys from "@/router/sys/index";
+import markdown from "@/router/markdown"
 import renwushu from "@/router/model/renwushu";
 
 
@@ -17,6 +18,7 @@ const routes = [
         component : home,
         children:[
             ...sys,
+            ...markdown,
             ...renwushu
         ],
     },
