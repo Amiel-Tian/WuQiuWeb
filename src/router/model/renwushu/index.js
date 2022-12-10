@@ -8,5 +8,14 @@ export default [
             index: () =>
                 import ('@/views/model/renwushu/index')
         }
+    }, {
+        name: 'business/index',
+        path: '/business/index',
+        meta: { title: '业务信息', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/model/business/index')
+        }
     },
 ]
