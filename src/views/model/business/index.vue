@@ -20,7 +20,7 @@
               <Refresh/>
             </el-icon>
           </el-tooltip>
-          <el-button link type="primary" @click="addClick()">新增</el-button>
+          <el-button v-permission="['sys:business:add']" link type="primary" @click="addClick()">新增</el-button>
         </el-row>
         <el-tree
             ref="treeRef"
@@ -50,12 +50,12 @@
                     创建于{{ form.createDate }}，最后修改时间{{ form.updateDate }}
                   </el-col>
                   <el-col :span="4">
-                    <el-button link type="primary" @click="editClick(form)">编辑</el-button>
+                    <el-button link v-permission="['sys:business:update']" type="primary" @click="editClick(form)">编辑</el-button>
                     <el-popconfirm
                         @confirm="confirmDelete(form)"
                         title="确认删除?">
                       <template #reference>
-                        <el-button v-permission="['sys:menu:delete']" link type="danger" @click="">删除</el-button>
+                        <el-button v-permission="['sys:business:delete']" link type="danger" @click="">删除</el-button>
                       </template>
                     </el-popconfirm>
                   </el-col>
