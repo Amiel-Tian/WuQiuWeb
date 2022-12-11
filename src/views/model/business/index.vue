@@ -35,6 +35,9 @@
           <template #default="{ node, data }">
             <el-row justify="space-between" style="font-size: 1rem">
               <div>{{ node.label }}</div>
+              <div style="padding:0 1.5rem">
+                <el-tag size="small">{{ data.sort }}</el-tag>
+              </div>
             </el-row>
           </template>
         </el-tree>
@@ -50,7 +53,8 @@
                     创建于{{ form.createDate }}，最后修改时间{{ form.updateDate }}
                   </el-col>
                   <el-col :span="4">
-                    <el-button link v-permission="['sys:business:update']" type="primary" @click="editClick(form)">编辑</el-button>
+                    <el-button link v-permission="['sys:business:update']" type="primary" @click="editClick(form)">编辑
+                    </el-button>
                     <el-popconfirm
                         @confirm="confirmDelete(form)"
                         title="确认删除?">
@@ -82,14 +86,13 @@
                 </el-col>
                 <el-col :span="6">
                   <el-form-item label="" prop="parentId">
-                    <el-select v-model="form.parentId" filterable placeholder="请选择父项" style="width: 100%;" clearable>
-                      <el-option
-                          v-for="item in treeData"
-                          :key="item.id"
-                          :label="item.name"
-                          :value="item.id"
-                      />
-                    </el-select>
+                    <el-cascader
+                        style="width: 100%;"
+                        v-model="form.parentId"
+                        :options="treeData"
+                        :props="cascaderProps"
+                        clearable
+                    />
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
@@ -141,7 +144,13 @@ export default {
     let data = {
       menuWidth: ref(12),
       isOpen: ref(true),
-
+      cascaderProps: {
+        children: "children",
+        label: "name",
+        value: "id",
+        checkStrictly: true,
+        emitPath: false,
+      },
       treeWidth: ref(4),
       treeInput: ref(""),
       treeData: ref([]),
@@ -214,9 +223,27 @@ export default {
     * 树型控件点击事件
     * */
       treeeNodeClick(datas, node, TreeNode, e) {
-        data.edit.value = false
-        data.searchForm.value.id = datas.id
-        methods.get(datas.id);
+        if (data.form.value && data.form.value.show && data.edit.value) {
+          ElMessageBox.confirm(
+              '内容未保存，是否退出?',
+              '警告',
+              {
+                confirmButtonText: '确定',
+                cancelButtonText: '继续编辑',
+                type: 'warning',
+              }
+          ).then(() => {
+            data.edit.value = false
+            data.searchForm.value.id = datas.id
+            methods.get(datas.id);
+          }).catch(() => {
+
+          })
+        } else {
+          data.edit.value = false
+          data.searchForm.value.id = datas.id
+          methods.get(datas.id);
+        }
       },
       /*
       * 数过滤函数
@@ -229,14 +256,35 @@ export default {
         businessInfoApi.get(id).then(res => {
           data.form.value = res.data
           data.form.value.show = true
+          if (!data.form.value.content) {
+            data.form.value.content = ""
+          }
           data.currentTreeeNode.value = res.data
         })
       },
       /*新增按钮*/
       addClick() {
-        data.form.value = {}
-        data.form.value.show = true
-        data.edit.value = true
+        if (data.form.value && data.form.value.show && data.edit.value) {
+          ElMessageBox.confirm(
+              '内容未保存，是否退出?',
+              '警告',
+              {
+                confirmButtonText: '确定',
+                cancelButtonText: '继续编辑',
+                type: 'warning',
+              }
+          ).then(() => {
+            data.form.value = {}
+            data.form.value.show = true
+            data.edit.value = true
+          }).catch(() => {
+
+          })
+        } else {
+          data.form.value = {}
+          data.form.value.show = true
+          data.edit.value = true
+        }
       },
       /*编辑按钮*/
       editClick(info) {
@@ -250,9 +298,9 @@ export default {
       confirmDelete(row) {
         let param = row
         businessInfoApi.remove(param).then(res => {
-          if (res.success){
+          if (res.success) {
             ElMessage.success(res.msg)
-          }else{
+          } else {
             ElMessage.warning(res.msg)
           }
           data.currentTreeeNode.value = undefined
@@ -280,6 +328,7 @@ export default {
                 } else {
                   ElMessage.error(res.msg)
                 }
+                methods.refreshTreeClick()
                 methods.treeeNodeClick(param)
                 data.btnLoad.value = false;
               })
