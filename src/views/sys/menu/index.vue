@@ -26,7 +26,6 @@
             :props="treeProps"
             node-key="id"
             highlight-current
-            :current-node-key="currentTreeeNodeKey"
             @node-click="treeeNodeClick"
             :filter-node-method="filterNode"
         >
@@ -289,10 +288,15 @@ export default {
         })
       },
 
-      getNav() {
-        menuApi.getNavAll().then(res => {
+      async getNav() {
+        await menuApi.getNavAll().then(res => {
           data.treeData.value = res.data.nav
         })
+
+        let key = data.currentTreeeNodeKey.value;
+        if (key) {
+          treeRef.value.setCurrentKey(key, true)
+        }
       },
 
       /*
@@ -306,6 +310,7 @@ export default {
           }else{
             ElMessage.warning(res.msg)
           }
+          data.currentTreeeNode.value = undefined
           this.refreshTreeClick()
         })
       },
