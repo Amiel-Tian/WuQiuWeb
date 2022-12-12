@@ -28,6 +28,7 @@
             :props="treeProps"
             node-key="id"
             highlight-current
+            :expand-on-click-node="false"
             :current-node-key="currentTreeeNodeKey"
             @node-click="treeeNodeClick"
             :filter-node-method="filterNode"
@@ -142,7 +143,7 @@ export default {
     const formRef = ref()
     const treeRef = ref()
     let data = {
-      menuWidth: ref(12),
+      menuWidth: ref(16.6),
       isOpen: ref(true),
       cascaderProps: {
         children: "children",
@@ -228,7 +229,7 @@ export default {
               '内容未保存，是否退出?',
               '警告',
               {
-                confirmButtonText: '确定',
+                confirmButtonText: '退出',
                 cancelButtonText: '继续编辑',
                 type: 'warning',
               }
