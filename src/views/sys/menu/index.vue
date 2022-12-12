@@ -26,6 +26,7 @@
             :props="treeProps"
             node-key="id"
             highlight-current
+            :expand-on-click-node="false"
             @node-click="treeeNodeClick"
             :filter-node-method="filterNode"
         >

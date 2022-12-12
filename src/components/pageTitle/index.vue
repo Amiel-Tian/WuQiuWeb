@@ -51,9 +51,9 @@ export default {
 .page-title {
   z-index: 99999;
   color: var(--el-menu-text-color);
-  background-color: #f9f9f9;
+  background-color: #FFF;
   border-bottom: 1px solid #e4e7ed;
-  padding: 1rem;
+  padding: .5rem 1rem;
   display: flex;
   margin-bottom: 0.1rem;
 
