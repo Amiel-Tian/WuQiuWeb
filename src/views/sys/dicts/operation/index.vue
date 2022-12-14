@@ -68,6 +68,7 @@ import {ElMessage} from "element-plus";
 
 import dictType from "@/api/sys/dictType";
 import dictData from "@/api/sys/dictData";
+import dictTypeApi from "@/api/sys/dictType";
 
 export default {
   name: "index",
@@ -170,6 +171,9 @@ export default {
                 content.emit("success", {});
                 data.form.value = {}
                 data.btnLoad.value = false
+                dictTypeApi.getTreeDict().then(resdict => {
+                  sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
+                })
               })
             } else {
               dictType.add(data.form.value).then(res => {
@@ -182,6 +186,9 @@ export default {
                 content.emit("success", {});
                 data.form.value = {}
                 data.btnLoad.value = false
+                dictTypeApi.getTreeDict().then(resdict => {
+                  sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
+                })
               })
             }
           } else {

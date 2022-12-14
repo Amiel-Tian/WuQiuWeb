@@ -33,7 +33,7 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="菜单地址">
-            <el-input v-model="form.path" placeholder="请输入菜单地址" clearable/>
+            <el-input v-model="form.path" @input="pathInput" placeholder="请输入菜单地址" clearable/>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -185,6 +185,15 @@ export default {
         let menus = proxy.$tools.selectDict(proxy.$appConfig.MENUTYPE)
         data.menuTypeList.value = menus
       },
+      pathInput(value) {
+        if (value) {
+          let v = value.replaceAll("/",":")
+          if (v.indexOf(":") == 0){
+            v = v.substring(1)
+          }
+        data.form.value.perms = v
+        }
+      },
       subment() {
         if (!formRef) {
           return
@@ -206,6 +215,9 @@ export default {
                 content.emit("success", {});
                 data.form.value = {}
                 data.btnLoad.value = false;
+                menuApi.getNav().then(resnav => {
+                  sessionStorage.setItem('permission', resnav.data.authoritys)
+                })
               })
             } else {
               menuApi.add(param).then(res => {
@@ -217,6 +229,10 @@ export default {
                 content.emit("success", {});
 
                 data.btnLoad.value = false;
+
+                menuApi.getNav().then(resnav => {
+                  sessionStorage.setItem('permission', resnav.data.authoritys)
+                })
               })
             }
             data.form.value = {}

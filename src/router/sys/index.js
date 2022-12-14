@@ -69,4 +69,14 @@ export default [
                 import ('@/views/sys/dicts')
         }
     },
+    {
+        name: 'components/iconShow',
+        path: '/components/iconShow',
+        meta: { title: '图标', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/components/iconShow')
+        }
+    },
 ]

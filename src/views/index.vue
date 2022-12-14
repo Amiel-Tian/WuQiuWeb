@@ -44,7 +44,7 @@
 
       <el-main>
 <!--        <el-tabs-->
-<!--            v-model="editableTabsValue"-->
+<!--            v-modules="editableTabsValue"-->
 <!--            type="card"-->
 <!--            class="demo-tabs"-->
 <!--            closable-->
