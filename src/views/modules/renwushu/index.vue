@@ -78,8 +78,8 @@ import {useRouter} from "vue-router";
 import userApi from "@/api/sys/user";
 import {ElMessage} from "element-plus";
 
-import operation from "@/views/model/renwushu/operation"
-import renwuApi from "@/api/model/renwu";
+import operation from "@/views/modules/renwushu/operation"
+import renwuApi from "@/api/modules/renwu";
 import useClipboard from "vue-clipboard3";
 export default {
   name: "index",

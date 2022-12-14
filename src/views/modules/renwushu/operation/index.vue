@@ -105,7 +105,7 @@ import {useRouter} from "vue-router";
 import userApi from "@/api/sys/user";
 import {ElMessage, ElMessageBox} from "element-plus";
 
-import renwuApi from "@/api/model/renwu";
+import renwuApi from "@/api/modules/renwu";
 import tool from "@/utils/model"
 
 export default {

@@ -5,7 +5,7 @@
   >
     <div class="box">
       <div class="menu" :style="{width: isOpen ? menuWidth + '%' : '0',}">
-        <!--        <el-input placeholder="输入搜索" v-model="treeInput" clearable >-->
+        <!--        <el-input placeholder="输入搜索" v-modules="treeInput" clearable >-->
         <!--          <template #append>-->
         <!--            <el-button icon="Search" @click="treeSearch"/>-->
         <!--          </template>-->
@@ -129,7 +129,7 @@ import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {ElMessage, ElMessageBox} from 'element-plus';
 import {useRouter} from "vue-router";
 
-import businessInfoApi from "@/api/model/businessInfo";
+import businessInfoApi from "@/api/modules/businessInfo";
 import menuApi from "@/api/sys/menu";
 
 export default {

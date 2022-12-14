@@ -3,7 +3,7 @@ import login from "@/views/login";
 import home from "@/views/index";
 import sys from "@/router/sys/index";
 import markdown from "@/router/markdown"
-import renwushu from "@/router/model/renwushu";
+import renwushu from "@/router/modules/renwushu";
 
 
 const routes = [
