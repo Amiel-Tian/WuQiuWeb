@@ -15,6 +15,7 @@
 import * as ElIcons from '@element-plus/icons'
 import {reactive, ref, toRefs} from "vue";
 import {ElMessage, ElMessageBox} from 'element-plus';
+import useClipboard from "vue-clipboard3";
 
 export default {
   components: {
@@ -24,6 +25,8 @@ export default {
   props: ["icon"],
   emits: ["update:icon", "success"],
   setup(props, content) {
+
+    const { toClipboard } = useClipboard()
     const getData = () => {
       let icons = []
       for (const name in ElIcons) {
@@ -34,13 +37,20 @@ export default {
     const iconList = reactive({
       icons: getData()
     })
-    const iconClick = function (name) {
+    const iconClick = async function (name) {
       content.emit('update:icon', name)
       ElMessage.success("选择成功")
+      try {
+        await toClipboard(name)
+        ElMessage.success("复制成功");
+      } catch (e) {
+        ElMessage.error("复制失败" + e);
+      }
       content.emit('success', name)
     }
     return {
       iconClick,
+      toClipboard,
       ...toRefs(iconList)
     }
   }

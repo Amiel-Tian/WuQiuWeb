@@ -37,7 +37,7 @@
         </el-col>
       </el-row>
     </el-form>
-    <el-divider content-position="left">添加字典项</el-divider>
+    <el-divider content-position="left">{{edit? "编辑字典项" : "添加字典项"}}</el-divider>
     <el-form ref="formRef" :rules="rules" :model="formData" label-width="100px" :disabled="btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="5">
@@ -62,8 +62,12 @@
         </el-col>
         <el-col :span="4">
           <el-row justify="center">
-            <el-button :loading="btnLoad" type="primary" @click="subment()">{{
-                formData.id ? '保存修改' : '添加'
+            <el-button v-permission="['sys:dictData:update']" v-if="edit" :loading="btnLoad" type="primary" @click="subment(edit)">{{
+                '保存修改'
+              }}
+            </el-button>
+            <el-button v-permission="['sys:dictData:add']" v-if="!edit" :loading="btnLoad" type="primary" @click="subment(edit)">{{
+                '添加'
               }}
             </el-button>
             <el-button :loading="btnLoad" @click="">清空</el-button>
@@ -105,12 +109,12 @@
         </el-table-column>
         <el-table-column fixed="right" label="操作">
           <template #default="scope">
-            <el-button v-permission="['sys:user:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
+            <el-button v-permission="['sys:dictData:update']" size="small" @click="editClick(scope.row)">编辑</el-button>
             <el-popconfirm
                 @confirm="confirmStatus(scope.row)"
                 title="是否更改状态?">
               <template #reference>
-                <el-button v-permission="['sys:role:status']" size="small"
+                <el-button v-permission="['sys:dictData:status']" size="small"
                            :type="scope.row.status == '1' ? 'warning' : 'primary'" @click="">
                   {{ scope.row.status == '1' ? '停用' : '启用' }}
                 </el-button>
@@ -120,7 +124,7 @@
                 @confirm="confirmDelete(scope.row)"
                 title="确认删除?">
               <template #reference>
-                <el-button v-permission="['sys:user:delete']" size="small" type="danger" @click="">删除</el-button>
+                <el-button v-permission="['sys:dictData:delete']" size="small" type="danger" @click="">删除</el-button>
               </template>
             </el-popconfirm>
           </template>
@@ -152,6 +156,7 @@ import dictType from "@/api/sys/dictType";
 import dictData from "@/api/sys/dictData";
 import userApi from "@/api/sys/user";
 import roleApi from "@/api/sys/role";
+import dictTypeApi from "@/api/sys/dictType";
 
 export default {
   name: "index",
@@ -166,6 +171,7 @@ export default {
       tableData: ref([]),
       tableSelect: ref([]),
       tableDataLoad: ref(false),
+      edit: ref(false),
       page: ref({
         small: true, //是否小型
         onepage: true, //是否一页不显示
@@ -261,7 +267,7 @@ export default {
         })
       },
 
-      subment() {
+      subment(flag) {
         if (!formRef) {
           return
         }
@@ -270,7 +276,7 @@ export default {
             data.btnLoad.value = true
 
             let param = data.formData.value
-            if (param.id) {
+            if (param.id && flag) {
               dictData.update(param).then(res => {
                 if (res.success) {
                   ElMessage.success(res.msg)
@@ -280,6 +286,10 @@ export default {
                 this.getTableData()
                 data.formData.value = {}
                 data.btnLoad.value = false
+                data.edit.value = false
+                dictTypeApi.getTreeDict().then(resdict => {
+                  sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
+                })
               })
             } else {
               if (!param.status) {
@@ -297,6 +307,9 @@ export default {
                 this.getTableData()
                 data.formData.value = {}
                 data.btnLoad.value = false
+                dictTypeApi.getTreeDict().then(resdict => {
+                  sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
+                })
               })
             }
           } else {
@@ -333,9 +346,13 @@ export default {
             ElMessage.warning(res.msg)
           }
           this.getTableData()
+          dictTypeApi.getTreeDict().then(resdict => {
+            sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
+          })
         })
       },
       editClick(row) {
+        data.edit.value = true
         data.formData.value = row
       },
     }

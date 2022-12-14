@@ -146,7 +146,9 @@ VMdPreview.use(createCopyCodePlugin());
 app.use(VMdEditor);
 // app.use(VueMarkdownEditor);
 app.use(VMdPreview);
-
+/*打印页面引入*/
+import print from 'vue3-print-nb'
+app.use(print)
 //权限控制
 import directive from "@/directive";
 
