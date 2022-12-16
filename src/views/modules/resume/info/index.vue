@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="background-color: #FFF">
     <el-row>
       <el-col style="position: relative" :span="24" :class="['row',  {'out-height':out}]"
               :style="windowWidth < 1000? 'height:14rem':''">
@@ -245,6 +245,7 @@ export default {
   }
 
   .image-box {
+    z-index: 99;
     position: absolute;
     bottom: -6rem;
     right: .5rem;

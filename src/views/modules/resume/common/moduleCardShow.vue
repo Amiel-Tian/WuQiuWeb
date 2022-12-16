@@ -22,8 +22,8 @@
     </el-row>
     <el-row v-if="info.content">
       <el-col>
-        <div v-html="info.content.replace(/\n/g, '<br />')">
-        </div>
+<!--        <div v-html="info.content.replace(/\n/g, '<br />')"></div>-->
+        <el-input type="textarea" disabled autosize v-model="info.content"></el-input>
       </el-col>
     </el-row>
   </div>
@@ -41,10 +41,7 @@ export default {
     let data = {}
     //监听
     watch(() => [props.info], ([newContent], [oldContent]) => {
-      console.log(newContent)
-      if (newContent && newContent.content) {
-        props.info.content = newContent.content.replace(/\n/g, '<br />')
-      }
+
     })
     onMounted(async () => {
     })
@@ -79,6 +76,17 @@ export default {
   }
   .link:hover{
     color: #409eff;
+  }
+
+  ::v-deep .el-textarea__inner {
+    cursor: default;
+    border: none;
+    box-shadow: 0 0 0 0px var(--el-input-border-color, var(--el-border-color)) inset;
+    resize: none;/* 这个是去掉 textarea 下面拉伸的那个标志，如下图 */
+    background: none;
+    padding: 0;
+    font-size: 16px;
+    color: #000;
   }
 }
 </style>

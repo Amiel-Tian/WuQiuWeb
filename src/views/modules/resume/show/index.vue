@@ -8,7 +8,10 @@
           <el-button @click="addClick()">添加模块</el-button>
         </el-col>
         <el-col :span="12">
-          <el-row justify="end" align="middle" style="margin-bottom: .5rem">
+          <el-row justify="end" align="middle" :gutter="1" style="margin-bottom: .5rem">
+            <div style="margin-right: .5rem">
+              <el-alert title="展示效果为A4" :closable="false" type="info"/>
+            </div>
             <div>
               <el-alert title="建议全屏使用" :closable="false" type="info"/>
             </div>
@@ -21,8 +24,8 @@
           </el-row>
         </el-col>
       </el-row>
-      <div style="height: 93%;">
-        <div id="printBox" class="box">
+      <div style="padding:0 25rem; height: 93%;">
+        <div id="printBox" >
           <info :info="form"></info>
 
           <div v-for="item in resumeContentGroup">

@@ -106,6 +106,7 @@
                 <v-md-editor v-model="form.content" height="100%"
                              @save="mdSaveClick()"
                              :disabled-menus="[]"
+                             @upload-image="handleUploadImage"
                 ></v-md-editor>
               </el-col>
             </el-col>
@@ -130,7 +131,7 @@ import {ElMessage, ElMessageBox} from 'element-plus';
 import {useRouter} from "vue-router";
 
 import businessInfoApi from "@/api/modules/businessInfo";
-import menuApi from "@/api/sys/menu";
+import fileApi from "@/api/sys/file";
 
 export default {
   name: "index",
@@ -310,6 +311,26 @@ export default {
       },
       treeSearch() {
         treeRef.value.filter(data.treeInput)
+      },
+      handleUploadImage(event, insertImage, files) {
+        // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
+        if (!files){
+          return
+        }
+        let param = {
+          file : files[0]
+        }
+        fileApi.uploadAttachment(param).then(res => {
+          if (res.success){
+            let data = res.data
+            insertImage({
+              url:data.link,
+              desc: data.originalFilename,
+              width: '250',
+              height: 'auto',
+            });
+          }
+        })
       },
       mdSaveClick() {
         if (!formRef) {
