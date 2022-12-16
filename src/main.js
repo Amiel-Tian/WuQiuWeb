@@ -57,6 +57,9 @@ import Prism from 'prismjs';
 import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-java';
 import 'prismjs/components/prism-sql';
+import 'prismjs/components/prism-kotlin';
+import 'prismjs/components/prism-properties';
+import 'prismjs/components/prism-xml-doc';
 //编辑器使用默认样式
 VMdEditor.use(vuepressTheme, {
     Prism,
