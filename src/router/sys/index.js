@@ -70,13 +70,33 @@ export default [
         }
     },
     {
-        name: 'components/iconShow',
-        path: '/components/iconShow',
+        name: 'tools/markdown',
+        path: '/tools/markdown',
+        meta: { title: 'Markdown', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/sys/tools/markdown')
+        }
+    },
+    {
+        name: 'tools/icon',
+        path: '/tools/icon',
         meta: { title: '图标', icon: '' },
         components: {
             //index为声明的router-view的name
             index: () =>
-                import ('@/components/iconShow')
+                import ('@/views/sys/tools/icon')
+        }
+    },
+    {
+        name: 'tools/other',
+        path: '/tools/other',
+        meta: { title: '其他工具', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/sys/tools/other')
         }
     },
 ]
