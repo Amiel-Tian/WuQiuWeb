@@ -11,7 +11,7 @@ export default [
     }, {
         name: 'business/index',
         path: '/business/index',
-        meta: {title: '业务信息', icon: ''},
+        meta: {title: '项目文档', icon: ''},
         components: {
             //index为声明的router-view的name
             index: () =>

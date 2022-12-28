@@ -43,7 +43,7 @@
           </template>
         </el-tree>
       </div>
-      <div class="content">
+      <div class="content" :style="{width: isOpen ? (100 - menuWidth) + '%' : '100%',}">
         <el-row v-if="!edit && form && form.show" justify="center" style="height: 100%;">
           <el-col :span="23" style="height: 100%;">
             <el-row>
@@ -400,8 +400,7 @@ export default {
 
   .content {
     position: relative;
-    flex: 1;
-
+    transition: width .5s;
     /*title*/
     .title {
       font-size: 2rem;

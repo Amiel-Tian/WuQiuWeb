@@ -24,7 +24,7 @@
           </el-row>
         </el-col>
       </el-row>
-      <div style="padding:0 25rem; height: 93%;">
+      <div style="width: 210mm;margin: auto; height: 93%;">
         <div id="printBox" >
           <info :info="form"></info>
 
