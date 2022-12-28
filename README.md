@@ -1,24 +1,5 @@
-# renwushuweb
-
-## Project setup
-```
-npm install
-```
-
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 集成框架
+* element-plu
+* axios
+* vue3-print-nb 打印插件
+* v-md-editor markdown编辑器
