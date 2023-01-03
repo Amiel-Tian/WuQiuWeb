@@ -61,6 +61,7 @@ export default {
 
 <style lang="scss" scoped>
 .box-s {
+  min-height: 3rem;
   padding: .5rem 2rem;
 
   .label{
