@@ -1,5 +1,5 @@
 <template>
-  <el-container  v-loading="loading" style="height: 100%;">
+  <el-container v-loading="loading" style="height: 100%;">
 
     <el-aside :width="menuRightCollapse ? 'auto' : '220px'" class="aside">
       <el-scrollbar>
@@ -26,10 +26,12 @@
             :ellipsis="false"
         >
           <el-menu-item index="0" @click="menuRightCollapse = !menuRightCollapse">
-            <el-icon >
-              <Fold v-show="!menuRightCollapse"/>
-              <Expand v-show="menuRightCollapse"/>
-            </el-icon>_
+            <div>
+              <el-icon>
+                <Fold v-show="!menuRightCollapse"/>
+                <Expand v-show="menuRightCollapse"/>
+              </el-icon>
+            </div>
           </el-menu-item>
 
           <div class="flex-grow"/>
@@ -43,23 +45,7 @@
       </el-header>
 
       <el-main>
-<!--        <el-tabs-->
-<!--            v-modules="editableTabsValue"-->
-<!--            type="card"-->
-<!--            class="demo-tabs"-->
-<!--            closable-->
-<!--            @tab-click="tabClick"-->
-<!--            @tab-remove="removeTab"-->
-<!--        >-->
-<!--          <el-tab-pane-->
-<!--              v-for="item in editableTabs"-->
-<!--              :key="item.name"-->
-<!--              :label="item.title"-->
-<!--              :name="item.name"-->
-<!--          >-->
-            <router-view name="index"></router-view>
-<!--          </el-tab-pane>-->
-<!--        </el-tabs>-->
+        <router-view name="index"></router-view>
       </el-main>
 
     </el-container>
@@ -84,7 +70,7 @@ export default {
     const router = useRouter()
 
     let data = {
-      routerPath :  ref(router.currentRoute.value.path),
+      routerPath: ref(router.currentRoute.value.path),
       userInfo: ref({
         username: "--"
       }),
@@ -110,11 +96,11 @@ export default {
         })
         menuApi.getNav().then(resnav => {
           data.menuList.value = resnav.data.nav
-          sessionStorage.setItem('permission',resnav.data.authoritys)
+          sessionStorage.setItem('permission', resnav.data.authoritys)
           data.loading.value = false
         })
         dictTypeApi.getTreeDict().then(resdict => {
-          sessionStorage.setItem('dictionaries',JSON.stringify(resdict.data))
+          sessionStorage.setItem('dictionaries', JSON.stringify(resdict.data))
         })
       },
 
@@ -126,11 +112,13 @@ export default {
           path: '/sys/user/personal',
         })
       },
-      menuClick(e){
-        let fil = data.editableTabs.value.filter(f => {return f.name == e.path})
-        if (fil && fil.length > 0){
+      menuClick(e) {
+        let fil = data.editableTabs.value.filter(f => {
+          return f.name == e.path
+        })
+        if (fil && fil.length > 0) {
           data.editableTabsValue.value = e.path
-        }else{
+        } else {
           data.editableTabs.value.push({
             title: e.name,
             name: e.path,
@@ -140,10 +128,10 @@ export default {
         }
 
       },
-      tabClick(tabsPaneContext, e){
+      tabClick(tabsPaneContext, e) {
 
       },
-      removeTab(targetName){
+      removeTab(targetName) {
 
       },
     }
@@ -167,9 +155,11 @@ export default {
     height: 100vh;
   }
 }
-.el-main{
+
+.el-main {
   --el-main-padding: .5rem 1rem;
 }
+
 .el-header {
   padding: 0;
 }
