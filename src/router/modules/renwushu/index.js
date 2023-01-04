@@ -28,4 +28,14 @@ export default [
                 import ('@/views/modules/resume/show')
         }
     },
+    {
+        name: 'ireport/xmlToLowerCase',
+        path: '/ireport/xmlToLowerCase',
+        meta: {title: '变量转小写', icon: ''},
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/modules/ireport/xmlToLowerCase')
+        }
+    },
 ]
