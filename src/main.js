@@ -39,6 +39,10 @@ app.config.globalProperties.$tools = tool
 import components from "@/components";
 
 app.use(components)
+//x2js解析xml
+import x2js from 'x2js' //xml数据处理插件
+app.config.globalProperties.$x2js = new x2js() //全局方法挂载
+
 /*注册markdown组件*/
 //完整
 import VMdEditor from '@kangc/v-md-editor/lib/codemirror-editor';

@@ -12,6 +12,22 @@
       {{ copyContent }}
     </div>
   </el-card>
+  <el-card header="xml解析为对象">
+    <el-input
+        v-model="form.context"
+        :rows="5"
+        type="textarea"
+        placeholder="请输入工作内容"
+    />
+    <el-button style="margin: .5rem 0" type="primary" @click="xmlBtnClick">解析</el-button>
+    <el-input
+        v-model="form.result"
+        :rows="5"
+        disabled
+        type="textarea"
+        placeholder=""
+    />
+  </el-card>
 
 </template>
 
@@ -35,6 +51,7 @@ export default {
 
     const { toClipboard } = useClipboard()
     let data = {
+      form : ref({}),
       print: ref({
         id: 'printBox',//这里的id就是上面我们的打印区域id，实现指哪打哪
         popTitle: '配置页眉标题', // 打印配置页上方的标题
@@ -83,7 +100,18 @@ export default {
           ElMessage.error("复制失败" + e);
         }
 
-      }
+      },
+      async xmlBtnClick() {
+        let form = data.form.value;
+
+        let str = ""
+        if (form.context) {
+          str = form.context
+          let xml = proxy.$x2js.xml2js(form.context)
+          str = JSON.stringify(xml)
+        }
+        data.form.value.result = str
+      },
     }
 
     return {
