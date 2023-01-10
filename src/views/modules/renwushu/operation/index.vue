@@ -106,7 +106,7 @@ import userApi from "@/api/sys/user";
 import {ElMessage, ElMessageBox} from "element-plus";
 
 import renwuApi from "@/api/modules/renwu";
-import tool from "@/utils/model"
+import tool from "@/utils/modules"
 
 export default {
   name: "index",

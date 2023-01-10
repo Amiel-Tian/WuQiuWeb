@@ -32,7 +32,7 @@ import {useRouter} from "vue-router";
 import useClipboard from "vue-clipboard3";
 
 export default {
-  name: "index",
+  name: "XmlToLowerCase",
   props: ["info"],
   emits: ["update:info"],
   components: {},

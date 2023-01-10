@@ -29,7 +29,7 @@
           <el-row>
             <el-col :span="12">
               <el-form-item label="模块：">
-                <el-select v-model="form.groupings" placeholder="Select" size="large" style="width: 100%;">
+                <el-select v-model="form.groupings" placeholder="请选择模块" size="large" style="width: 100%;">
                   <el-option
                       v-for="item in resumeContentGroup"
                       :key="item.value"

@@ -35,7 +35,13 @@
         >
           <template #default="{ node, data }">
             <el-row justify="space-between" style="font-size: 1rem">
-              <div>{{ node.label }}</div>
+              <el-tooltip
+                  effect="dark"
+                  :content="node.label"
+                  placement="top"
+              >
+                <div class="text-overlength" style="flex: 1">{{ node.label }}</div>
+              </el-tooltip>
               <div style="padding:0 1.5rem">
                 <el-tag size="small">{{ data.sort }}</el-tag>
               </div>
@@ -75,29 +81,43 @@
           </el-col>
         </el-row>
 
-        <el-form v-if="edit" style="height: 100%;" ref="formRef" :model="form" label-width="10px" :rules="rules"
+        <el-form v-if="edit" style="height: 100%;" ref="formRef" :model="form" label-width="5rem" :rules="rules"
                  :disabled="btnLoad">
           <el-row justify="center" style="height: 100%;">
             <el-col :span="23" style="height: 100%;">
               <el-row>
-                <el-col :span="12">
-                  <el-form-item label="" prop="name">
+                <el-col>
+                  <el-form-item label="标题" prop="name">
                     <el-input v-model="form.name" placeholder="请输入标题" clearable/>
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="" prop="parentId">
+                  <el-form-item label="权限" prop="remark">
+                    <el-select v-model="form.remark" clearable placeholder="选择权限" size="large" style="width: 100%;">
+                      <el-option
+                          v-for="item in powerList"
+                          :key="item.value"
+                          :label="item.name"
+                          :value="item.value"
+                      />
+                    </el-select>
+                  </el-form-item>
+
+                </el-col>
+                <el-col :span="6">
+                  <el-form-item label="父项" prop="parentId">
                     <el-cascader
                         style="width: 100%;"
                         v-model="form.parentId"
                         :options="treeData"
                         :props="cascaderProps"
+                        placeholder="选择父项（非必填）"
                         clearable
                     />
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item prop="sort" label="">
+                  <el-form-item prop="sort" label="排序">
                     <el-input-number v-model="form.sort" :min="1" :max="1000" placeholder="排序"/>
                   </el-form-item>
                 </el-col>
@@ -166,6 +186,7 @@ export default {
       searchForm: ref({}),
       edit: ref(false),
       btnLoad: ref(false),
+      powerList: ref([]),
       rules: {
         name: [
           {
@@ -188,9 +209,14 @@ export default {
 
     })
     onMounted(async () => {
+      methods.loadDictList()
       methods.getTreeData()
     })
     let methods = {
+      loadDictList() {
+        let res = proxy.$tools.selectDict("power")
+        data.powerList.value = res
+      },
       async getTreeData() {
         await businessInfoApi.treeData().then(res => {
           data.treeData.value = res.data
