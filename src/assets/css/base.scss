@@ -1,47 +1,57 @@
-:root{
-    --white:#FFFFFF;
+:root {
+  --white: #FFFFFF;
 }
-.min-width{
-    width: 1200px;
-    height: 100%;
-    margin: auto;
+
+.min-width {
+  width: 1200px;
+  height: 100%;
+  margin: auto;
 }
-.fl-l{
-    float: left;
-}
-.fl-r{
-    float: right;
-}
+
 /*禁用文字选中*/
-.notext{
-    -o-user-select: none;
-    -moz-user-select: none; /*火狐 firefox*/
-    -webkit-user-select: none; /*webkit浏览器*/
-    -ms-user-select: none; /*IE10+*/
-    -khtml-user-select :none; /*早期的浏览器*/
-    user-select: none;
+.notext {
+  -o-user-select: none;
+  -moz-user-select: none; /*火狐 firefox*/
+  -webkit-user-select: none; /*webkit浏览器*/
+  -ms-user-select: none; /*IE10+*/
+  -khtml-user-select: none; /*早期的浏览器*/
+  user-select: none;
 }
-.el-card{
-    margin: .5rem 0;
+
+.el-card {
+  margin: .5rem 0;
 }
-.el-tree-node__label{
-    flex: 1;
+
+.el-tree-node__label {
+  flex: 1;
 }
-.op-btn{
-    cursor: pointer;
-    color: var(--el-text-color-secondary) !important;
+
+.op-btn {
+  cursor: pointer;
+  color: var(--el-text-color-secondary) !important;
 }
-.op-btn:hover{
-    color: var(--el-text-color-primary) !important;;
+
+.op-btn:hover {
+  color: var(--el-text-color-primary) !important;;
 }
+
 ::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
+
 ::-webkit-scrollbar-thumb {
-    background-color: #0003;
-    border-radius: 10px;
-    transition: all .2s ease-in-out;
+  background-color: #0003;
+  border-radius: 10px;
+  transition: all .2s ease-in-out;
 }
+
 ::-webkit-scrollbar-track {
-    border-radius: 10px;
+  border-radius: 10px;
+}
+
+//文字超出显示省略号
+.text-overlength {
+  overflow: hidden;
+  　text-overflow: ellipsis;
+  　white-space: nowrap;
 }

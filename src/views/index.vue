@@ -45,6 +45,14 @@
       </el-header>
 
       <el-main>
+<!--        <div>-->
+<!--          <router-link :to="'/sys/dicts'" class="tag">-->
+<!--            /sys/dicts-->
+<!--          </router-link>-->
+<!--          <router-link :to="'/ireport/xmlToLowerCase'" class="tag">-->
+<!--            /ireport/xmlToLowerCase-->
+<!--          </router-link>-->
+<!--        </div>-->
         <router-view name="index"></router-view>
       </el-main>
 
