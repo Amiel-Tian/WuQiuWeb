@@ -99,4 +99,14 @@ export default [
                 import ('@/views/sys/tools/other')
         }
     },
+    {
+        name: 'websocket/index',
+        path: '/websocket/index',
+        meta: { title: 'websocket', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/sys/websocket/index')
+        }
+    },
 ]

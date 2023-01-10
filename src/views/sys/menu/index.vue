@@ -32,7 +32,13 @@
         >
           <template #default="{ node, data }">
             <el-row justify="space-between">
-              <div>{{ node.label }}</div>
+              <el-tooltip
+                  effect="dark"
+                  :content="node.label"
+                  placement="top"
+              >
+                <div class="text-overlength" style="flex: 1">{{ node.label }}</div>
+              </el-tooltip>
               <div style="padding:0 1.5rem">
                 <el-tag size="small">{{ proxy.$tools.selectDictLabel(proxy.$appConfig.MENUTYPE,data.type) }}</el-tag>
               </div>
