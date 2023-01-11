@@ -38,7 +38,7 @@
               <el-tooltip
                   effect="dark"
                   :content="node.label"
-                  placement="top"
+                  placement="right-start"
               >
                 <div class="text-overlength" style="flex: 1">{{ node.label }}</div>
               </el-tooltip>
