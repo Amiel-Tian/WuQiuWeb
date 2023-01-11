@@ -13,7 +13,7 @@
           <el-tooltip
               effect="dark"
               content="刷新"
-              placement="top-start"
+              placement="right-start"
           >
             <el-icon class="op-btn" @click="refreshTreeClick">
               <Refresh/>
