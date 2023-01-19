@@ -92,8 +92,8 @@
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
-                  <el-form-item label="权限" prop="remark">
-                    <el-select v-model="form.remark" clearable placeholder="选择权限" size="large" style="width: 100%;">
+                  <el-form-item label="权限" prop="businessStatus">
+                    <el-select :disabled="form.id && !(form.createBy == userInfo.id)" v-model="form.businessStatus" clearable placeholder="选择权限" size="large" style="width: 100%;">
                       <el-option
                           v-for="item in powerList"
                           :key="item.value"
@@ -152,6 +152,7 @@ import {useRouter} from "vue-router";
 
 import businessInfoApi from "@/api/modules/businessInfo";
 import fileApi from "@/api/sys/file";
+import userApi from "@/api/sys/user";
 
 export default {
   name: "index",
@@ -165,6 +166,7 @@ export default {
     const treeRef = ref()
     let data = {
       menuWidth: ref(16.6),
+      userInfo: ref({}),
       isOpen: ref(true),
       cascaderProps: {
         children: "children",
@@ -202,6 +204,13 @@ export default {
             trigger: 'change',
           },
         ],
+        businessStatus: [
+          {
+            required: true,
+            message: '请选择权限',
+            trigger: 'change',
+          },
+        ],
       },
     }
     //监听
@@ -214,6 +223,10 @@ export default {
     })
     let methods = {
       loadDictList() {
+        userApi.getUserInfo().then(res => {
+          data.userInfo.value = res.data
+        })
+
         let res = proxy.$tools.selectDict("power")
         data.powerList.value = res
       },
