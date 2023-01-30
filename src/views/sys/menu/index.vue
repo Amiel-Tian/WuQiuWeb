@@ -9,16 +9,18 @@
             <el-button icon="Search" @click="treeSearch"/>
           </template>
         </el-input>
-        <el-row justify="start" align="middle" style="flex: 1; padding: .5rem">
+        <el-row justify="space-between" align="middle" style="flex: 1; padding: .5rem">
           <el-tooltip
               effect="dark"
               content="刷新"
-              placement="right-start"
+              placement="top-start"
           >
             <el-icon class="op-btn" @click="refreshTreeClick">
               <Refresh/>
             </el-icon>
           </el-tooltip>
+
+          <el-link v-permission="['sys:menu:save']" type="primary" @click="addClick()">{{'新增' }}</el-link>
         </el-row>
         <el-tree
             ref="treeRef"
@@ -35,7 +37,7 @@
               <el-tooltip
                   effect="dark"
                   :content="node.label"
-                  placement="top"
+                  placement="right-start"
               >
                 <div class="text-overlength" style="flex: 1">{{ node.label }}</div>
               </el-tooltip>
@@ -89,7 +91,7 @@
             </el-col>
           </el-row>
         </el-form>
-        <el-row justify="start" style="margin: .5rem">
+          <el-row justify="start" style="margin: .5rem">
           <el-link v-permission="['sys:menu:save']" v-if="form.type != '2'" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增菜单' }}</el-link>
           <el-link v-permission="['sys:menu:update']" type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
           <el-popconfirm

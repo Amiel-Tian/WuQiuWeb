@@ -63,4 +63,10 @@ export default {
             params: {id : id},
         })
     },
+    datas(id) {
+        return request({
+            url: '/sysUser/datas',
+            method: 'get',
+        })
+    },
 }
