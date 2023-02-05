@@ -1,12 +1,20 @@
-import { ElMessage } from 'element-plus'
+import {ElMessage} from 'element-plus'
+import userApi from "@/api/sys/user";
+//全局变量
+import APP_CONFIG from "@/config/config";
 
-let URL = 'ws://localhost:2200/renwushu'
+// let URL = 'ws://'+APP_CONFIG.VUE_APP_API_HOST_DEFAULT+'/websocket'
+let URL = 'ws://172.21.56.72:2200/renwushu/websocket'
 let timer = null
 let ws = null
 let isConnect = false
 let checkHeart = 'check-heart'
 let count = 0
+let userInfo = {}
+let token = window.localStorage.getItem("javawebtoken")
 
+URL += token ? "/" + token : "/ "
+URL += "/ / "
 // 心跳检测
 let heart = {
     timer: null,
@@ -26,7 +34,13 @@ let heart = {
 }
 
 // WebSocket连接
-const connectWebsocket = () => {
+const connectWebsocket = async () => {
+    if (!userInfo || !userInfo.id) {
+        await userApi.getUserInfo().then(res => {
+            userInfo = res.data
+            URL += userInfo ? userInfo.id ? "/" + userInfo.id : "/ " : "/ "
+        })
+    }
     if (count > 5) {
         connectCount()
         return
@@ -38,6 +52,7 @@ const connectWebsocket = () => {
         connect()
     }
 }
+
 // 重新连接WebSocket
 function connect() {
     if (isConnect) return
@@ -48,6 +63,7 @@ function connect() {
         connectWebsocket()
     }, 5000)
 }
+
 // 初始化WebSocket连接
 function initWebSocket() {
     ws.onopen = function () { // WebSocket连接成功
@@ -74,6 +90,7 @@ function initWebSocket() {
         receive(e.data)
     }
 }
+
 function connectCount() {
     ElMessage.error('WebSocket连接失败')
     clearTimeout(timer)
@@ -94,6 +111,7 @@ const webSocketSend = (data) => {
             break;
     }
 }
+
 function sendSock(data) {
     ws.send(JSON.stringify(data))
     ElMessage.success('消息发送成功')
@@ -103,6 +121,7 @@ function sendSock(data) {
 const closeWebSocket = () => {
     if (isConnection()) ws.close()
 }
+
 // 是否已连接
 function isConnection() {
     return ws?.readyState === 1
@@ -110,11 +129,12 @@ function isConnection() {
 
 // 自定义事件
 function receive(data) {
-    let event = new CustomEvent('receive', { detail: data })
+    let event = new CustomEvent('receive', {detail: data})
     window.dispatchEvent(event)
 }
+
 function connectStatus(status) {
-    let event = new CustomEvent('connectStatus', { detail: status })
+    let event = new CustomEvent('connectStatus', {detail: status})
     window.dispatchEvent(event)
 }
 
