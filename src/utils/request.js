@@ -43,6 +43,10 @@ api.interceptors.response.use(res => {
     let response = err.response
     console.log(err)
     if (response.data.code == "106" || !window.localStorage.getItem("javawebtoken")) {
+        if ( router.currentRoute.value.path.indexOf("login") > -1){
+            Promise.reject(err)
+            return
+        }
         localStorage.setItem('javawebtoken', undefined)
         ElMessage.warning(response.data.msg);
         //用户未登录
