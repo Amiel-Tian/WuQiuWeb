@@ -3,8 +3,15 @@ import userApi from "@/api/sys/user";
 //全局变量
 import APP_CONFIG from "@/config/config";
 
-// let URL = 'ws://'+APP_CONFIG.VUE_APP_API_HOST_DEFAULT+'/websocket'
-let URL = 'ws://172.21.56.72:2200/renwushu/websocket'
+// let URL = APP_CONFIG.VUE_APP_API_HOST_DEFAULT+'/websocket'
+let URL = 'ws://localhost:2200/renwushu/websocket'
+
+if (URL.indexOf("http") > -1){
+    URL = URL.replace("http", "ws")
+}
+if (URL.indexOf("https") > -1){
+    URL = URL.replace("https", "wss")
+}
 let timer = null
 let ws = null
 let isConnect = false
