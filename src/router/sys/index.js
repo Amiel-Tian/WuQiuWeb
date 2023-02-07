@@ -60,6 +60,16 @@ export default [
         }
     },
     {
+        name: 'sys/organ',
+        path: '/sys/organ',
+        meta: { title: '组织管理', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/sys/organ')
+        }
+    },
+    {
         name: 'sys/dicts',
         path: '/sys/dicts',
         meta: { title: '字典管理', icon: '' },
