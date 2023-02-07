@@ -13,55 +13,49 @@
         关闭
       </el-button>
     </template>
-    <el-form ref="formRef" :model="form" label-width="120px" :rules="rules" :disabled="btnLoad">
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="120px" :disabled="btnLoad">
       <el-row justify="start" style="margin: .5rem">
         <el-col :span="24">
-          <el-form-item label="用户名" prop="username">
-            <el-input v-model="form.username" placeholder="请选择用户名" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="登录名" prop="loginname">
-            <el-input v-model="form.loginname" placeholder="请输入登录名" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="24">
-          <el-form-item label="密码">
-            <el-input v-model="form.password" placeholder="输入密码" show-password clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="手机号">
-            <el-input v-model="form.phone" placeholder="输入手机号" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="邮箱">
-            <el-input v-model="form.phone" placeholder="输入邮箱" clearable/>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="权限" prop="roleIdList">
-            <el-select v-model="form.roleIdList" multiple placeholder="请选择权限" style="width: 100%;" clearable>
-              <el-option
-                  v-for="item in treeList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="组织" prop="organIdList">
+          <el-form-item label="上级组织">
             <el-cascader
                 style="width: 100%;"
-                v-model="form.organIdList"
-                :options="treeListOrgan"
+                v-model="form.parentId"
+                :options="treeData"
                 :props="cascaderProps"
                 clearable
-                collapse-tags
             />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="组织名称" prop="name">
+            <el-input v-model="form.name" placeholder="请输入组织名称" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="组织编码" prop="code">
+            <el-input v-model="form.code" placeholder="请输入组织编码" clearable/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="图标">
+            <el-button @click="iocnDrawer = true">选择</el-button>
+            <el-icon style="font-size: 2rem; margin-left: 1rem">
+              <component v-if="form.icon" :is="form.icon"/>
+            </el-icon>
+            <el-drawer
+                :title="'选择图标'"
+                v-model="iocnDrawer"
+                :show-close="true"
+            >
+              <div>
+                <icon-show v-model:icon="form.icon" @success="iocnDrawer = false"></icon-show>
+              </div>
+            </el-drawer>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="排序">
+            <el-input-number v-model="form.sort" :min="1" :max="1000" placeholder="数字"/>
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -73,7 +67,7 @@
         </el-col>
         <el-col :span="24">
           <el-row justify="end">
-            <el-button @click="subment()" :loading="btnLoad">保存</el-button>
+            <el-button @click="subment" :loading="btnLoad">保存</el-button>
           </el-row>
         </el-col>
       </el-row>
@@ -84,15 +78,13 @@
 <script>
 import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {useRouter} from "vue-router";
-import {ElMessage, ElMessageBox} from 'element-plus';
 
-import userApi from "@/api/sys/user"
-import roleApi from "@/api/sys/role"
-import organApi from "@/api/sys/organ";
+import organApi from "@/api/sys/organ"
+import {ElMessage} from "element-plus";
 
 export default {
   name: "index",
-  props: ["id", "drawer"],
+  props: ["id", "drawer", "parentId"],
   emits: ["update:drawer", "success"],
   components: {},
   setup(props, content) {
@@ -100,24 +92,30 @@ export default {
     const formRef = ref()
     const {proxy} = getCurrentInstance();
     let data = {
-      iocnDrawer: ref(false),
-      treeList: ref([]),
-      treeListOrgan: ref([]),
       form: ref({}),
+      treeData: ref([]),
       btnLoad: ref(false),
       statusList: ref([]),
+      cascaderProps: {
+        children: "children",
+        label: "name",
+        value: "id",
+        checkStrictly: true,
+        emitPath: false,
+      },
+      iocnDrawer: ref(false),
       rules: {
-        username: [
+        name: [
           {
             required: true,
-            message: '请输入用户名',
+            message: '请输入组织名',
             trigger: 'change',
           },
         ],
-        loginname: [
+        code: [
           {
             required: true,
-            message: '请输入登录名',
+            message: '请输入组织编码',
             trigger: 'change',
           },
         ],
@@ -128,21 +126,6 @@ export default {
             trigger: 'change',
           },
         ],
-        roleIdList: [
-          {
-            required: true,
-            message: '请选择权限',
-            trigger: 'change',
-          },
-        ],
-      },
-      cascaderProps: {
-        children: "children",
-        label: "name",
-        value: "id",
-        checkStrictly: true,
-        emitPath: false,
-        multiple: true,
       },
     }
     //监听
@@ -150,15 +133,20 @@ export default {
       content.emit('update:drawer', drawer)
       if (drawer) {
         if (props.id) {
-          userApi.get(props.id).then(res => {
+          organApi.get(props.id).then(res => {
             data.form.value = res.data || {}
             data.form.value.status = data.form.value.status + ""
-            data.form.value.password = undefined
+            data.form.value.type = data.form.value.type + ""
           })
         } else {
           data.form.value = {}
           data.form.value.status = "1"
         }
+        if (props.parentId) {
+          data.form.value.parentId = props.parentId || ""
+        }
+
+        methods.getNav()
         methods.loadDictList();
       }
     })
@@ -166,22 +154,29 @@ export default {
 
     })
     let methods = {
+      getNav() {
+        organApi.getNavAll().then(res => {
+          data.treeData.value = res.data.nav
+        })
+      },
       loadDictList() {
         let res = proxy.$tools.selectDict(proxy.$appConfig.STATUS)
         data.statusList.value = res
-        roleApi.datas().then(res => {
-          data.treeList.value = res.data
-        })
-        organApi.getNavAll().then(res => {
-          data.treeListOrgan.value = res.data.nav
-        })
       },
+
       subment() {
+        if (!formRef) {
+          return
+        }
         formRef.value.validate((valid, fields) => {
           if (valid) {
             data.btnLoad.value = true
-            if (data.form.value.id) {
-              userApi.update(data.form.value).then(res => {
+            let param = data.form.value
+            if (!param.parentId) {
+              param.parentId = "0"
+            }
+            if (param.id) {
+              organApi.update(param).then(res => {
                 if (res.success) {
                   ElMessage.success(res.msg)
                 } else {
@@ -190,24 +185,33 @@ export default {
                 content.emit("success", {});
                 data.form.value = {}
                 data.btnLoad.value = false;
+                organApi.getNav().then(resnav => {
+                  sessionStorage.setItem('permission', resnav.data.authoritys)
+                })
               })
             } else {
-              userApi.add(data.form.value).then(res => {
+              organApi.add(param).then(res => {
                 if (res.success) {
                   ElMessage.success(res.msg)
                 } else {
                   ElMessage.error(res.msg)
                 }
                 content.emit("success", {});
-                data.form.value = {}
+
                 data.btnLoad.value = false;
+
+                organApi.getNav().then(resnav => {
+                  sessionStorage.setItem('permission', resnav.data.authoritys)
+                })
               })
             }
+            data.form.value = {}
+            content.emit("success", {});
           } else {
             ElMessage.warning("必填项未填写！")
           }
         })
-      },
+      }
     }
 
     return {
