@@ -41,17 +41,18 @@
           </template>
         </el-tree>
       </el-col>
-      <el-col :span="24-treeWidth-1">
-        <div class="chat">
+      <el-col :span="24-treeWidth-1" style="height: 100%;">
+        <div class="chat" v-show="form.id">
           <div class="head">{{ form.username }}
           </div>
-          <div class="content">
-            <div v-for="item in form.record" >
-              <div class="date" :style="item.sendId == userInfo.id ? 'display: flex;justify-content: end;' : 'display: flex;'">
+          <div class="content" ref="contentRef">
+            <div v-for="item in form.record">
+              <div class="date"
+                   :style="item.sendId == userInfo.id ? 'display: flex;justify-content: end;' : 'display: flex;'">
                 {{ item.sendDate }}
               </div>
               <div :style="item.sendId == userInfo.id ? 'display: flex;justify-content: end;' : 'display: flex;'">
-                <div  class="message-box"  :style="item.sendId == userInfo.id ? 'background-color: #c9e7ff' : ''">
+                <div class="message-box" :style="item.sendId == userInfo.id ? 'background-color: #c9e7ff' : ''">
                   {{ item.message }}
                   <!--                {{ item.sendDate }}-->
                 </div>
@@ -90,6 +91,7 @@ export default {
     const {proxy} = getCurrentInstance();
 
     const treeRef = ref();
+    const contentRef = ref();
     let data = {
       treeWidth: ref(4),
       treeInput: ref(""),
@@ -137,6 +139,19 @@ export default {
       treeeNodeClick(datas, node, TreeNode, e) {
         data.form.value = datas
         data.currentTreeeNode.value = datas
+
+        let param = {
+          sendId: datas.id,
+          receiveId: data.userInfo.value.id,
+        }
+        websocketApi.datas(param).then(res => {
+          if (res.success) {
+            if (res.data) {
+              data.form.value.record = res.data
+              contentRef.value.scrollTop = contentRef.value.scrollHeight
+            }
+          }
+        })
       },
       /*
       * 过滤函数
@@ -153,27 +168,34 @@ export default {
           sendId: data.userInfo.value.id,
           receiveId: data.form.value.id,
           message: data.form.value.message,
-          // sendDate: new Date(),
+          sendDate: proxy.$tools.getDate(),
         }
         if (data.form.value.record) {
           data.form.value.record.push(detail)
         } else {
           data.form.value.record = [detail]
         }
+
+        contentRef.value.scrollTop = contentRef.value.scrollHeight
         websocketApi.sentMessage(detail)
       },
+
+
     }
 
     //监听接收消息
     window.addEventListener('receive', function (event) {
       let detail = JSON.parse(event.detail)
-      console.log(detail)
-      if (detail.sendId == data.form.value.id) {
+      detail.sendDate = proxy.$tools.getDate(detail.sendDate)
+
+      if (detail.sendId == data.form.value.id && detail.sendId != data.userInfo.id) {
         if (data.form.value.record) {
           data.form.value.record.push(detail)
         } else {
           data.form.value.record = [detail]
         }
+
+        contentRef.value.scrollTop = contentRef.value.scrollHeight
       }
       // ElMessage.success(event.detail)
     }, false);
@@ -183,6 +205,7 @@ export default {
       proxy,
       router,
       treeRef,
+      contentRef,
       ...data,
       ...methods
     }
@@ -195,6 +218,7 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 
   .head {
     height: 3rem;
@@ -203,16 +227,17 @@ export default {
   }
 
   .content {
-    height: 20rem;
+    flex: 1;
     overflow-y: auto;
     padding: .5rem;
 
-    .date{
+    .date {
       padding: .2rem;
       font-size: .1rem;
       color: #969696;
     }
-    .message-box{
+
+    .message-box {
       padding: .5rem;
       max-width: 35%;
       background-color: #f2f2f2;
