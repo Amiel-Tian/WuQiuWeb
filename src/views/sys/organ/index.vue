@@ -20,7 +20,7 @@
             </el-icon>
           </el-tooltip>
 
-          <el-link v-permission="['sys:menu:save']" type="primary" @click="addClick()">{{'新增' }}</el-link>
+          <el-link v-permission="['sys:organ:save']" type="primary" @click="addClick()">{{'新增' }}</el-link>
         </el-row>
         <el-tree
             ref="treeRef"
@@ -88,13 +88,13 @@
           </el-row>
         </el-form>
           <el-row justify="start" style="margin: .5rem">
-          <el-link v-permission="['sys:menu:save']" v-if="form.type != '2'" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增组织' }}</el-link>
-          <el-link v-permission="['sys:menu:update']" type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
+          <el-link v-permission="['sys:organ:save']" v-if="form.type != '2'" type="primary" @click="addClick()">{{ form.name ?'新增子项' : '新增组织' }}</el-link>
+          <el-link v-permission="['sys:organ:update']" type="warning" @click="editClick(form)" style="margin-left: .5rem">{{ form.name ?'编辑此项' : '' }}</el-link>
           <el-popconfirm
               @confirm="confirmDelete(form)"
               title="确认删除?">
             <template #reference>
-              <el-link v-permission="['sys:menu:delete']" type="danger" style="margin-left: .5rem">{{ form.name ?'删除此项' : '' }}</el-link>
+              <el-link v-permission="['sys:organ:delete']" type="danger" style="margin-left: .5rem">{{ form.name ?'删除此项' : '' }}</el-link>
             </template>
           </el-popconfirm>
           <el-row justify="end" v-if="form.type != '2'" align="middle" style="flex: 1">
@@ -129,12 +129,12 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作">
               <template #default="scope">
-                <el-button v-permission="['sys:menu:update']"  size="small" @click="editClick(scope.row)">编辑</el-button>
+                <el-button v-permission="['sys:organ:update']"  size="small" @click="editClick(scope.row)">编辑</el-button>
                 <el-popconfirm
                     @confirm="confirmDelete(scope.row)"
                     title="确认删除?">
                   <template #reference>
-                    <el-button v-permission="['sys:menu:delete']"  size="small" type="danger" @click="">删除</el-button>
+                    <el-button v-permission="['sys:organ:delete']"  size="small" type="danger" @click="">删除</el-button>
                   </template>
                 </el-popconfirm>
               </template>
@@ -213,7 +213,7 @@ export default {
     })
 
     onMounted(async () => {
-      methods.getNav()
+      methods.getTree()
       methods.getTableData()
     })
     let methods = {
@@ -268,7 +268,7 @@ export default {
           data.searchForm.value = {}
         }
 
-        methods.getNav();
+        methods.getTree();
         methods.getTableData();
       },
 
@@ -287,8 +287,8 @@ export default {
         })
       },
 
-      async getNav() {
-        await organApi.getNavAll().then(res => {
+      async getTree() {
+        await organApi.getTreeAll().then(res => {
           data.treeData.value = res.data.nav
         })
 

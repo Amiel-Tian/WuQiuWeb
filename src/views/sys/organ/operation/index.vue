@@ -146,7 +146,7 @@ export default {
           data.form.value.parentId = props.parentId || ""
         }
 
-        methods.getNav()
+        methods.getTree()
         methods.loadDictList();
       }
     })
@@ -154,8 +154,8 @@ export default {
 
     })
     let methods = {
-      getNav() {
-        organApi.getNavAll().then(res => {
+      getTree() {
+        organApi.getTreeAll().then(res => {
           data.treeData.value = res.data.nav
         })
       },
@@ -185,7 +185,7 @@ export default {
                 content.emit("success", {});
                 data.form.value = {}
                 data.btnLoad.value = false;
-                organApi.getNav().then(resnav => {
+                organApi.getTreeAll().then(resnav => {
                   sessionStorage.setItem('permission', resnav.data.authoritys)
                 })
               })
@@ -200,7 +200,7 @@ export default {
 
                 data.btnLoad.value = false;
 
-                organApi.getNav().then(resnav => {
+                organApi.getTreeAll().then(resnav => {
                   sessionStorage.setItem('permission', resnav.data.authoritys)
                 })
               })
