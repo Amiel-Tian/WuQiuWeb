@@ -172,7 +172,7 @@ export default {
         roleApi.datas().then(res => {
           data.treeList.value = res.data
         })
-        organApi.getNavAll().then(res => {
+        organApi.getTreeAll().then(res => {
           data.treeListOrgan.value = res.data.nav
         })
       },

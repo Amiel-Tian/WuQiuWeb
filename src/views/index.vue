@@ -69,6 +69,7 @@ import menuApi from "@/api/sys/menu";
 import menuTree from "@/views/sys/menu/menuTree";
 import dictTypeApi from "@/api/sys/dictType";
 
+import websocket from "@/utils/websocket";
 export default {
   name: "index",
   props: [],
@@ -89,12 +90,12 @@ export default {
       editableTabs: ref([]),
     }
     //监听
-    watch(() => [props.info], ([newInfo], [oldInfo]) => {
-
+    watch(() => [router.currentRoute.value.path], ([newInfo], [oldInfo]) => {
+      data.routerPath.value = router.currentRoute.value.path
     })
     onMounted(async () => {
       methods.getUserInfo()
-      data.routerPath.value = router.currentRoute.value.path
+      websocket.connectWebsocket()
     })
     let methods = {
       getUserInfo() {

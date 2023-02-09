@@ -4,6 +4,7 @@ import App from './App.vue'
 const app = createApp(App)
 import "./assets/css/reset.css"
 import "./assets/css/base.scss"
+import "./assets/css/chat.scss"
 // element-plus
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'

@@ -4,7 +4,7 @@ import userApi from "@/api/sys/user";
 import APP_CONFIG from "@/config/config";
 
 // let URL = APP_CONFIG.VUE_APP_API_HOST_DEFAULT+'/websocket'
-let URL = 'ws://localhost:2200/renwushu/websocket'
+let URL = 'ws://localhost:2201/chat/websocket'
 
 if (URL.indexOf("http") > -1){
     URL = URL.replace("http", "ws")
@@ -18,10 +18,7 @@ let isConnect = false
 let checkHeart = 'check-heart'
 let count = 0
 let userInfo = {}
-let token = window.localStorage.getItem("javawebtoken")
 
-URL += token ? "/" + token : "/ "
-URL += "/ / "
 // 心跳检测
 let heart = {
     timer: null,
@@ -43,6 +40,10 @@ let heart = {
 // WebSocket连接
 const connectWebsocket = async () => {
     if (!userInfo || !userInfo.id) {
+        let token = window.localStorage.getItem("javawebtoken")
+
+        URL += token ? "/" + token : "/ "
+        URL += "/ / "
         await userApi.getUserInfo().then(res => {
             userInfo = res.data
             URL += userInfo ? userInfo.id ? "/" + userInfo.id : "/ " : "/ "
@@ -76,6 +77,7 @@ function initWebSocket() {
     ws.onopen = function () { // WebSocket连接成功
         isConnect = true
         connectStatus(true)
+        heart.start()
         ElMessage.success('WebSocket连接成功')
     }
     ws.onerror = function () { // WebSocket连接发生错误
