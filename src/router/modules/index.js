@@ -1,0 +1,22 @@
+export default [
+    {
+        name: 'modules/messages',
+        path: '/modules/messages',
+        meta: { title: '消息', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/modules/messages')
+        }
+    },
+    {
+        name: 'modules/mails',
+        path: '/modules/mails',
+        meta: { title: '通讯录', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/modules/mails')
+        }
+    },
+]
