@@ -1,9 +1,15 @@
 import request from "@/utils/request";
 
 export default {
-    getNavAll() {
+    getTreeAll() {
         return request({
-            url: '/sysOrgan/navAll',
+            url: '/sysOrgan/treeAll',
+            method: 'get',
+        })
+    },
+    getTreeAllAndUser() {
+        return request({
+            url: '/sysOrgan/treeAllAndUser',
             method: 'get',
         })
     },

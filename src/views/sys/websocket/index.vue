@@ -42,7 +42,7 @@
         </el-tree>
       </el-col>
       <el-col :span="24-treeWidth-1" style="height: 100%;">
-        <div class="chat" v-show="form.id">
+        <div class="chat flex-column" v-show="form.id">
           <div class="head">{{ form.username }}
           </div>
           <div class="content" ref="contentRef">
@@ -76,9 +76,7 @@
 import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
 import {ElMessage, ElMessageBox} from 'element-plus';
 import {useRouter} from "vue-router";
-import useClipboard from "vue-clipboard3";
 import userApi from "@/api/sys/user";
-import websocket from "@/utils/websocket";
 import websocketApi from "@/api/sys/websocket";
 
 export default {
@@ -116,7 +114,6 @@ export default {
       methods.loadDictList()
       methods.getUserInto()
 
-      websocket.connectWebsocket()
     })
     let methods = {
       getUserInto() {
@@ -185,19 +182,24 @@ export default {
 
     //监听接收消息
     window.addEventListener('receive', function (event) {
-      let detail = JSON.parse(event.detail)
-      detail.sendDate = proxy.$tools.getDate(detail.sendDate)
+      let res = JSON.parse(event.detail)
 
-      if (detail.sendId == data.form.value.id && detail.sendId != data.userInfo.id) {
-        if (data.form.value.record) {
-          data.form.value.record.push(detail)
-        } else {
-          data.form.value.record = [detail]
+      if (res.success && res.data.type=="websocketMessage"){
+        let detail = res.data.data
+
+
+        if (detail.sendId == data.form.value.id && detail.sendId != data.userInfo.id) {
+          if (data.form.value.record) {
+            data.form.value.record.push(detail)
+          } else {
+            data.form.value.record = [detail]
+          }
+
+          contentRef.value.scrollTop = contentRef.value.scrollHeight
         }
 
-        contentRef.value.scrollTop = contentRef.value.scrollHeight
+        detail.sendDate = proxy.$tools.getDate(detail.sendDate)
       }
-      // ElMessage.success(event.detail)
     }, false);
 
 
@@ -215,10 +217,6 @@ export default {
 
 <style lang="scss" scoped>
 .chat {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
 
   .head {
     height: 3rem;
