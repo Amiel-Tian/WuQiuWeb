@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {ElMessage} from 'element-plus';
 import router from '@/router'
+import websocket from "@/utils/websocket";
 
 //全局变量
 import APP_CONFIG from "@/config/config";
@@ -27,6 +28,7 @@ api.interceptors.response.use(res => {
         //登录成功
         if (res.headers && res.headers.authorization) {
             localStorage.setItem('javawebtoken', res.headers.authorization)
+            websocket.connectWebsocket()
         }
     }
     if (res.data.code == "106" || res.data.code == "115" || !window.localStorage.getItem("javawebtoken")) {
@@ -35,6 +37,7 @@ api.interceptors.response.use(res => {
         router.push({
             path: '/login',
         })
+        websocket.closeWebSocket()
     }
 
     return Promise.resolve(res.data)
