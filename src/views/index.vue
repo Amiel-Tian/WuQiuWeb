@@ -95,7 +95,6 @@ export default {
     })
     onMounted(async () => {
       methods.getUserInfo()
-      websocket.connectWebsocket()
     })
     let methods = {
       getUserInfo() {
@@ -114,6 +113,7 @@ export default {
       },
 
       onSubmit() {
+        websocket.closeWebSocket()
         userApi.logout()
       },
       toPersonal() {
