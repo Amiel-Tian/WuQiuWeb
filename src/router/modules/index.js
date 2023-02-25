@@ -6,7 +6,7 @@ export default [
         components: {
             //index为声明的router-view的name
             index: () =>
-                import ('@/views/modules/messages')
+                import ('@/views/modules/chat/messages')
         }
     },
     {
@@ -16,7 +16,7 @@ export default [
         components: {
             //index为声明的router-view的name
             index: () =>
-                import ('@/views/modules/mails')
+                import ('@/views/modules/chat/mails')
         }
     },
 ]

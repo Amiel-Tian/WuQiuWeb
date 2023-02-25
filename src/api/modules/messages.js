@@ -22,4 +22,11 @@ export default {
             params:param,
         })
     },
+    page(param) {
+        return request({
+            url: '/messages/page',
+            method: 'get',
+            params: param,
+        })
+    },
 }

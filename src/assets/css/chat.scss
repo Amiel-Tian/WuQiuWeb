@@ -40,7 +40,16 @@
 
   .item{
     border-bottom: 1px solid #e0e1e2;
-    @extend .line
+    @extend .line;
+
+    .title{
+
+    }
+    .date{
+      text-align: right;
+      font-size: .5rem;
+      color: #8c8d8f;
+    }
   }
 
   .item-top {
@@ -57,16 +66,48 @@
   overflow-y: auto;
 
   .date {
+    line-height: 1rem;
     padding: .2rem;
     font-size: .1rem;
     color: #969696;
   }
   .message {
-    max-width: 35%;
-    margin: 1rem;
+    max-width: 65%;
+    margin:0 1rem;
     padding: .5rem;
     background-color: #e8e8e9;
     border-radius: .5rem;
+  }
+  .move{
+    text-align: center;
+  }
+  .details{
+    text-align: center;
+    padding: 7rem;
+
+    .user{
+      .username{
+        font-size: 1.5rem;
+        padding: 1rem 0;
+        border-bottom: 1px #ebebeb solid;
+      }
+    }
+    .organ{
+
+    }
+  }
+  .el-tree {
+    background-color: transparent;
+
+    .el-tree-node__content {
+      &:hover {
+        background-color: var(--hover-color) !important;
+      }
+    }
+
+    .el-tree-node.is-current > .el-tree-node__content {
+      background-color: var(--select-color) !important;
+    }
   }
 }
 
@@ -83,7 +124,7 @@
   .tools{
     padding: .3rem;
     .el-icon{
-      font-size: 16px;
+      font-size: 1rem;
       padding: .3rem;
       border-radius: .3rem;
 

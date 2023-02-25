@@ -43,8 +43,8 @@
           {{ selectRootForm.name }}
         </div>
       </div>
-      <el-row justify="space-around" style="flex:1;overflow:hidden;">
-        <el-col :span="treeWidth" class="flex-column tree-box" style="border-right: 1px solid #e5e6e7">
+      <el-row justify="space-around" class="messages-box" style="overflow:hidden;">
+        <el-col :span="treeWidth" class="flex-column" style="border-right: 1px solid #e5e6e7;overflow-y: auto">
           <el-tree
               ref="treeRef"
               :data="treeData"
@@ -70,13 +70,16 @@
             </template>
           </el-tree>
         </el-col>
-        <el-col :span="24-treeWidth">
-          <div>
-            {{form.name}}
-            {{form.username}}
+        <el-col :span="24-treeWidth" class="details">
+          <div v-if="form.username" class="user">
+            <div class="username">{{form.username}}</div>
+            <div style="padding: 1rem 0">
+              <el-button type="primary" @click="sendMessClick()">发送消息</el-button>
+            </div>
           </div>
-          <div v-if="form.username">
-            <el-button type="primary" @click="sendMessClick()">发送消息</el-button>
+          <div v-else class="organ">
+            <div style="color: #0075bc;font-size: 20px">{{selectRootForm.name}}</div>
+            <div style="font-size: 18px; font-weight: bold;padding: 1rem 0">{{form.name}}</div>
           </div>
         </el-col>
       </el-row>
@@ -100,6 +103,7 @@ export default {
   setup(props, content) {
     const router = useRouter()
     const {proxy} = getCurrentInstance();
+    const treeRef = ref()
     let data = {
       treeWidth: ref(5),
       searchForm: ref({}),
@@ -140,6 +144,7 @@ export default {
 
       lineClick(param) {
         data.selectRootForm.value = param
+        data.form.value = {}
         data.treeData.value = param.children
         data.treeAll.value.forEach(item => {
           if (item.id == param.id) {
@@ -178,6 +183,9 @@ export default {
         if (!value) return true
         return datas.name.indexOf(value) != -1
       },
+      treeSearch() {
+        treeRef.value.filter(data.searchForm.name)
+      },
       sendMessClick(){
         let user = data.form.value
         router.push({
@@ -190,6 +198,7 @@ export default {
     return {
       proxy,
       router,
+      treeRef,
       ...data,
       ...methods
     }
@@ -198,19 +207,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.tree-box {
-  .el-tree {
-    background-color: transparent;
 
-    .el-tree-node__content {
-      &:hover {
-        background-color: var(--hover-color) !important;
-      }
-    }
-
-    .el-tree-node.is-current > .el-tree-node__content {
-      background-color: var(--select-color) !important;
-    }
-  }
-}
 </style>
