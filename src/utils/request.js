@@ -30,8 +30,7 @@ api.interceptors.response.use(res => {
             localStorage.setItem('javawebtoken', res.headers.authorization)
             websocket.connectWebsocket()
         }
-    }
-    if (res.data.code == "106" || res.data.code == "115" || !window.localStorage.getItem("javawebtoken")) {
+    }else if (res.data.code == "106" || res.data.code == "115" || !window.localStorage.getItem("javawebtoken")) {
         localStorage.setItem('javawebtoken', res.headers.authorization)
         //用户未登录
         router.push({

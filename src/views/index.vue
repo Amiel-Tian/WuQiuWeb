@@ -61,7 +61,7 @@
 </template>
 
 <script>
-import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
+import {ref, unref, getCurrentInstance, watch, reactive, onMounted, onBeforeUnmount} from "vue";
 import {useRouter} from "vue-router";
 
 import userApi from "@/api/sys/user";
@@ -88,27 +88,38 @@ export default {
       loading: ref(false),
       editableTabsValue: ref(""),
       editableTabs: ref([]),
+      code: ref(106),
     }
     //监听
     watch(() => [router.currentRoute.value.path], ([newInfo], [oldInfo]) => {
       data.routerPath.value = router.currentRoute.value.path
     })
     onMounted(async () => {
-      methods.getUserInfo()
+      await methods.getUserInfo()
+      if (!websocket.isConnection() && data.code.value != 106){
+          await websocket.connectWebsocket()
+      }
     })
     let methods = {
-      getUserInfo() {
+      async getUserInfo() {
         data.loading.value = true
-        userApi.getUserInfo().then(res => {
-          data.userInfo.value = res.data
+        await userApi.getUserInfo().then(res => {
+          if (res.success) {
+            data.userInfo.value = res.data
+            data.code.value = res.code
+          }
         })
-        menuApi.getNav().then(resnav => {
-          data.menuList.value = resnav.data.nav
-          sessionStorage.setItem('permission', resnav.data.authoritys)
-          data.loading.value = false
+        await menuApi.getNav().then(resnav => {
+          if (resnav.success) {
+            data.menuList.value = resnav.data.nav
+            sessionStorage.setItem('permission', resnav.data.authoritys)
+            data.loading.value = false
+          }
         })
-        dictTypeApi.getTreeDict().then(resdict => {
-          sessionStorage.setItem('dictionaries', JSON.stringify(resdict.data))
+        await  dictTypeApi.getTreeDict().then(resdict => {
+          if (resdict.success) {
+            sessionStorage.setItem('dictionaries', JSON.stringify(resdict.data))
+          }
         })
       },
 
@@ -144,6 +155,9 @@ export default {
 
       },
     }
+    onBeforeUnmount(() => {
+      websocket.closeWebSocket()
+    })
 
     return {
       router,
