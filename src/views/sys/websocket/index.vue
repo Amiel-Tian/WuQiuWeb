@@ -184,8 +184,8 @@ export default {
     window.addEventListener('receive', function (event) {
       let res = JSON.parse(event.detail)
 
-      if (res.success && res.data.type=="websocketMessage"){
-        let detail = res.data.data
+      if (res.success && res.code=="10001"){
+        let detail = res.data
 
 
         if (detail.sendId == data.form.value.id && detail.sendId != data.userInfo.id) {
