@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <el-row justify="space-around">
       <el-col :span="treeWidth">
@@ -181,7 +180,7 @@ import roleApi from "@/api/sys/role";
 import {ElMessage} from "element-plus";
 
 export default {
-  name: "index",
+  name: "sys/menus",
   props: [],
   emits: [],
   components: {operation},

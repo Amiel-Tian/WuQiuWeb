@@ -80,7 +80,7 @@ import userApi from "@/api/sys/user";
 import websocketApi from "@/api/sys/websocket";
 
 export default {
-  name: "index",
+  name: "websocket/index",
   props: [],
   emits: [],
   components: {},

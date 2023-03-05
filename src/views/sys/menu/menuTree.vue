@@ -13,7 +13,7 @@
         </el-icon>
         <span  class="text-overlength">{{ item.name }}</span>
       </template>
-      <menu-tree @menuClick="menuClick" v-if="item.children" :menu-list="item.children"></menu-tree>
+      <menu-tree @menuClick="menuClickTree" v-if="item.children" :menu-list="item.children"></menu-tree>
     </el-sub-menu>
   </template>
 </template>
@@ -46,6 +46,9 @@ export default {
           content.emit('menuClick',fil[0])
           return
         }
+        content.emit('menuClick',e)
+      },
+      menuClickTree(e){
         content.emit('menuClick',e)
       }
     }

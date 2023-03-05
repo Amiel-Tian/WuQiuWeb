@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card header="局部打印">
     <el-button v-print="print">点击打印</el-button>
     <div id="printBox">
@@ -38,7 +37,7 @@ import {useRouter} from "vue-router";
 
 import useClipboard from "vue-clipboard3";
 export default {
-  name: "index",
+  name: "tools/other",
   props:["info"],
   emits:["update:info"],
   components:{
