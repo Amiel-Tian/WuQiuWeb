@@ -2,7 +2,7 @@ export default [
     {
         name: 'renwushu/index',
         path: '/renwushu/index',
-        meta: {title: '任务书', icon: ''},
+        meta: {title: '任务书', icon: '', keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -11,7 +11,7 @@ export default [
     }, {
         name: 'business/index',
         path: '/business/index',
-        meta: {title: '项目文档', icon: ''},
+        meta: {title: '项目文档', icon: '',keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -21,7 +21,7 @@ export default [
     {
         name: 'resume/show',
         path: '/resume/show',
-        meta: {title: '个人简历', icon: ''},
+        meta: {title: '个人简历', icon: '',keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -31,7 +31,7 @@ export default [
     {
         name: 'ireport/xmlToLowerCase',
         path: '/ireport/xmlToLowerCase',
-        meta: {title: '变量转小写', icon: ''},
+        meta: {title: '变量转小写', icon: '',keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>

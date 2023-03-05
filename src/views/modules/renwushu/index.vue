@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card >
     <operation :info="form" v-model:drawer="drawer" @success="getTableData()"></operation>
   </el-card>
@@ -82,7 +81,7 @@ import operation from "@/views/modules/renwushu/operation"
 import renwuApi from "@/api/modules/renwu";
 import useClipboard from "vue-clipboard3";
 export default {
-  name: "index",
+  name: "renwushu/index",
   props: [],
   emits: [],
   components: {

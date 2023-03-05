@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card style="height: 93%;"
            :body-style="{ padding: '20px' , height: '100%'}"
   >
@@ -155,7 +154,7 @@ import fileApi from "@/api/sys/file";
 import userApi from "@/api/sys/user";
 
 export default {
-  name: "index",
+  name: "business/index",
   props: ["info"],
   emits: ["update:info"],
   components: {},

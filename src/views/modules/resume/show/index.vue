@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <div :class="fullScreenFlg ? 'box full-screen': ''">
       <el-row>
@@ -149,7 +148,7 @@ import dictData from "@/api/sys/dictData";
 import moduleCardShow from "@/views/modules/resume/common/moduleCardShow";
 
 export default {
-  name: "index",
+  name: "business/index",
   props: [],
   emits: [],
   components: {
