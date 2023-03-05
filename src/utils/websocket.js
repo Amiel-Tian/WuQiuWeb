@@ -4,7 +4,7 @@ import userApi from "@/api/sys/user";
 import APP_CONFIG from "@/config/config";
 
 // let URL = APP_CONFIG.VUE_APP_API_HOST_DEFAULT+'/websocket'
-let URL = 'ws://localhost:2201/chat/websocket'
+let URL = 'ws://localhost:2200/renwushu/websocket'
 
 if (URL.indexOf("http") > -1){
     URL = URL.replace("http", "ws")

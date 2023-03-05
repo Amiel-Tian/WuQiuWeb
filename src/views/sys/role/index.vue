@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <el-form :model="searchForm" label-width="120px">
       <el-row justify="start" style="margin: .5rem">
@@ -105,7 +104,7 @@ import userApi from "@/api/sys/user";
 import {ElMessage} from "element-plus";
 
 export default {
-  name: "index",
+  name: "sys/roles",
   props: [],
   emits: [],
   components: {operation},

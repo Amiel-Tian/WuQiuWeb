@@ -57,7 +57,7 @@ import {useRouter} from "vue-router";
 import userApi from "@/api/sys/user";
 
 export default {
-  name: "index",
+  name: "sys/user/personal",
   props: ["info"],
   emits: ["update:info"],
   components: {},
