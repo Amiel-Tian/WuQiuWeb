@@ -95,7 +95,7 @@ import messagesApi from "@/api/modules/messages";
 import userApi from "@/api/sys/user";
 
 export default {
-  name: "index",
+  name: "modules/messages",
   props: ["info"],
   emits: ["update:info"],
   components: {},

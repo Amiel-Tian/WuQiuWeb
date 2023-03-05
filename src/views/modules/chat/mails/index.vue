@@ -96,7 +96,7 @@ import userApi from "@/api/sys/user";
 import router from "@/router";
 
 export default {
-  name: "index",
+  name: "modules/mails",
   props: ["info"],
   emits: ["update:info"],
   components: {},
