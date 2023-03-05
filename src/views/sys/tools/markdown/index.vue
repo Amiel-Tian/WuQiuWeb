@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <v-md-editor v-model="text" height="400px"
                :disabled-menus="[]"
                @upload-image="handleUploadImage"
@@ -22,7 +21,7 @@ import {useRouter} from "vue-router";
 import fileApi from "@/api/sys/file";
 
 export default {
-  name: "index",
+  name: "tools/markdown",
   props:[],
   emits:[],
   components:{

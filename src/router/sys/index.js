@@ -1,5 +1,15 @@
 export default [
     {
+        name: 'sys/index',
+        path: '/',
+        meta: { title: '首页', icon: '' },
+        components: {
+            //index为声明的router-view的name
+            index: () =>
+                import ('@/views/sys/index')
+        }
+    },
+    {
         name: '404',
         path: '/404',
         meta: { title: '404', icon: '' },
@@ -22,7 +32,7 @@ export default [
     {
         name: 'sys/user',
         path: '/sys/user',
-        meta: { title: '用户管理', icon: '' },
+        meta: { title: '用户管理', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -32,7 +42,7 @@ export default [
     {
         name: 'sys/user/personal',
         path: '/sys/user/personal',
-        meta: { title: '个人中心', icon: '' },
+        meta: { title: '个人中心', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -42,7 +52,7 @@ export default [
     {
         name: 'sys/roles',
         path: '/sys/roles',
-        meta: { title: '角色管理', icon: '' },
+        meta: { title: '角色管理', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -52,7 +62,7 @@ export default [
     {
         name: 'sys/menus',
         path: '/sys/menus',
-        meta: { title: '菜单管理', icon: '' },
+        meta: { title: '菜单管理', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -62,7 +72,7 @@ export default [
     {
         name: 'sys/organ',
         path: '/sys/organ',
-        meta: { title: '组织管理', icon: '' },
+        meta: { title: '组织管理', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -72,7 +82,7 @@ export default [
     {
         name: 'sys/dicts',
         path: '/sys/dicts',
-        meta: { title: '字典管理', icon: '' },
+        meta: { title: '字典管理', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -82,7 +92,7 @@ export default [
     {
         name: 'tools/markdown',
         path: '/tools/markdown',
-        meta: { title: 'Markdown', icon: '' },
+        meta: { title: 'Markdown', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -92,7 +102,7 @@ export default [
     {
         name: 'tools/icon',
         path: '/tools/icon',
-        meta: { title: '图标', icon: '' },
+        meta: { title: '图标', icon: ''  ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -102,7 +112,7 @@ export default [
     {
         name: 'tools/other',
         path: '/tools/other',
-        meta: { title: '其他工具', icon: '' },
+        meta: { title: '其他工具', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>
@@ -112,7 +122,7 @@ export default [
     {
         name: 'websocket/index',
         path: '/websocket/index',
-        meta: { title: 'websocket', icon: '' },
+        meta: { title: 'websocket', icon: '' ,keepalive : true},
         components: {
             //index为声明的router-view的name
             index: () =>

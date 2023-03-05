@@ -1,5 +1,4 @@
 <template>
-  <page-title :title="router.currentRoute.value.meta.title"></page-title>
   <el-card>
     <icon-show></icon-show>
   </el-card>
@@ -11,7 +10,7 @@ import {ElMessage, ElMessageBox} from 'element-plus';
 import {useRouter} from "vue-router";
 
 export default {
-  name: "index",
+  name: "tools/icon",
   props:["info"],
   emits:["update:info"],
   components:{
