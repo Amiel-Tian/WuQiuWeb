@@ -106,6 +106,11 @@ export default {
       if(newVal.meta.keepalive && data.includeList.value.indexOf(newVal.name) === -1){
         data.includeList.value.push(newVal.name);
       }
+      let val = {
+        name : newVal.meta.title,
+        path : newVal.path,
+      }
+      methods.menuClick(val)
     },{deep:true}) // 开启深度监听
 
     onMounted(async () => {
