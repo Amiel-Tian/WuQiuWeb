@@ -1,14 +1,14 @@
 <template>
-  <el-card style="height: 93%;"
+  <el-card style="height: 95%;"
            :body-style="{ padding: '20px' , height: '100%'}"
   >
     <div class="box">
       <div class="menu" :style="{width: isOpen ? menuWidth + '%' : '0',}">
-        <!--        <el-input placeholder="输入搜索" v-modules="treeInput" clearable >-->
-        <!--          <template #append>-->
-        <!--            <el-button icon="Search" @click="treeSearch"/>-->
-        <!--          </template>-->
-        <!--        </el-input>-->
+        <el-input placeholder="输入搜索" @input="treeSearch" v-model="treeInput" clearable >
+          <template #append>
+            <el-button icon="Search" @click="treeSearch"/>
+          </template>
+        </el-input>
         <el-row justify="space-between" align="middle" style="flex: 1; padding: .5rem">
           <el-tooltip
               effect="dark"
@@ -21,32 +21,34 @@
           </el-tooltip>
           <el-button v-permission="['sys:business:add']" link type="primary" @click="addClick()">新增</el-button>
         </el-row>
-        <el-tree
-            ref="treeRef"
-            :data="treeData"
-            :props="treeProps"
-            node-key="id"
-            highlight-current
-            :expand-on-click-node="false"
-            :current-node-key="currentTreeeNodeKey"
-            @node-click="treeeNodeClick"
-            :filter-node-method="filterNode"
-        >
-          <template #default="{ node, data }">
-            <el-row justify="space-between" style="font-size: 1rem">
-              <el-tooltip
-                  effect="dark"
-                  :content="node.label"
-                  placement="right-start"
-              >
-                <div class="text-overlength" style="flex: 1">{{ node.label }}</div>
-              </el-tooltip>
-              <div style="padding:0 1.5rem">
-                <el-tag size="small">{{ data.sort }}</el-tag>
-              </div>
-            </el-row>
-          </template>
-        </el-tree>
+        <el-scrollbar>
+          <el-tree
+              ref="treeRef"
+              :data="treeData"
+              :props="treeProps"
+              node-key="id"
+              highlight-current
+              :expand-on-click-node="false"
+              :current-node-key="currentTreeeNodeKey"
+              @node-click="treeeNodeClick"
+              :filter-node-method="filterNode"
+          >
+            <template #default="{ node, data }">
+              <el-row justify="space-between" style="font-size: 1rem">
+                <el-tooltip
+                    effect="dark"
+                    :content="node.label"
+                    placement="right-start"
+                >
+                  <div class="text-overlength" style="flex: 1">{{ node.label }}</div>
+                </el-tooltip>
+                <div style="padding:0 1.5rem">
+                  <el-tag size="small">{{ data.sort }}</el-tag>
+                </div>
+              </el-row>
+            </template>
+          </el-tree>
+        </el-scrollbar>
       </div>
       <div class="content" :style="{width: isOpen ? (100 - menuWidth) + '%' : '100%',}">
         <el-row v-if="!edit && form && form.show" justify="center" style="height: 100%;">
@@ -65,7 +67,8 @@
                         @confirm="confirmDelete(form)"
                         title="确认删除?">
                       <template #reference>
-                        <el-button v-permission="['sys:business:delete']" link type="danger" @click="">删除</el-button>
+                        <el-button
+                            v-show="!(form.id && !(form.createBy == userInfo.id))" v-permission="['sys:business:delete']" link type="danger" @click="">删除</el-button>
                       </template>
                     </el-popconfirm>
                   </el-col>
@@ -348,7 +351,9 @@ export default {
         })
       },
       treeSearch() {
-        treeRef.value.filter(data.treeInput)
+        if (treeRef && treeRef.value) {
+          treeRef.value.filter(data.treeInput.value)
+        }
       },
       handleUploadImage(event, insertImage, files) {
         // 拿到 files 之后上传到文件服务器，然后向编辑框中插入对应的内容
@@ -434,6 +439,8 @@ export default {
     overflow: hidden;
     border-right: 1px var(--el-border-color) var(--el-border-style);
     transition: width .5s;
+    display: flex;
+    flex-direction: column;
   }
 
   .content {
