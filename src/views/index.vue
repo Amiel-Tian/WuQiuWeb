@@ -63,7 +63,7 @@
 
       <el-main>
         <router-view name="index" v-slot="{ Component }">
-          <keep-alive :include="includeList">
+          <keep-alive ref="keepAliveRef" :include="includeList">
             <component :is="Component" :key="route.name" v-if="route.meta.keepalive" />
           </keep-alive>
           <component :is="Component" :key="route.name" v-if="!route.meta.keepalive" />
@@ -95,6 +95,7 @@ export default {
 
     const tagsBoxScrollRef = ref()
     const tagsBoxRef = ref()
+    const keepAliveRef = ref()
     let data = {
       routerPath: ref(router.currentRoute.value.path),
       userInfo: ref({
@@ -174,8 +175,6 @@ export default {
         })
       },
       menuClick(e) {
-
-        console.log(1)
         let fil = data.editableTabs.value.filter(f => {
           return f.name == e.path
         })
@@ -203,7 +202,7 @@ export default {
         let scorWidth = tagsBoxScrollRef.value.offsetWidth
         let boxWidth = tagsBoxRef.value.offsetWidth
         let tag = JSON.parse(JSON.stringify(data.tagScroll.value))
-        if (boxWidth > scorWidth){
+        if (boxWidth > scorWidth || tag != 0){
           if (delta == 1){
             if (tag > (scorWidth - boxWidth)) {
                 data.tagScroll.value = tag - 10
@@ -251,6 +250,14 @@ export default {
             })
           }
         }
+        //清除缓存
+        const cachedInstances = keepAliveRef.value.cache;
+        for (const key in cachedInstances) {
+          const cachedInstance = cachedInstances[key].instance;
+          if (cachedInstance && cachedInstance.$options.name === targetName.name) {
+            cachedInstance.$destroy(); // 销毁指定组件实例，从而清除缓存
+          }
+        }
         tags.splice(index, 1)
         tagsName.splice(index, 1)
       },
@@ -262,6 +269,7 @@ export default {
     return {
       router,
       route,
+      keepAliveRef,
       tagsBoxScrollRef,
       tagsBoxRef,
       ...data,
