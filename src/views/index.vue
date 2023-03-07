@@ -12,7 +12,7 @@
             :router="true"
             :default-active="routerPath"
         >
-          <menu-tree @menuClick="menuClick" v-model:menu-list="menuList"></menu-tree>
+          <menu-tree v-model:menu-list="menuList"></menu-tree>
         </el-menu>
       </el-scrollbar>
     </el-aside>
@@ -46,11 +46,16 @@
               <el-menu-item index="2-5" @click="onSubmit">退出登录</el-menu-item>
             </el-sub-menu>
           </el-menu>
-          <div class="tags-box">
-            <div v-for="(item, index) in editableTabs" @click="tabClick(item)" :class="item.name == editableTabsValue ? 'tag-box flex-center tag-box-active' : 'tag-box flex-center'">
-              <div class="tag-dian"></div>
-              <div class="tag-message">{{ item.title }}</div>
-              <el-icon @click.stop="removeTab(item, index)" class="tag-coles"><Close /></el-icon>
+          <div class="tags-box-scroll" ref="tagsBoxScrollRef" @wheel="handleScroll">
+            <div class="tags-box" ref="tagsBoxRef"  :style="{'transform':'translateX('+tagScroll+'px)'}">
+              <div v-for="(item, index) in editableTabs" @click="tabClick(item)"
+                   :class="item.name == editableTabsValue ? 'tag-box flex-center tag-box-active' : 'tag-box flex-center'">
+                <div class="tag-dian"></div>
+                <div class="tag-message">{{ item.title }}</div>
+                <el-icon @click.stop="removeTab(item, index)" class="tag-coles">
+                  <Close/>
+                </el-icon>
+              </div>
             </div>
           </div>
         </div>
@@ -88,6 +93,8 @@ export default {
     const router = useRouter()
     const route = useRoute()
 
+    const tagsBoxScrollRef = ref()
+    const tagsBoxRef = ref()
     let data = {
       routerPath: ref(router.currentRoute.value.path),
       userInfo: ref({
@@ -99,6 +106,7 @@ export default {
       editableTabsValue: ref(""),//打开的路由path
       includeList : ref([]),//历史打开路由name
       editableTabs: ref([]),//历史打开的路由对象
+      tagScroll: ref(0),//历史打开的路由对象
       code: ref(106),
     }
     //监听
@@ -166,6 +174,8 @@ export default {
         })
       },
       menuClick(e) {
+
+        console.log(1)
         let fil = data.editableTabs.value.filter(f => {
           return f.name == e.path
         })
@@ -187,6 +197,27 @@ export default {
         router.push({
           path: tabsPaneContext.name,
         })
+      },
+      handleScroll(event){
+        const delta = Math.sign(event.deltaY); // 获取鼠标滚动方向，1表示向下滚动，-1表示向上滚动
+        let scorWidth = tagsBoxScrollRef.value.offsetWidth
+        let boxWidth = tagsBoxRef.value.offsetWidth
+        let tag = JSON.parse(JSON.stringify(data.tagScroll.value))
+        if (boxWidth > scorWidth){
+          if (delta == 1){
+            if (tag > (scorWidth - boxWidth)) {
+                data.tagScroll.value = tag - 10
+            }
+          }else{
+            if (tag < 0) {
+              if (tag - 10 > 0){
+                data.tagScroll.value = 0
+              }else{
+                  data.tagScroll.value = tag + 10
+              }
+            }
+          }
+        }
       },
       removeTab(targetName, index) {
         let tags = data.editableTabs.value;
@@ -231,6 +262,8 @@ export default {
     return {
       router,
       route,
+      tagsBoxScrollRef,
+      tagsBoxRef,
       ...data,
       ...methods
     }
@@ -256,9 +289,15 @@ export default {
 .el-header {
   padding: 0;
 
+  .tags-box-scroll{
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+    background-color: #fff;
+  }
   .tags-box{
     padding: .1rem;
-    background-color: #fff;
+    display: inline-flex;
 
     //white-space: nowrap;
     .tag-box{
