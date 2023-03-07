@@ -12,7 +12,7 @@
             :router="true"
             :default-active="routerPath"
         >
-          <menu-tree @menuClick="menuClick" v-model:menu-list="menuList"></menu-tree>
+          <menu-tree v-model:menu-list="menuList"></menu-tree>
         </el-menu>
       </el-scrollbar>
     </el-aside>
@@ -46,11 +46,16 @@
               <el-menu-item index="2-5" @click="onSubmit">退出登录</el-menu-item>
             </el-sub-menu>
           </el-menu>
-          <div class="tags-box">
-            <div v-for="(item, index) in editableTabs" @click="tabClick(item)" :class="item.name == editableTabsValue ? 'tag-box flex-center tag-box-active' : 'tag-box flex-center'">
-              <div class="tag-dian"></div>
-              <div class="tag-message">{{ item.title }}</div>
-              <el-icon @click.stop="removeTab(item, index)" class="tag-coles"><Close /></el-icon>
+          <div class="tags-box-scroll" ref="tagsBoxScrollRef" @wheel="handleScroll">
+            <div class="tags-box" ref="tagsBoxRef"  :style="{'transform':'translateX('+tagScroll+'px)'}">
+              <div v-for="(item, index) in editableTabs" @click="tabClick(item)"
+                   :class="item.name == editableTabsValue ? 'tag-box flex-center tag-box-active' : 'tag-box flex-center'">
+                <div class="tag-dian"></div>
+                <div class="tag-message">{{ item.title }}</div>
+                <el-icon @click.stop="removeTab(item, index)" class="tag-coles">
+                  <Close/>
+                </el-icon>
+              </div>
             </div>
           </div>
         </div>
@@ -58,7 +63,7 @@
 
       <el-main>
         <router-view name="index" v-slot="{ Component }">
-          <keep-alive :include="includeList">
+          <keep-alive ref="keepAliveRef" :include="includeList">
             <component :is="Component" :key="route.name" v-if="route.meta.keepalive" />
           </keep-alive>
           <component :is="Component" :key="route.name" v-if="!route.meta.keepalive" />
@@ -88,6 +93,9 @@ export default {
     const router = useRouter()
     const route = useRoute()
 
+    const tagsBoxScrollRef = ref()
+    const tagsBoxRef = ref()
+    const keepAliveRef = ref()
     let data = {
       routerPath: ref(router.currentRoute.value.path),
       userInfo: ref({
@@ -99,6 +107,7 @@ export default {
       editableTabsValue: ref(""),//打开的路由path
       includeList : ref([]),//历史打开路由name
       editableTabs: ref([]),//历史打开的路由对象
+      tagScroll: ref(0),//历史打开的路由对象
       code: ref(106),
     }
     //监听
@@ -188,6 +197,27 @@ export default {
           path: tabsPaneContext.name,
         })
       },
+      handleScroll(event){
+        const delta = Math.sign(event.deltaY); // 获取鼠标滚动方向，1表示向下滚动，-1表示向上滚动
+        let scorWidth = tagsBoxScrollRef.value.offsetWidth
+        let boxWidth = tagsBoxRef.value.offsetWidth
+        let tag = JSON.parse(JSON.stringify(data.tagScroll.value))
+        if (boxWidth > scorWidth || tag != 0){
+          if (delta == 1){
+            if (tag > (scorWidth - boxWidth)) {
+                data.tagScroll.value = tag - 10
+            }
+          }else{
+            if (tag < 0) {
+              if (tag - 10 > 0){
+                data.tagScroll.value = 0
+              }else{
+                  data.tagScroll.value = tag + 10
+              }
+            }
+          }
+        }
+      },
       removeTab(targetName, index) {
         let tags = data.editableTabs.value;
         let tagsName = data.includeList.value;
@@ -220,6 +250,14 @@ export default {
             })
           }
         }
+        //清除缓存
+        const cachedInstances = keepAliveRef.value.cache;
+        for (const key in cachedInstances) {
+          const cachedInstance = cachedInstances[key].instance;
+          if (cachedInstance && cachedInstance.$options.name === targetName.name) {
+            cachedInstance.$destroy(); // 销毁指定组件实例，从而清除缓存
+          }
+        }
         tags.splice(index, 1)
         tagsName.splice(index, 1)
       },
@@ -231,6 +269,9 @@ export default {
     return {
       router,
       route,
+      keepAliveRef,
+      tagsBoxScrollRef,
+      tagsBoxRef,
       ...data,
       ...methods
     }
@@ -256,9 +297,15 @@ export default {
 .el-header {
   padding: 0;
 
+  .tags-box-scroll{
+    overflow: hidden;
+    position: relative;
+    white-space: nowrap;
+    background-color: #fff;
+  }
   .tags-box{
     padding: .1rem;
-    background-color: #fff;
+    display: inline-flex;
 
     //white-space: nowrap;
     .tag-box{
