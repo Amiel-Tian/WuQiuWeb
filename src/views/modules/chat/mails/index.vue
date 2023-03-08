@@ -2,7 +2,7 @@
 
   <el-row justify="space-around" style="height: 100%; box-shadow:#666 0 0 .2rem">
     <el-col :span="treeWidth" class="flex-column" style="background-color: #f0f0f1;">
-      <div class="header">
+      <div class="header flex-center">
         <el-input
             v-model="searchForm.name"
             placeholder="搜索"
@@ -12,6 +12,13 @@
             <el-button icon="Search"/>
           </template>
         </el-input>
+        <el-tooltip
+            effect="dark"
+            content="创建群聊"
+            placement="right-end"
+        >
+          <el-icon class="btn" @click="addGroup"><Plus /></el-icon>
+        </el-tooltip>
       </div>
       <div class="list-box">
         <div v-for="(item, index) of treeAll"
@@ -163,6 +170,8 @@ export default {
         }
         return ""
       },
+      /*创建群聊*/
+      addGroup(){},
       /*
      * 树型控件点击事件
      * */

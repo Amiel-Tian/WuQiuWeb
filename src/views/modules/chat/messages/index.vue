@@ -17,7 +17,7 @@
             v-for="(item, index) in searchForm.name ? userList.filter(item => {return item.username.indexOf(searchForm.name) > -1}) : userList"
             :class="item.select ? 'item line-select': 'item'"
             @click="userClick(item)">
-          <div style="display: flex">
+          <div class="flex-center">
             <span class="text-overlength" style="padding-right: .3rem">{{ item.username }}</span>
             <el-tag v-if="item.type == 'group'" size="small" effect="dark">群</el-tag>
           </div>
@@ -39,31 +39,35 @@
         {{ form.username }}
       </div>
       <el-row justify="space-around" style="flex:1;overflow:hidden;" v-show="form.id">
-        <el-col :span="24" class="flex-column tree-box" style="border-right: 1px solid #e5e6e7">
-          <div class="messages-box" ref="messagesBoxRef">
-            <div class="move" v-show="page.pageNum <= page.pages">
-              <el-link type="primary" @click="moveClick()" :disabled="moveFlag">
-                <span v-if="!moveFlag">加载更多</span>
-                <el-icon v-else>
-                  <Loading/>
-                </el-icon>
-              </el-link>
-            </div>
-            <div v-for="item in form.record? form.record.slice().reverse() : []" :key="item.id"
-                 style="margin-top: 1rem">
-              <div class="date"
-                   :style="item.sendId == userInfo.id ? 'display: flex;justify-content: end;' : 'display: flex;'">
+        <el-col :span="24-massageExpandWidth" class="flex-column tree-box" style="border-right: 1px solid #e5e6e7">
+            <div class="messages-box" ref="messagesBoxRef">
+              <el-scrollbar ref="messagesBoxScrollRef">
+                <div ref="recordRef" style="padding: 0 .5rem 1rem .5rem;">
+                  <div class="move" v-show="page.pageNum <= page.pages">
+                    <el-link type="primary" @click="moveClick()" :disabled="moveFlag">
+                      <span v-if="!moveFlag">加载更多</span>
+                      <el-icon v-else>
+                        <Loading/>
+                      </el-icon>
+                    </el-link>
+                  </div>
+                  <div v-for="item in form.record? form.record.slice().reverse() : []" :key="item.id"
+                       style="margin-top: 1rem">
+                    <div class="date"
+                         :style="item.sendId == userInfo.id ? 'display: flex;justify-content: end;' : 'display: flex;'">
                 <span v-if="item.type == 'group' && item.sendId != userInfo.id"
                       style="font-size: 1rem; margin-right: .5rem">{{ userFormat(item.sendId) }}</span>
-                <span>{{ dateFormat(item.sendDate) }}</span>
-              </div>
-              <div :style="item.sendId == userInfo.id ? 'display: flex;justify-content: end;' : 'display: flex;'">
-                <div class="message" :style="item.sendId == userInfo.id ? 'background-color: #c9e7ff' : ''">
-                  {{ item.message }}
+                      <span>{{ dateFormat(item.sendDate) }}</span>
+                    </div>
+                    <div :style="item.sendId == userInfo.id ? 'display: flex;justify-content: end;' : 'display: flex;'">
+                      <div class="message" :style="item.sendId == userInfo.id ? 'background-color: #c9e7ff' : ''">
+                        {{ item.message }}
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </el-scrollbar>
             </div>
-          </div>
           <div class="send-box">
             <div class="tools">
               <el-tooltip content="语音通话" effect="light">
@@ -80,7 +84,13 @@
             </div>
           </div>
         </el-col>
-        <el-col :span="0"></el-col>
+        <el-col :span="massageExpandWidth" class="expand-box">
+          <div class="group-title">群成员</div>
+          <div class="group-user flex-center" v-for="item in form? form.users ? form.users.split(',') : [] : []">
+            <el-icon ><UserFilled /></el-icon>
+            {{ userFormat(item) }}
+          </div>
+        </el-col>
       </el-row>
 
     </el-col>
@@ -88,7 +98,7 @@
 </template>
 
 <script>
-import {ref, unref, getCurrentInstance, watch, reactive, onMounted} from "vue";
+import {ref, unref, getCurrentInstance, watch, reactive, onMounted, onActivated} from "vue";
 import {ElMessage, ElMessageBox} from 'element-plus';
 import {useRouter, useRoute} from "vue-router";
 import messagesApi from "@/api/modules/messages";
@@ -104,10 +114,11 @@ export default {
     const route = useRoute()
     const {proxy} = getCurrentInstance();
     const messagesBoxRef = ref();
+    const messagesBoxScrollRef = ref();
+    const recordRef = ref();
     let data = {
       treeWidth: ref(5),
       searchForm: ref({}),
-      userQuery: route.query,
       userList: ref([]),
       userAllList: ref([]),
       userInfo: ref({}),
@@ -121,11 +132,15 @@ export default {
       }),
       moveFlag: ref(false),
       scrollHeight: ref(0),
+      massageExpandWidth: ref(0),
     }
     //监听
     // watch(() => [messagesBoxRef.value], ([newInfo], [oldInfo]) => {
     //   console.log(newInfo)
     // })
+    onActivated(async () => {
+      await methods.load();
+    })
     onMounted(async () => {
       methods.loadDictList();
       await methods.getUserInfo();
@@ -135,7 +150,7 @@ export default {
     let methods = {
       async load() {
         let userList = data.userList.value
-        let userQuery = data.userQuery
+        let userQuery = route.query
 
         if (userQuery && userQuery.id) {
           let id = userList.findIndex((arr) => arr.id == userQuery.id);
@@ -205,6 +220,10 @@ export default {
         })
         data.form.value = JSON.parse(JSON.stringify(user))
         data.page.value.pageNum = 1
+        data.massageExpandWidth.value = 0
+        if (user.type == 'group'){
+          data.massageExpandWidth.value = 3
+        }
         await methods.getMessages()
       },
       async getMessages() {
@@ -227,21 +246,20 @@ export default {
             }
           }
         })
-
         if (data.page.value.pageNum == 1) {
-          if (messagesBoxRef && messagesBoxRef.value) {
-            messagesBoxRef.value.scrollTop = messagesBoxRef.value.scrollHeight
+          if (messagesBoxScrollRef && messagesBoxScrollRef.value) {
+            messagesBoxScrollRef.value.setScrollTop(recordRef.value.clientHeight)
           }
         } else {
           if (data.scrollHeight.value != 0) {
-            if (messagesBoxRef && messagesBoxRef.value) {
-              let c = messagesBoxRef.value.scrollHeight - data.scrollHeight.value
-              messagesBoxRef.value.scrollTop = c
+            if (messagesBoxScrollRef && messagesBoxScrollRef.value) {
+              let c = recordRef.value.clientHeight - data.scrollHeight.value
+              messagesBoxScrollRef.value.setScrollTop(c)
             }
           }
         }
 
-        let scrollHeight = messagesBoxRef.value.scrollHeight;
+        let scrollHeight = recordRef.value.clientHeight;
         data.scrollHeight.value = scrollHeight + 0
 
         data.moveFlag.value = false
@@ -265,7 +283,7 @@ export default {
         }
         await messagesApi.sentMessage(detail)
         if (messagesBoxRef && messagesBoxRef.value) {
-          messagesBoxRef.value.scrollTop = messagesBoxRef.value.scrollHeight
+          messagesBoxScrollRef.value.setScrollTop(recordRef.value.clientHeight)
         }
       },
 
@@ -311,28 +329,6 @@ export default {
               }
             })
           }
-          // data.userList.value.forEach(item => {
-          //   console.log(item, item.record)
-          //   if (detail.type == "group"){
-          //     if (item.id == detail.receiveId) {
-          //       if (item.record) {
-          //         item.record.push(detail)
-          //       }else {
-          //         item.record = []
-          //         item.record.push(detail)
-          //       }
-          //     }
-          //   }else {
-          //     if (item.id == detail.sendId) {
-          //       if (item.record) {
-          //         item.record.push(detail)
-          //       }else {
-          //         item.record = []
-          //         item.record.push(detail)
-          //       }
-          //     }
-          //   }
-          // })
         }
         /*发送人为当前打开聊天窗口人并且发送人不是登陆人，群发并且发送人不是登陆人*/
         if ((detail.sendId == data.form.value.id && detail.sendId != data.userInfo.value.id && detail.type != "group") || (detail.type == "group" && detail.receiveId == data.form.value.id)) {
@@ -343,17 +339,19 @@ export default {
             data.form.value.record = [detail];
           }
         }
+        setTimeout(() => {
+          if (messagesBoxRef && messagesBoxRef.value) {
+            messagesBoxScrollRef.value.setScrollTop(recordRef.value.clientHeight)
+          }
+        }, 20)
       }
-      setTimeout(() => {
-        if (messagesBoxRef && messagesBoxRef.value) {
-          messagesBoxRef.value.scrollTop = messagesBoxRef.value.scrollHeight
-        }
-      }, 20)
     }, false);
     return {
       proxy,
       router,
       messagesBoxRef,
+      messagesBoxScrollRef,
+      recordRef,
       ...data,
       ...methods
     }
