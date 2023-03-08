@@ -46,17 +46,19 @@
               <el-menu-item index="2-5" @click="onSubmit">退出登录</el-menu-item>
             </el-sub-menu>
           </el-menu>
-          <div class="tags-box-scroll" ref="tagsBoxScrollRef" @wheel="handleScroll">
-            <div class="tags-box" ref="tagsBoxRef"  :style="{'transform':'translateX('+tagScroll+'px)'}">
-              <div v-for="(item, index) in editableTabs" @click="tabClick(item)"
-                   :class="item.name == editableTabsValue ? 'tag-box flex-center tag-box-active' : 'tag-box flex-center'">
-                <div class="tag-dian"></div>
-                <div class="tag-message">{{ item.title }}</div>
-                <el-icon @click.stop="removeTab(item, index)" class="tag-coles">
-                  <Close/>
-                </el-icon>
+          <div class="tags-box-scroll" ref="tagsBoxScrollBoxRef" @wheel="handleScroll">
+            <el-scrollbar ref="tagsBoxScrollRef">
+              <div class="tags-box" ref="tagsBoxRef">
+                <div v-for="(item, index) in editableTabs" @click="tabClick(item)"
+                     :class="item.name == editableTabsValue ? 'tag-box flex-center tag-box-active' : 'tag-box flex-center'">
+                  <div class="tag-dian"></div>
+                  <div class="tag-message">{{ item.title }}</div>
+                  <el-icon @click.stop="removeTab(item, index)" class="tag-coles">
+                    <Close/>
+                  </el-icon>
+                </div>
               </div>
-            </div>
+            </el-scrollbar>
           </div>
         </div>
       </el-header>
@@ -84,6 +86,7 @@ import menuTree from "@/views/sys/menu/menuTree";
 import dictTypeApi from "@/api/sys/dictType";
 
 import websocket from "@/utils/websocket";
+import {ElScrollbar} from "element-plus";
 export default {
   name: "index",
   props: [],
@@ -93,6 +96,7 @@ export default {
     const router = useRouter()
     const route = useRoute()
 
+    const tagsBoxScrollBoxRef = ref()
     const tagsBoxScrollRef = ref()
     const tagsBoxRef = ref()
     const keepAliveRef = ref()
@@ -187,6 +191,16 @@ export default {
             content: e.path,
           })
           data.editableTabsValue.value = e.path
+          setTimeout(() => {
+            let scorWidth = tagsBoxScrollBoxRef.value.clientWidth
+            let boxWidth = tagsBoxRef.value.clientWidth
+            if (boxWidth > scorWidth){
+              let tag = boxWidth - scorWidth
+              data.tagScroll.value = tag
+              tagsBoxScrollRef.value.setScrollLeft(tag)
+            }
+          }, 20)
+
         }
 
       },
@@ -199,23 +213,24 @@ export default {
       },
       handleScroll(event){
         const delta = Math.sign(event.deltaY); // 获取鼠标滚动方向，1表示向下滚动，-1表示向上滚动
-        let scorWidth = tagsBoxScrollRef.value.offsetWidth
-        let boxWidth = tagsBoxRef.value.offsetWidth
+        let scorWidth = tagsBoxScrollBoxRef.value.clientWidth
+        let boxWidth = tagsBoxRef.value.clientWidth
         let tag = JSON.parse(JSON.stringify(data.tagScroll.value))
         if (boxWidth > scorWidth || tag != 0){
           if (delta == 1){
-            if (tag > (scorWidth - boxWidth)) {
-                data.tagScroll.value = tag - 10
+            if (tag < (boxWidth - scorWidth)) {
+                data.tagScroll.value = tag + 20
             }
           }else{
-            if (tag < 0) {
-              if (tag - 10 > 0){
+            if (tag > 0) {
+              if (tag - 10 < 0){
                 data.tagScroll.value = 0
               }else{
-                  data.tagScroll.value = tag + 10
+                  data.tagScroll.value = tag - 20
               }
             }
           }
+          tagsBoxScrollRef.value.setScrollLeft(tag)
         }
       },
       removeTab(targetName, index) {
@@ -270,6 +285,7 @@ export default {
       router,
       route,
       keepAliveRef,
+      tagsBoxScrollBoxRef,
       tagsBoxScrollRef,
       tagsBoxRef,
       ...data,
