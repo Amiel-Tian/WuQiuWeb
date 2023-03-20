@@ -92,6 +92,8 @@
       </el-row>
     </el-col>
   </el-row>
+
+  <group v-model:drawer="drawer" v-model:treeAll="treeAll"></group>
 </template>
 
 <script>
@@ -102,11 +104,12 @@ import organApi from "@/api/sys/organ";
 import userApi from "@/api/sys/user";
 import router from "@/router";
 
+import group from "@/views/modules/chat/group";
 export default {
   name: "modules/mails",
   props: ["info"],
   emits: ["update:info"],
-  components: {},
+  components: {group},
   setup(props, content) {
     const router = useRouter()
     const {proxy} = getCurrentInstance();
@@ -123,6 +126,7 @@ export default {
       },
       selectRootForm: ref({}),
       form: ref({}),
+      drawer: ref(false),
     }
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
@@ -171,8 +175,10 @@ export default {
         return ""
       },
       /*创建群聊*/
-      addGroup(){},
-      /*
+      addGroup(){
+        data.drawer.value = true
+      },
+      /**
      * 树型控件点击事件
      * */
       treeeNodeClick(datas, node, TreeNode, e) {
@@ -185,7 +191,7 @@ export default {
           }
         }
       },
-      /*
+      /**
       * 数过滤函数
       * */
       filterNode(value, datas) {
@@ -193,7 +199,7 @@ export default {
         return datas.name.indexOf(value) != -1
       },
       treeSearch() {
-        treeRef.value.filter(data.searchForm.name)
+        treeRef.value.filter(data.searchForm.value.name)
       },
       sendMessClick(){
         let user = data.form.value

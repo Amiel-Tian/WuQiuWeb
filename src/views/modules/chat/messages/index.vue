@@ -6,6 +6,7 @@
             v-model="searchForm.name"
             placeholder="搜索"
             class="input-with-select"
+            @input=""
         >
           <template #prepend>
             <el-button icon="Search"/>
@@ -19,7 +20,7 @@
             @click="userClick(item)">
           <div class="flex-center">
             <span class="text-overlength" style="padding-right: .3rem">{{ item.username }}</span>
-            <el-tag v-if="item.type == 'group'" size="small" effect="dark">群</el-tag>
+            <el-tag v-if="item.type == 'group'" size="small" >群</el-tag>
           </div>
           <div class="date">
             <span v-show="!item.record || item.record.length == 0">{{ dateFormat(item.createdTime) }}</span>
@@ -139,6 +140,7 @@ export default {
     //   console.log(newInfo)
     // })
     onActivated(async () => {
+      await methods.getUserRecord();
       await methods.load();
     })
     onMounted(async () => {
@@ -302,24 +304,50 @@ export default {
       if (res.success && res.code == "10002") {
         let detail = res.data
 
-        /*发送人不是当前打开聊天窗口并且发送人不是登陆人*/
-        if ((detail.sendId != data.form.value.id && detail.type != "group") || (detail.receiveId != data.form.value.id && detail.type == "group")) {
-          if (detail.type == "group") {
-            let filter = data.userList.value.filter(item => {
-              return item.id == detail.receiveId
-            })
-            filter.forEach(item => {
-              if (item.record) {
-                item.record.push(detail)
-              } else {
-                item.record = []
-                item.record.push(detail)
-              }
-            })
-          } else {
-            let filter = data.userList.value.filter(item => {
+        let sendId = "";
+        if (detail.type == "group"){
+          sendId = detail.receiveId
+        }else{
+          sendId = detail.sendId
+        }
+        //当前打开窗口（接收人是当前窗口id）
+        if (sendId == data.form.value.id) {
+          let show = false;
+          //发送人不是自己
+          if (detail.sendId != data.userInfo.value.id){
+            show = true;
+          }
+          if (show){
+            detail.sendDate = proxy.$tools.getDate(detail.sendDate)
+            if (data.form.value.record) {
+              data.form.value.record.unshift(detail)
+            } else {
+              data.form.value.record = [detail];
+            }
+          }
+          setTimeout(() => {
+            if (messagesBoxRef && messagesBoxRef.value) {
+              messagesBoxScrollRef.value.setScrollTop(recordRef.value.clientHeight)
+            }
+          }, 20)
+        }else{
+          let show = false
+          let filter = []
+          //如果不是群聊
+          if (detail.type != "group"){
+            show = true
+            filter = data.userList.value.filter(item => {
               return item.id == detail.sendId
             })
+          }
+          //如果是群聊
+          else if(detail.type == "group"){
+            show = true
+            filter = data.userList.value.filter(item => {
+              return item.id == detail.receiveId
+            })
+          }
+          if (show){
             filter.forEach(item => {
               if (item.record) {
                 item.record.push(detail)
@@ -330,20 +358,6 @@ export default {
             })
           }
         }
-        /*发送人为当前打开聊天窗口人并且发送人不是登陆人，群发并且发送人不是登陆人*/
-        if ((detail.sendId == data.form.value.id && detail.sendId != data.userInfo.value.id && detail.type != "group") || (detail.type == "group" && detail.receiveId == data.form.value.id)) {
-          detail.sendDate = proxy.$tools.getDate(detail.sendDate)
-          if (data.form.value.record) {
-            data.form.value.record.unshift(detail)
-          } else {
-            data.form.value.record = [detail];
-          }
-        }
-        setTimeout(() => {
-          if (messagesBoxRef && messagesBoxRef.value) {
-            messagesBoxScrollRef.value.setScrollTop(recordRef.value.clientHeight)
-          }
-        }, 20)
       }
     }, false);
     return {
