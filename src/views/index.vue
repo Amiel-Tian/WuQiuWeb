@@ -327,7 +327,7 @@ export default {
     .tag-box{
       cursor: pointer;
       display: inline-flex;
-      padding: .5rem 1rem;
+      padding: .2rem 1rem;
       border-left: 1px solid #f4f4f4;
       border-right: 1px solid #f4f4f4;
       color: rgb(51, 51, 51);
@@ -340,6 +340,7 @@ export default {
       }
       .tag-message{
         margin-left: .5rem;
+        font-size: .4rem;
       }
       .tag-coles{
         display: none;
