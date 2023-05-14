@@ -12,6 +12,8 @@ const APP_CONFIG = {
     DICTTREE: "dictTree",
     //菜单类型
     MENUTYPE: "menuType",
+    //菜单设备端
+    MENUDEVICE: "menuDevice",
     /*
    * 字典end
    * */

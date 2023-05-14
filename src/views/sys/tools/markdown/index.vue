@@ -1,6 +1,8 @@
 <template>
   <v-md-editor v-model="text" height="400px"
                :disabled-menus="[]"
+               left-toolbar="undo redo clear | h bold italic strikethrough quote | ul ol table hr | link image code uploadFile | save"
+               :toolbar="toolbar"
                @upload-image="handleUploadImage"
   ></v-md-editor>
   <el-card>
@@ -30,7 +32,39 @@ export default {
     const router = useRouter()
     const {proxy} = getCurrentInstance();
     let data = {
-      text: ref('* Hello World!')
+      text: ref('* Hello World!'),
+      toolbar: {
+        uploadFile : {
+          title: '上传文件',
+          icon: 'v-md-icon-link',
+          menus: [
+            {
+              name: '添加文件连接',
+              text: '添加文件连接',
+              action(editor) {
+                editor.insert(function (selected) {
+                  const prefix = '[文件链接](';
+                  const suffix = ')';
+                  const placeholder = '请输入文本';
+                  const content = selected || placeholder;
+
+                  return {
+                    text: `${prefix}${content}${suffix}`,
+                    selected: content,
+                  };
+                });
+              },
+            },
+            {
+              name: '上传本地文件',
+              text: '上传本地文件',
+              action(editor) {
+                console.log('你点击了菜单2');
+              },
+            },
+          ],
+        },
+      },
     }
     //监听
     watch(() => [props.info], ([newInfo],[oldInfo]) => {

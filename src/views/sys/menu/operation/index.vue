@@ -77,6 +77,18 @@
             </el-radio-group>
           </el-form-item>
         </el-col>
+        <el-col :span="12">
+          <el-form-item label="显示设备端" >
+            <el-select v-model="form.device" placeholder="默认为空，所有端显示" clearable>
+              <el-option
+                  v-for="item in menuDeviceList"
+                  :key="item.value"
+                  :label="item.name"
+                  :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
         <el-col :span="24">
           <el-row justify="end">
             <el-button @click="subment" :loading="btnLoad">保存</el-button>
@@ -109,6 +121,7 @@ export default {
       btnLoad: ref(false),
       statusList: ref([]),
       menuTypeList: ref([]),
+      menuDeviceList: ref([]),
       cascaderProps: {
         children: "children",
         label: "name",
@@ -184,6 +197,8 @@ export default {
         data.statusList.value = res
         let menus = proxy.$tools.selectDict(proxy.$appConfig.MENUTYPE)
         data.menuTypeList.value = menus
+        let menuDevices = proxy.$tools.selectDict(proxy.$appConfig.MENUDEVICE)
+        data.menuDeviceList.value = menuDevices
       },
       pathInput(value) {
         if (value) {
