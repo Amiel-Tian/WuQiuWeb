@@ -70,7 +70,15 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="年龄：">
-              <el-input-number v-model="form.sort" :min="1" style="width: 100%;"/>
+              <el-date-picker
+                  style="width: 100%;"
+                  v-model="form.birthday"
+                  type="date"
+                  placeholder="出生日期"
+                  :disabled-date="disabledDate"
+                  :shortcuts="shortcuts"
+                  value-format="YYYY-MM-DD HH:mm:ss"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -147,7 +155,7 @@ import {ElMessage} from "element-plus";
 export default {
   name: "index",
   props: ["info"],
-  emits: [],
+  emits: ["refresh"],
   components: {},
   setup(props, content) {
     let data = {
@@ -160,13 +168,33 @@ export default {
       windowWidth: ref(0),
       // 屏幕高度
       windowHeight: ref(0),
+      shortcuts : [
+        {
+          text: 'Today',
+          value: new Date(),
+        },
+        {
+          text: 'Yesterday',
+          value: () => {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24)
+            return date
+          },
+        },
+        {
+          text: 'A week ago',
+          value: () => {
+            const date = new Date()
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7)
+            return date
+          },
+        },
+      ]
     }
 
     //监听
     watch(() => [props.info], ([newInfo], [oldInfo]) => {
-      if (newInfo) {
-        data.form.value = newInfo
-      }
+      data.form.value = newInfo
     })
 
     onMounted(async () => {
@@ -202,6 +230,9 @@ export default {
           })
         }
       },
+      disabledDate(time) {
+        return time.getTime() > Date.now()
+      }
     }
 
     return {

@@ -25,7 +25,7 @@
       </el-row>
       <div style="width: 210mm;margin: auto; height: 93%;">
         <div id="printBox" >
-          <info :info="form"></info>
+          <info :info="form" @refresh="getData()"></info>
 
           <div v-for="item in resumeContentGroup">
             <module-title :title="item.name" :icon="item.remarks"
@@ -37,7 +37,7 @@
               <module-card
                   :info="item_"
                   :resumeId="resumeId"
-                  @refresh="getData() "
+                  @refresh="getData()"
               ></module-card>
             </div>
           </div>
@@ -57,7 +57,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="模块：">
-              <el-select v-model="formContent.groupings" placeholder="Select" size="large" style="width: 100%;">
+              <el-select v-model="formContent.groupings" placeholder="请选择模块" size="large" style="width: 100%;">
                 <el-option
                     v-for="item in resumeContentGroup"
                     :key="item.value"
