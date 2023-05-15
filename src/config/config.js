@@ -1,6 +1,6 @@
 const APP_CONFIG = {
     // 服务器后台接口地址,
-    VUE_APP_API_HOST_DEFAULT: "http://60.205.4.143/chatApi",
+    VUE_APP_API_HOST_DEFAULT: "http://60.205.4.143/renwushuApi",
     /*
     * 字典
     * */

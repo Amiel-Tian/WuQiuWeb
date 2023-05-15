@@ -18,7 +18,7 @@ const routes = [
         component : home,
         children:[
             ...sys,
-            ...renwushu
+            ...renwushu,
             ...modules,
         ],
     },
