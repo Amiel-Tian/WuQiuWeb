@@ -3,6 +3,7 @@ import login from "@/views/login";
 import home from "@/views/index";
 import sys from "@/router/sys/index";
 import renwushu from "@/router/modules/renwushu";
+import modules from "@/router/modules";
 
 
 const routes = [
@@ -18,10 +19,10 @@ const routes = [
         children:[
             ...sys,
             ...renwushu
+            ...modules,
         ],
     },
     // ...back,
-    // ...houseInfo,
 ]
 
 
